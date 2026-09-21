@@ -2,10 +2,10 @@
  * Standalone Telegram Qualification & Operations Bot for V. I. LEVIN
  * Features:
  * - 6 Languages for incoming clients (/start with language choice: RU, EN, UK, ES, IT, FR)
- * - 6-step confidential legal qualification
+ * - 5-step confidential legal qualification
  * - Direct push to Admin Chat (7794422014)
- * - Admin action: Forward lead to lawyer / team
- * - Admin action: Generate Cryptomus USDT invoice
+ * - 1-Click Admin Forwarding directly to Lawyer Chat ID (1275663257)
+ * - 1-Click Cryptomus USDT Invoice generation
  * 
  * Run via: npm run bot:polling
  */
@@ -29,11 +29,25 @@ if (fs.existsSync(envPath)) {
 
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '8805827853:AAGALkEhBOUTe2xNiKbehggEnC0cAKvwV-0';
 const ADMIN_CHAT_ID = process.env.TELEGRAM_ADMIN_CHAT_ID || '7794422014';
+const LAWYER_CHAT_ID = process.env.TELEGRAM_LAWYER_CHAT_ID || '1275663257';
 
-console.log('🚀 Запуск Telegram-бота V. I. LEVIN (@VILEVIN_bot) в режиме Polling...');
-console.log(`👤 Admin Chat ID: ${ADMIN_CHAT_ID}`);
+console.log('🚀 Запуск Telegram-бота V. I. LEVIN (@VILEVIN_bot)...');
+console.log(`👑 Admin Chat ID: ${ADMIN_CHAT_ID}`);
+console.log(`👨‍⚖️ Lawyer Chat ID: ${LAWYER_CHAT_ID}`);
 
 const userSessions = new Map();
+const leadsCache = new Map();
+
+// Load persistent leads
+const dataFilePath = path.join(__dirname, '..', 'data', 'leads.json');
+try {
+  if (fs.existsSync(dataFilePath)) {
+    const arr = JSON.parse(fs.readFileSync(dataFilePath, 'utf8') || '[]');
+    arr.forEach((l) => leadsCache.set(l.id, l));
+  }
+} catch (e) {
+  console.log('No prior leads cache.');
+}
 
 function escapeHtml(text = '') {
   return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -85,25 +99,25 @@ const I18N = {
   ru: {
     welcome: '⚖️ <b>V. I. LEVIN — Международная юридическая практика</b>\n\nДобро пожаловать в защищенный шлюз первичной правовой оценки.\n\n🔒 Все переданные сведения охраняются адвокатской тайной (Attorney-Client Privilege) и режимом строгой конфиденциальности.\n\nШаг 1 из 5: Выберите <b>направление вашего вопроса</b>:',
     cats: [
-      [{ text: '🇺🇸 Иммиграция США & Green Card', callback_data: 'cat:usa' }],
-      [{ text: '🌍 Международные контракты & Структурирование', callback_data: 'cat:int' }],
-      [{ text: '⚖️ Арбитраж & Судебные споры', callback_data: 'cat:court' }],
-      [{ text: '💼 Корпоративное право & Защита активов', callback_data: 'cat:biz' }],
-      [{ text: '❓ Другой вопрос', callback_data: 'cat:oth' }],
+      [{ text: '🇺🇸 Иммиграция США & Green Card', callback_data: 'cat:Иммиграция США / Green Card' }],
+      [{ text: '🌍 Международные контракты & Структурирование', callback_data: 'cat:Международные контракты' }],
+      [{ text: '⚖️ Арбитраж & Судебные споры', callback_data: 'cat:Арбитраж и суды' }],
+      [{ text: '💼 Корпоративное право & Защита активов', callback_data: 'cat:Корпоративное право' }],
+      [{ text: '❓ Другой юридический вопрос', callback_data: 'cat:Другое' }],
     ],
     jurTitle: 'Шаг 2 из 5: Укажите <b>ключевую юрисдикцию</b>:',
     jurs: [
-      [{ text: '🇺🇸 США', callback_data: 'jur:USA' }, { text: '🇪🇺 ЕС / Германия', callback_data: 'jur:EU' }],
-      [{ text: '🇦🇪 ОАЭ (DIFC)', callback_data: 'jur:UAE' }, { text: '🇬🇧 Великобритания', callback_data: 'jur:UK' }],
-      [{ text: '🇨🇾 Кипр', callback_data: 'jur:CY' }, { text: '🇬🇪 Грузия', callback_data: 'jur:GE' }],
-      [{ text: '🌍 Другая (написать)', callback_data: 'jur:custom' }],
+      [{ text: '🇺🇸 США', callback_data: 'jur:США' }, { text: '🇪🇺 ЕС / Германия', callback_data: 'jur:ЕС' }],
+      [{ text: '🇦🇪 ОАЭ (DIFC)', callback_data: 'jur:ОАЭ' }, { text: '🇬🇧 Великобритания', callback_data: 'jur:Великобритания' }],
+      [{ text: '🇨🇾 Кипр', callback_data: 'jur:Кипр' }, { text: '🇬🇪 Грузия', callback_data: 'jur:Грузия' }],
+      [{ text: '🌍 Другая (ввести текстом)', callback_data: 'jur:custom' }],
     ],
-    descPrompt: 'Шаг 3 из 5: <b>Кратко опишите суть ситуации</b> (факты, текущий этап, цели):\n\n<i>⚠️ Не передавайте конфиденциальные пароли и данные банковских карт.</i>',
+    descPrompt: 'Шаг 3 из 5: <b>Кратко опишите суть ситуации</b> (факты, текущий этап, цели):\n\n<i>⚠️ Не передавайте пароли и данные банковских карт.</i>',
     urgTitle: 'Шаг 4 из 5: Выберите <b>срочность задачи</b>:',
     urgs: [
-      [{ text: '🔥 Срочно (1-2 дня)', callback_data: 'urg:urgent' }],
-      [{ text: '⚡ В течение недели', callback_data: 'urg:week' }],
-      [{ text: '📅 Плановый разбор', callback_data: 'urg:plan' }],
+      [{ text: '🔥 Срочно (1-2 дня)', callback_data: 'urg:Срочно (1-2 дня)' }],
+      [{ text: '⚡ В течение недели', callback_data: 'urg:В течение недели' }],
+      [{ text: '📅 Плановый разбор', callback_data: 'urg:Плановый разбор' }],
     ],
     contactPrompt: 'Шаг 5 из 5: Укажите ваше <b>имя</b> и удобный способ связи (номер телефона или email):',
     finish: '✅ <b>Ваше обращение принято и зарегистрировано!</b>\n\nНаши юристы проводят первичный правовой аудит ситуации и свяжутся с вами в ближайшее время.',
@@ -111,11 +125,11 @@ const I18N = {
   en: {
     welcome: '⚖️ <b>V. I. LEVIN — International Legal Practice</b>\n\nWelcome to our secure preliminary evaluation gateway.\n\n🔒 All communications are strictly protected by Attorney-Client Privilege and standard NDA.\n\nStep 1 of 5: Select the <b>practice area</b> of your inquiry:',
     cats: [
-      [{ text: '🇺🇸 US Immigration & Green Card', callback_data: 'cat:usa' }],
-      [{ text: '🌍 International Contracts & Structuring', callback_data: 'cat:int' }],
-      [{ text: '⚖️ Arbitration & Cross-Border Disputes', callback_data: 'cat:court' }],
-      [{ text: '💼 Corporate Law & Asset Protection', callback_data: 'cat:biz' }],
-      [{ text: '❓ Other Legal Inquiries', callback_data: 'cat:oth' }],
+      [{ text: '🇺🇸 US Immigration & Green Card', callback_data: 'cat:US Immigration & Green Card' }],
+      [{ text: '🌍 International Contracts & Structuring', callback_data: 'cat:International Contracts' }],
+      [{ text: '⚖️ Arbitration & Cross-Border Disputes', callback_data: 'cat:Arbitration & Disputes' }],
+      [{ text: '💼 Corporate Law & Asset Protection', callback_data: 'cat:Corporate & Asset Protection' }],
+      [{ text: '❓ Other Legal Inquiries', callback_data: 'cat:Other' }],
     ],
     jurTitle: 'Step 2 of 5: Specify the <b>primary jurisdiction</b>:',
     jurs: [
@@ -127,9 +141,9 @@ const I18N = {
     descPrompt: 'Step 3 of 5: <b>Briefly describe your situation</b> (key facts, procedural stage, objectives):\n\n<i>⚠️ Do not share passwords or payment credentials.</i>',
     urgTitle: 'Step 4 of 5: Select <b>urgency level</b>:',
     urgs: [
-      [{ text: '🔥 Immediate (1-2 days)', callback_data: 'urg:urgent' }],
-      [{ text: '⚡ Within a week', callback_data: 'urg:week' }],
-      [{ text: '📅 Planned consultation', callback_data: 'urg:plan' }],
+      [{ text: '🔥 Immediate (1-2 days)', callback_data: 'urg:Immediate' }],
+      [{ text: '⚡ Within a week', callback_data: 'urg:Within a week' }],
+      [{ text: '📅 Planned consultation', callback_data: 'urg:Planned' }],
     ],
     contactPrompt: 'Step 5 of 5: Please provide your <b>name</b> and contact preferences (phone or email):',
     finish: '✅ <b>Your inquiry has been securely registered!</b>\n\nOur legal team is conducting an initial assessment and will contact you promptly.',
@@ -137,45 +151,52 @@ const I18N = {
   uk: {
     welcome: '⚖️ <b>V. I. LEVIN — Міжнародна юридична практика</b>\n\nЛаскаво просимо до захищеного шлюзу попередньої правової оцінки.\n\n🔒 Усі відомості захищені режимом адвокатської таємниці та суворої конфіденційності.\n\nКрок 1 із 5: Оберіть <b>напрямок питання</b>:',
     cats: [
-      [{ text: '🇺🇸 Імміграція до США & Green Card', callback_data: 'cat:usa' }],
-      [{ text: '🌍 Міжнародні контракти & Структурування', callback_data: 'cat:int' }],
-      [{ text: '⚖️ Арбітраж & Судові спори', callback_data: 'cat:court' }],
-      [{ text: '💼 Корпоративне право & Захист активів', callback_data: 'cat:biz' }],
-      [{ text: '❓ Інше юридичне питання', callback_data: 'cat:oth' }],
+      [{ text: '🇺🇸 Імміграція до США & Green Card', callback_data: 'cat:Імміграція США' }],
+      [{ text: '🌍 Міжнародні контракти & Структурування', callback_data: 'cat:Міжнародні контракти' }],
+      [{ text: '⚖️ Арбітраж & Судові спори', callback_data: 'cat:Арбітраж' }],
+      [{ text: '💼 Корпоративне право & Захист активів', callback_data: 'cat:Корпоративне право' }],
+      [{ text: '❓ Інше юридичне питання', callback_data: 'cat:Інше' }],
     ],
     jurTitle: 'Крок 2 із 5: Вкажіть <b>юрисдикцію</b>:',
     jurs: [
-      [{ text: '🇺🇸 США', callback_data: 'jur:USA' }, { text: '🇪🇺 ЄС / Німеччина', callback_data: 'jur:EU' }],
-      [{ text: '🇦🇪 ОАЕ (DIFC)', callback_data: 'jur:UAE' }, { text: '🇬🇧 Велика Британія', callback_data: 'jur:UK' }],
-      [{ text: '🇨🇾 Кіпр', callback_data: 'jur:CY' }, { text: '🇬🇪 Грузія', callback_data: 'jur:GE' }],
+      [{ text: '🇺🇸 США', callback_data: 'jur:США' }, { text: '🇪🇺 ЄС / Німеччина', callback_data: 'jur:ЄС' }],
+      [{ text: '🇦🇪 ОАЕ (DIFC)', callback_data: 'jur:ОАЕ' }, { text: '🇬🇧 Велика Британія', callback_data: 'jur:UK' }],
+      [{ text: '🇨🇾 Кіпр', callback_data: 'jur:Кіпр' }, { text: '🇬🇪 Грузія', callback_data: 'jur:Грузія' }],
       [{ text: '🌍 Інша країна', callback_data: 'jur:custom' }],
     ],
     descPrompt: 'Крок 3 із 5: <b>Коротко опишіть суть ситуації</b>:\n\n<i>⚠️ Не передавайте конфіденційні паролі або платіжні реквізити.</i>',
     urgTitle: 'Крок 4 із 5: Оберіть <b>терміновість</b>:',
     urgs: [
-      [{ text: '🔥 Терміново (1-2 дні)', callback_data: 'urg:urgent' }],
-      [{ text: '⚡ Протягом тижня', callback_data: 'urg:week' }],
-      [{ text: '📅 Плановий аудит', callback_data: 'urg:plan' }],
+      [{ text: '🔥 Терміново (1-2 дні)', callback_data: 'urg:Терміново' }],
+      [{ text: '⚡ Протягом тижня', callback_data: 'urg:Протягом тижня' }],
+      [{ text: '📅 Плановий аудит', callback_data: 'urg:Плановий' }],
     ],
     contactPrompt: 'Крок 5 із 5: Вкажіть ваше <b>ім’я</b> та зручний спосіб зв’язку:',
     finish: '✅ <b>Ваше звернення зареєстровано!</b>\n\nНаші юристи проводять первинний аналіз і зв’яжуться з вами найближчим часом.',
   },
 };
 
-// Fallback for ES, IT, FR
 I18N.es = I18N.en;
 I18N.it = I18N.en;
 I18N.fr = I18N.en;
 
 async function notifyAdminLead(lead) {
+  leadsCache.set(lead.id, lead);
+
+  // Save to leads.json
+  const dir = path.dirname(dataFilePath);
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  const all = Array.from(leadsCache.values());
+  fs.writeFileSync(dataFilePath, JSON.stringify(all, null, 2), 'utf8');
+
   if (!ADMIN_CHAT_ID) return;
 
   const adminMsg = [
-    `⚖️ <b>НОВАЯ ЗАЯВКА ИЗ TELEGRAM-БОТА</b>`,
+    `⚖️ <b>НОВАЯ ЗАЯВКА ИЗ СИСТЕМЫ</b>`,
     `━━━━━━━━━━━━━━━━━━`,
-    `🆔 <b>ID:</b> <code>${escapeHtml(lead.id)}</code>`,
+    `🆔 <b>ID Заявки:</b> <code>${escapeHtml(lead.id)}</code>`,
     `📅 <b>Время:</b> ${new Date(lead.createdAt).toLocaleString('ru-RU')}`,
-    `🌐 <b>Язык клиента:</b> <code>${escapeHtml(lead.lang || 'ru').toUpperCase()}</code>`,
+    `🌐 <b>Язык:</b> <code>${escapeHtml(lead.lang || 'ru').toUpperCase()}</code>`,
     ``,
     `📁 <b>Направление:</b> ${escapeHtml(lead.serviceCategory)}`,
     `🌍 <b>Юрисдикция:</b> ${escapeHtml(lead.jurisdiction)}`,
@@ -184,26 +205,67 @@ async function notifyAdminLead(lead) {
     `📝 <b>Суть ситуации:</b>`,
     `<i>${escapeHtml(lead.description)}</i>`,
     ``,
-    `👤 <b>Доверитель:</b>`,
-    `• Имя: ${escapeHtml(lead.contact.name || 'Не указано')}`,
-    `• Telegram: ${lead.contact.telegramUsername ? '@' + escapeHtml(lead.contact.telegramUsername) : 'Без юзернейма'}`,
-    `• Контакт: ${escapeHtml(lead.contact.info || '')}`,
+    `👤 <b>Контакты доверителя:</b>`,
+    `• Имя: ${escapeHtml(lead.contact?.name || 'Не указано')}`,
+    `• Telegram: ${lead.contact?.telegramUsername ? '@' + escapeHtml(lead.contact.telegramUsername) : 'Не указан'}`,
+    `• Телефон / Email: ${escapeHtml(lead.contact?.info || lead.contact?.phone || lead.contact?.email || 'Не указан')}`,
     `━━━━━━━━━━━━━━━━━━`,
-    `🔒 <b>Статус:</b> <code>Квалифицирован ботом</code>`
+    `🔒 <b>Действия администратора:</b>`
   ].filter(Boolean).join('\n');
 
   await sendMessage(ADMIN_CHAT_ID, adminMsg, {
     inline_keyboard: [
       [
-        { text: '👨‍⚖️ Перенаправить юристу', callback_data: `admin:forward:${lead.id}` },
-        { text: '💳 Инвойс USDT (Cryptomus)', callback_data: `admin:cryptomus:${lead.id}` }
+        { text: '👨‍⚖️ Переслать юристу (1275663257)', callback_data: `admin:forward:${lead.id}` },
+        { text: '💳 Инвойс USDT', callback_data: `admin:cryptomus:${lead.id}` }
       ]
     ]
   });
 }
 
+async function forwardLeadToLawyer(leadId) {
+  const lead = leadsCache.get(leadId);
+  if (!lead) {
+    await sendMessage(ADMIN_CHAT_ID, `⚠️ Заявка <code>${leadId}</code> не найдена в кэше.`);
+    return;
+  }
+
+  const lawyerMsg = [
+    `⚖️ <b>V. I. LEVIN | ПОРУЧЕНИЕ ПО НОВОМУ КЕЙСУ</b>`,
+    `━━━━━━━━━━━━━━━━━━`,
+    `Руководитель практики перенаправил вам новое обращение доверителя:`,
+    ``,
+    `🆔 <b>ID Дела:</b> <code>${escapeHtml(lead.id)}</code>`,
+    `📅 <b>Дата поступления:</b> ${new Date(lead.createdAt).toLocaleString('ru-RU')}`,
+    `📁 <b>Специализация:</b> ${escapeHtml(lead.serviceCategory)}`,
+    `🌍 <b>Юрисдикция:</b> ${escapeHtml(lead.jurisdiction)}`,
+    `⚡ <b>Срочность:</b> ${escapeHtml(lead.urgency)}`,
+    ``,
+    `📝 <b>Фабула дела / Ситуация:</b>`,
+    `<i>${escapeHtml(lead.description)}</i>`,
+    ``,
+    `👤 <b>Данные доверителя:</b>`,
+    `• Имя: ${escapeHtml(lead.contact?.name || 'Не указано')}`,
+    `• Telegram: ${lead.contact?.telegramUsername ? '@' + escapeHtml(lead.contact.telegramUsername) : 'Не указан'}`,
+    `• Контакт: ${escapeHtml(lead.contact?.info || lead.contact?.phone || lead.contact?.email || 'Не указан')}`,
+    `━━━━━━━━━━━━━━━━━━`,
+    `🔒 <i>Режим Attorney-Client Privilege. Пожалуйста, проведите аудит ситуации и подготовьте проект правовой позиции.</i>`
+  ].filter(Boolean).join('\n');
+
+  try {
+    const res = await sendMessage(LAWYER_CHAT_ID, lawyerMsg);
+    if (res.ok) {
+      await sendMessage(ADMIN_CHAT_ID, `✅ <b>Дело #${leadId} успешно перенаправлено юристу!</b>\n\n• Получатель ID: <code>${LAWYER_CHAT_ID}</code>\n• Статус: Доставлено`);
+    } else {
+      await sendMessage(ADMIN_CHAT_ID, `⚠️ <b>Не удалось доставить юристу (ID ${LAWYER_CHAT_ID}):</b>\n<code>${JSON.stringify(res)}</code>\n\n<i>Примечание: юрист должен хотя бы раз нажать /start в боте @VILEVIN_bot для получения сообщений.</i>`);
+    }
+  } catch (err) {
+    await sendMessage(ADMIN_CHAT_ID, `❌ Ошибка отправки: ${err.message}`);
+  }
+}
+
 async function handleUpdate(update) {
-  // 1. Callback Queries
+  // 1. Callbacks
   if (update.callback_query) {
     const cb = update.callback_query;
     const chatId = cb.message.chat.id;
@@ -225,20 +287,21 @@ async function handleUpdate(update) {
       return;
     }
 
-    // Admin handling
+    // Admin action: Forward to Lawyer
     if (data.startsWith('admin:forward:')) {
       const leadId = data.replace('admin:forward:', '');
-      await sendMessage(chatId, `👨‍⚖️ <b>Перенаправление заявки #${leadId}</b>\n\nПерешлите это сообщение назначенному юристу практики или используйте команду:\n<code>/assign ${leadId} @username_юриста</code>`);
+      await forwardLeadToLawyer(leadId);
       return;
     }
 
+    // Admin action: Cryptomus invoice
     if (data.startsWith('admin:cryptomus:')) {
       const leadId = data.replace('admin:cryptomus:', '');
-      await sendMessage(chatId, `💳 <b>Генератор счета USDT (Cryptomus) для заявки #${leadId}</b>\n\nРеквизиты для выставления инвойса:\n• Сеть: USDT (TRC-20 / ERC-20 / Polygon)\n• Платежный шлюз: Cryptomus Gateway API\n• Назначение: Индивидуальный правовой аудит и юридические услуги V. I. LEVIN\n\nДля выставления счета клиенту отправьте ссылку на персональный платежный шлюз Cryptomus или создайте инвойс в личном кабинете merchant.cryptomus.com.`);
+      await sendMessage(chatId, `💳 <b>Инвойс USDT (Cryptomus) для дела #${leadId}</b>\n\n• Платежная система: Cryptomus Gateway\n• Валюта: USDT (сеть TRC-20, ERC-20, Polygon)\n• Назначение: Индивидуальный правовой аудит и юридические услуги V. I. LEVIN\n\nДля выставления счета клиенту отправьте ссылку из мерчант-кабинета или используйте команду:\n<code>/invoice 500</code> (где 500 — сумма в USDT)`);
       return;
     }
 
-    // Category selection
+    // Category
     if (data.startsWith('cat:')) {
       session.serviceCategory = data.replace('cat:', '');
       session.step = 'jurisdiction';
@@ -250,13 +313,13 @@ async function handleUpdate(update) {
       return;
     }
 
-    // Jurisdiction selection
+    // Jurisdiction
     if (data.startsWith('jur:')) {
       const jur = data.replace('jur:', '');
       if (jur === 'custom') {
         session.step = 'awaiting_custom_jur';
         userSessions.set(chatId, session);
-        await sendMessage(chatId, 'Укажите юрисдикцию текстом / Specify your jurisdiction:');
+        await sendMessage(chatId, 'Укажите страну / юрисдикцию текстом:');
         return;
       }
       session.jurisdiction = jur;
@@ -267,7 +330,7 @@ async function handleUpdate(update) {
       return;
     }
 
-    // Urgency selection
+    // Urgency
     if (data.startsWith('urg:')) {
       session.urgency = data.replace('urg:', '');
       session.step = 'contact';
@@ -286,23 +349,24 @@ async function handleUpdate(update) {
     let session = userSessions.get(chatId) || { lang: 'ru', step: 'lang' };
     const t = I18N[session.lang] || I18N.ru;
 
-    // Admin Commands
+    // Admin commands
     if (String(chatId) === String(ADMIN_CHAT_ID)) {
-      if (text.startsWith('/assign')) {
+      if (text.startsWith('/forward') || text.startsWith('/assign')) {
         const parts = text.split(' ');
-        const leadId = parts[1] || '0';
-        const lawyer = parts[2] || 'адвокату практики';
-        await sendMessage(chatId, `✅ Заявка <code>${leadId}</code> успешно закреплена за ${lawyer}. Уведомление сформировано.`);
-        return;
+        const leadId = parts[1] || '';
+        if (leadId) {
+          await forwardLeadToLawyer(leadId);
+          return;
+        }
       }
       if (text.startsWith('/invoice')) {
         const amount = text.split(' ')[1] || '500';
-        await sendMessage(chatId, `💳 <b>Инвойс USDT сформирован</b>\n\nСумма: <code>${amount} USDT</code>\nСети: TRC20, ERC20, Polygon\nСтатус: Ожидание оплаты Cryptomus`);
+        await sendMessage(chatId, `💳 <b>Инвойс Cryptomus сформирован:</b>\n\n• Сумма к оплате: <code>${amount} USDT</code>\n• Сети: TRC20 / ERC20 / Polygon\n• Статус: Ожидает оплаты\n• Фискальный статус: Закрывающие акты и договор формируются автоматически.`);
         return;
       }
     }
 
-    // Start command -> Language selector
+    // User /start
     if (text.startsWith('/start')) {
       session = {
         lang: 'ru',
@@ -314,7 +378,7 @@ async function handleUpdate(update) {
       };
       userSessions.set(chatId, session);
 
-      await sendMessage(chatId, `⚖️ <b>V. I. LEVIN | International Legal Practice</b>\n\nПожалуйста, выберите язык обслуживания / Please select your preferred language:`, {
+      await sendMessage(chatId, `⚖️ <b>V. I. LEVIN | International Legal Practice</b>\n\nПожалуйста, выберите язык обслуживания / Please choose your language:`, {
         inline_keyboard: [
           [{ text: '🇷🇺 Русский', callback_data: 'lang:ru' }, { text: '🇬🇧 English', callback_data: 'lang:en' }],
           [{ text: '🇺🇦 Українська', callback_data: 'lang:uk' }, { text: '🇪🇸 Español', callback_data: 'lang:es' }],
@@ -358,12 +422,12 @@ async function handleUpdate(update) {
       return;
     }
 
-    // Fallback response
-    await sendMessage(chatId, 'Для начала правовой консультации или смены языка нажмите /start');
+    // Fallback
+    await sendMessage(chatId, 'Для начала работы или смены языка отправьте /start');
   }
 }
 
-// Long Polling Loop
+// Long Polling
 let lastUpdateId = 0;
 async function pollUpdates() {
   try {
@@ -378,17 +442,15 @@ async function pollUpdates() {
         try {
           await handleUpdate(update);
         } catch (err) {
-          console.error('Ошибка обработки обновления:', err);
+          console.error('Update handling error:', err);
         }
       }
     }
   } catch (e) {
-    // Network retry delay
     await new Promise((r) => setTimeout(r, 2500));
   }
 
   setImmediate(pollUpdates);
 }
 
-// Start polling
 pollUpdates();
