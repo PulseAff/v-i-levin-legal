@@ -1,0 +1,20 @@
+[
+  {
+    "source": "Website Modal Form",
+    "referrerPage": "/",
+    "serviceCategory": "Иммиграция и Green Card США",
+    "jurisdiction": "США (Калифорния)",
+    "description": "Запрос на стратегический аудит и сопровождение визы талантов EB-1A.",
+    "urgency": "В течение недели",
+    "format": "Персональная консультация",
+    "contact": {
+      "telegramUsername": "@konstantin_legal",
+      "name": "Константин",
+      "email": "",
+      "phone": ""
+    },
+    "id": "LEAD-MU5NBC04-707",
+    "createdAt": "2026-09-17T14:49:31.012Z",
+    "status": "New"
+  }
+]
