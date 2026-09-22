@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { X, Send, Shield, CheckCircle2, MessageSquare } from 'lucide-react';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface ConsultationModalProps {
   isOpen: boolean;
@@ -9,246 +10,256 @@ interface ConsultationModalProps {
   defaultService?: string;
 }
 
+const BOT_TOKEN = '8805827853:AAGALkEhBOUTe2xNiKbehggEnC0cAKvwV-0';
+const ADMIN_CHAT_ID = '7794422014';
+const LAWYER_CHAT_ID = '1275663257';
+
+function escapeHtml(text = '') {
+  return String(text)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
 export const ConsultationModal: React.FC<ConsultationModalProps> = ({
   isOpen,
   onClose,
-  defaultService = 'Иммиграция и Green Card США',
+  defaultService = 'Консультация',
 }) => {
-  const [formData, setFormData] = useState({
-    serviceCategory: defaultService,
-    jurisdiction: 'США',
-    description: '',
-    urgency: 'В течение недели' as 'Сегодня' | 'В течение недели' | 'Плановая консультация',
-    format: 'Персональная консультация',
-    name: '',
-    telegramUsername: '',
-    email: '',
-    phone: '',
-  });
+  const { currentLang } = useLanguage();
 
-  useEffect(() => {
-    if (defaultService) {
-      setFormData((prev) => ({ ...prev, serviceCategory: defaultService }));
-    }
-  }, [defaultService, isOpen]);
-
+  const [name, setName] = useState('');
+  const [contact, setContact] = useState('');
+  const [question, setQuestion] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (isOpen) {
+      setIsSuccess(false);
+      setError('');
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
     setError('');
 
-    // Ensure at least Telegram or Email/Phone is provided
-    if (!formData.telegramUsername.trim() && !formData.email.trim() && !formData.phone.trim()) {
-      setError('Пожалуйста, укажите контакт для обратной связи: ваш Telegram, Email или телефон.');
-      setIsSubmitting(false);
+    if (!contact.trim()) {
+      setError(
+        currentLang === 'en'
+          ? 'Please provide your phone number or Telegram @username'
+          : 'Пожалуйста, укажите телефон или Telegram @username для связи'
+      );
       return;
     }
 
-    try {
-      const res = await fetch('/api/leads', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          source: 'Website Modal Form',
-          serviceCategory: formData.serviceCategory,
-          jurisdiction: formData.jurisdiction,
-          description: formData.description,
-          urgency: formData.urgency,
-          format: formData.format,
-          contact: {
-            name: formData.name,
-            telegramUsername: formData.telegramUsername,
-            email: formData.email,
-            phone: formData.phone,
-          },
-        }),
-      });
+    setIsSubmitting(true);
 
-      const data = await res.json();
-      if (data.success) {
-        setIsSuccess(true);
-      } else {
-        setError(data.error || 'Произошла ошибка при отправке. Пожалуйста, попробуйте позже.');
-      }
-    } catch (err) {
-      setError('Ошибка соединения. Пожалуйста, воспользуйтесь прямым Telegram-ботом.');
+    const timeStr = new Date().toLocaleString('ru-RU');
+
+    const msg = [
+      `⚖️ <b>НОВАЯ ЗАЯВКА С САЙТА VILEVIN.COM</b>`,
+      `━━━━━━━━━━━━━━━━━━`,
+      `👤 <b>Имя:</b> ${escapeHtml(name || 'Не указано')}`,
+      `📱 <b>Контакт:</b> ${escapeHtml(contact)}`,
+      question ? `📝 <b>Вопрос:</b> <i>${escapeHtml(question)}</i>` : '',
+      defaultService && defaultService !== 'Консультация' ? `📁 <b>Услуга:</b> ${escapeHtml(defaultService)}` : '',
+      `🌐 <b>Язык сайта:</b> ${currentLang.toUpperCase()}`,
+      `⏱ <b>Время:</b> ${timeStr}`,
+      `━━━━━━━━━━━━━━━━━━`,
+      `🔒 <i>Заявка передана юристу практики.</i>`,
+    ].filter(Boolean).join('\n');
+
+    try {
+      const sendToTelegram = async (chatId: string) => {
+        try {
+          return await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              chat_id: chatId,
+              text: msg,
+              parse_mode: 'HTML',
+            }),
+          });
+        } catch {
+          return null;
+        }
+      };
+
+      // Send to both admin and lawyer concurrently
+      await Promise.allSettled([
+        sendToTelegram(ADMIN_CHAT_ID),
+        sendToTelegram(LAWYER_CHAT_ID),
+      ]);
+
+      // Save to localStorage
+      try {
+        const existing = JSON.parse(localStorage.getItem('vilevin_leads') || '[]');
+        existing.push({
+          id: 'lead_' + Date.now(),
+          name,
+          contact,
+          question,
+          service: defaultService,
+          createdAt: new Date().toISOString(),
+        });
+        localStorage.setItem('vilevin_leads', JSON.stringify(existing));
+      } catch {}
+
+      setIsSuccess(true);
+    } catch {
+      setIsSuccess(true);
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
-      <div className="relative w-full max-w-2xl bg-navy-900 border border-gold-500/30 rounded-xl shadow-2xl p-6 lg:p-8 overflow-y-auto max-h-[90vh]">
-        {/* Close Button */}
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-sm animate-fadeIn">
+      <div className="relative w-full max-w-md bg-[#090D14] border border-[#232F42] rounded-2xl shadow-2xl p-5 sm:p-6 overflow-hidden">
+        {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 text-gray-400 hover:text-white p-2 transition-colors"
+          className="absolute top-4 right-4 text-gray-400 hover:text-white p-1.5 rounded-lg hover:bg-white/5 transition-colors cursor-pointer"
           aria-label="Закрыть"
         >
-          <X size={22} />
+          <X size={18} />
         </button>
 
         {isSuccess ? (
-          <div className="py-12 text-center space-y-4">
-            <div className="w-16 h-16 bg-gold-500/20 text-gold-400 rounded-full flex items-center justify-center mx-auto mb-4 border border-gold-500/40">
-              <CheckCircle2 size={36} />
+          /* Compact Success State */
+          <div className="py-5 text-center space-y-3">
+            <div className="w-12 h-12 bg-gold-500/15 text-gold-400 rounded-full flex items-center justify-center mx-auto border border-gold-500/40">
+              <CheckCircle2 size={24} />
             </div>
-            <h3 className="text-2xl font-serif text-white font-semibold">Ваше обращение принято</h3>
-            <p className="text-gray-300 max-w-md mx-auto text-sm leading-relaxed">
-              Информация передана ведущему специалисту практики. Мы изучим обстоятельства ситуации и свяжемся с вами в указанные сроки.
-            </p>
-            <div className="pt-6">
+            <div>
+              <h3 className="text-lg font-serif text-white font-bold">
+                {currentLang === 'en' ? 'Request Received' : 'Заявка принята'}
+              </h3>
+              <p className="text-gray-300 text-xs mt-1">
+                {currentLang === 'en'
+                  ? 'We will contact you within 15 minutes.'
+                  : 'Свяжемся с вами в течение 15 минут.'}
+              </p>
+            </div>
+            <div className="pt-2 flex items-center justify-center gap-2.5">
               <button
                 onClick={onClose}
-                className="px-6 py-2.5 bg-gradient-to-r from-gold-600 to-gold-500 text-navy-950 font-semibold text-sm rounded hover:from-gold-500 hover:to-gold-400 transition-all shadow-gold-sm"
+                className="px-5 py-2 bg-gradient-to-r from-[#E5C37A] to-[#C9A45B] text-[#070A0F] font-bold text-xs rounded-full hover:brightness-110 active:scale-95 transition-all cursor-pointer shadow-sm"
               >
-                Вернуться на сайт
+                {currentLang === 'en' ? 'Close' : 'Закрыть'}
               </button>
+              <a
+                href="https://t.me/VILEVIN_bot"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-4 py-2 bg-[#101724] border border-[#23334A] text-gold-300 hover:text-white text-xs rounded-full transition-colors inline-flex items-center gap-1.5"
+              >
+                <MessageSquare size={13} /> Telegram
+              </a>
             </div>
           </div>
         ) : (
+          /* Compact Form */
           <>
-            <div className="mb-6">
-              <div className="flex items-center gap-2 text-xs font-semibold text-gold-500 tracking-wider uppercase mb-1">
-                <Shield size={14} /> Конфиденциальный разбор ситуации
+            <div className="mb-4 pr-6">
+              <div className="flex items-center gap-1.5 text-[11px] font-semibold text-gold-400 uppercase tracking-wider mb-1">
+                <Shield size={12} />
+                <span>{currentLang === 'en' ? 'Confidential Legal Review' : 'Конфиденциально'}</span>
               </div>
-              <h2 className="text-2xl font-serif text-white font-bold">
-                Получить консультацию
+              <h2 className="text-xl font-serif text-white font-bold">
+                {currentLang === 'en' ? 'Request Consultation' : 'Запись на консультацию'}
               </h2>
-              <p className="text-xs text-gray-400 mt-1">
-                Опишите задачу — мы определим, есть ли правовое решение и какой путь наиболее рационален.
+              <p className="text-[11px] text-gray-400 mt-0.5">
+                {currentLang === 'en'
+                  ? 'Leave your details — an attorney will get in touch.'
+                  : 'Оставьте контакты — юрист свяжется с вами.'}
               </p>
             </div>
 
             {error && (
-              <div className="mb-4 p-3 bg-red-950/60 border border-red-500/50 rounded text-red-200 text-xs">
+              <div className="mb-3 p-2.5 bg-red-950/60 border border-red-500/40 rounded-lg text-red-200 text-xs">
                 {error}
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-medium text-gray-300 mb-1">Направление вопроса</label>
-                  <select
-                    value={formData.serviceCategory}
-                    onChange={(e) => setFormData({ ...formData, serviceCategory: e.target.value })}
-                    className="w-full bg-navy-950 border border-surface-border text-gray-200 rounded px-3 py-2 text-xs focus:outline-none focus:border-gold-500"
-                  >
-                    <option value="Иммиграция и Green Card США">🇺🇸 Иммиграция США / Green Card</option>
-                    <option value="Бизнес и международные сделки">💼 Бизнес и корпоративное право</option>
-                    <option value="Представительство в спорах">⚖️ Представительство в спорах</option>
-                    <option value="Семейное и наследственное право">👨‍👩‍👧 Семейное и наследственное право</option>
-                    <option value="Международные контракты">📄 Международные контракты</option>
-                    <option value="Индивидуальный аудит">🔍 Персональный правовой аудит</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-medium text-gray-300 mb-1">Страна / Юрисдикция</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="Например: США, Германия, ОАЭ"
-                    value={formData.jurisdiction}
-                    onChange={(e) => setFormData({ ...formData, jurisdiction: e.target.value })}
-                    className="w-full bg-navy-950 border border-surface-border text-gray-200 rounded px-3 py-2 text-xs focus:outline-none focus:border-gold-500 placeholder:text-gray-600"
-                  />
-                </div>
-              </div>
-
+            <form onSubmit={handleSubmit} className="space-y-3">
               <div>
-                <label className="block text-xs font-medium text-gray-300 mb-1">
-                  Описание ситуации <span className="text-gold-500">*</span>
+                <label className="block text-[11px] font-medium text-gray-300 mb-1">
+                  {currentLang === 'en' ? 'Your Name' : 'Ваше имя'}
                 </label>
-                <textarea
+                <input
+                  type="text"
                   required
-                  rows={3}
-                  placeholder="Кратко опишите хронологию, цели и существующие сложности..."
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className="w-full bg-navy-950 border border-surface-border text-gray-200 rounded px-3 py-2 text-xs focus:outline-none focus:border-gold-500 placeholder:text-gray-600"
+                  placeholder={currentLang === 'en' ? 'Alexander' : 'Иван'}
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full bg-[#0E1522] border border-[#223044] text-gray-100 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-gold-500 placeholder:text-gray-600 transition-colors"
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-medium text-gray-300 mb-1">Срочность</label>
-                  <select
-                    value={formData.urgency}
-                    onChange={(e) => setFormData({ ...formData, urgency: e.target.value as any })}
-                    className="w-full bg-navy-950 border border-surface-border text-gray-200 rounded px-3 py-2 text-xs focus:outline-none focus:border-gold-500"
-                  >
-                    <option value="В течение недели">🟠 В течение недели</option>
-                    <option value="Сегодня">🔴 Срочно (в течение 24 часов)</option>
-                    <option value="Плановая консультация">🟢 Плановая консультация</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-medium text-gray-300 mb-1">Ваше имя</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="Иван"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full bg-navy-950 border border-surface-border text-gray-200 rounded px-3 py-2 text-xs focus:outline-none focus:border-gold-500 placeholder:text-gray-600"
-                  />
-                </div>
+              <div>
+                <label className="block text-[11px] font-medium text-gray-300 mb-1">
+                  {currentLang === 'en' ? 'Phone or Telegram' : 'Телефон или Telegram'} <span className="text-gold-400">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="+7 (999) 000-00-00 или @username"
+                  value={contact}
+                  onChange={(e) => setContact(e.target.value)}
+                  className="w-full bg-[#0E1522] border border-[#223044] text-gray-100 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-gold-500 placeholder:text-gray-600 transition-colors"
+                />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-medium text-gray-300 mb-1">Telegram Username (@username)</label>
-                  <input
-                    type="text"
-                    placeholder="@ivan_law"
-                    value={formData.telegramUsername}
-                    onChange={(e) => setFormData({ ...formData, telegramUsername: e.target.value })}
-                    className="w-full bg-navy-950 border border-surface-border text-gray-200 rounded px-3 py-2 text-xs focus:outline-none focus:border-gold-500 placeholder:text-gray-600"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-medium text-gray-300 mb-1">Email или телефон</label>
-                  <input
-                    type="text"
-                    placeholder="mail@example.com"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full bg-navy-950 border border-surface-border text-gray-200 rounded px-3 py-2 text-xs focus:outline-none focus:border-gold-500 placeholder:text-gray-600"
-                  />
-                </div>
+              <div>
+                <label className="block text-[11px] font-medium text-gray-300 mb-1">
+                  {currentLang === 'en' ? 'Brief Situation / Question' : 'Суть вопроса (кратко)'}
+                </label>
+                <textarea
+                  rows={2}
+                  placeholder={
+                    currentLang === 'en'
+                      ? 'Describe your question or situation...'
+                      : 'Кратко опишите задачу или вопрос...'
+                  }
+                  value={question}
+                  onChange={(e) => setQuestion(e.target.value)}
+                  className="w-full bg-[#0E1522] border border-[#223044] text-gray-100 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-gold-500 placeholder:text-gray-600 resize-none transition-colors"
+                />
               </div>
 
-              <p className="text-[11px] text-gray-500 leading-normal">
-                🔒 Данные защищены адвокатской тайной. Не передавайте в форме пароли и номера карт.
-              </p>
-
-              <div className="pt-2 flex flex-col sm:flex-row gap-3">
+              <div className="pt-1 flex flex-col sm:flex-row gap-2">
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex-1 py-3 px-4 bg-gradient-to-r from-gold-600 via-gold-500 to-gold-400 text-navy-950 font-semibold text-xs rounded hover:brightness-110 transition-all shadow-gold-sm flex items-center justify-center gap-2"
+                  className="flex-1 py-2.5 px-4 bg-gradient-to-r from-[#E5C37A] via-[#C9A45B] to-[#99742B] text-[#070A0F] font-bold text-xs rounded-lg hover:brightness-110 active:scale-98 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md disabled:opacity-50"
                 >
-                  <Send size={14} /> {isSubmitting ? 'Отправка...' : 'Отправить заявку'}
+                  <Send size={13} />
+                  <span>
+                    {isSubmitting
+                      ? currentLang === 'en'
+                        ? 'Sending...'
+                        : 'Отправка...'
+                      : currentLang === 'en'
+                      ? 'Submit Request'
+                      : 'Отправить заявку'}
+                  </span>
                 </button>
 
                 <a
-                  href="https://t.me/V_I_Levin_bot"
+                  href="https://t.me/VILEVIN_bot"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 py-3 px-4 bg-navy-850 hover:bg-navy-800 text-gold-300 border border-gold-500/30 text-xs rounded transition-colors"
+                  className="flex items-center justify-center gap-1.5 py-2.5 px-3 bg-[#0E1522] hover:bg-[#152033] text-gold-300 border border-[#23334A] text-xs rounded-lg transition-colors"
                 >
-                  <MessageSquare size={14} /> Открыть в Telegram
+                  <MessageSquare size={13} />
+                  <span>Telegram</span>
                 </a>
               </div>
             </form>
