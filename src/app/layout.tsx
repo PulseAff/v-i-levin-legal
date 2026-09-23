@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Script from 'next/script';
 import { Inter, Cormorant_Garamond } from 'next/font/google';
 import './globals.css';
 import { Header } from '@/components/layout/Header';
@@ -78,10 +77,6 @@ export const metadata: Metadata = {
     icon: '/favicon.svg',
     apple: '/avatar.svg',
   },
-  verification: {
-    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
-    yandex: process.env.NEXT_PUBLIC_YANDEX_VERIFICATION,
-  },
 };
 
 export default function RootLayout({
@@ -89,9 +84,6 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const gaId = process.env.NEXT_PUBLIC_GA_ID;
-  const googleVerification = process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION;
-
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'LegalService',
@@ -135,35 +127,10 @@ export default function RootLayout({
   return (
     <html lang="ru" className={`${inter.variable} ${cormorant.variable} scroll-smooth`}>
       <head>
-        {googleVerification && (
-          <meta name="google-site-verification" content={googleVerification} />
-        )}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        {gaId && (
-          <>
-            <Script
-              strategy="afterInteractive"
-              src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
-            />
-            <Script
-              id="google-analytics"
-              strategy="afterInteractive"
-              dangerouslySetInnerHTML={{
-                __html: `
-                  window.dataLayer = window.dataLayer || [];
-                  function gtag(){dataLayer.push(arguments);}
-                  gtag('js', new Date());
-                  gtag('config', '${gaId}', {
-                    page_path: window.location.pathname,
-                  });
-                `,
-              }}
-            />
-          </>
-        )}
       </head>
       <body className="min-h-screen flex flex-col font-sans bg-[#05070D] text-slate-100 antialiased">
         <LanguageProvider>

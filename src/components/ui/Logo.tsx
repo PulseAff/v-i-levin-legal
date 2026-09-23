@@ -19,8 +19,7 @@ export const Logo: React.FC<LogoProps> = ({ variant = 'full', className = '', si
       <img
         src="/logo-symbol.png"
         alt="V. I. LEVIN"
-        style={{ height: `${iconHeight}px`, width: 'auto' }}
-        className="object-contain group-hover:scale-105 transition-transform duration-200 shrink-0"
+        className="h-6 sm:h-[30px] w-auto object-contain group-hover:scale-105 transition-transform duration-200 shrink-0"
       />
 
       {variant === 'full' && (
