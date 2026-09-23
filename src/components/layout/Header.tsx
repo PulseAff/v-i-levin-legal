@@ -52,14 +52,13 @@ export const Header: React.FC = () => {
 
   const activeLangObj = LANGUAGES.find((l) => l.code === currentLang) || LANGUAGES[0];
 
-  // Exact links from user screenshot: Услуги, США & GREEN CARD, Юрисдикции, Кейсы, О практике, FAQ, Контакты
+  // Navigation: Услуги, США & GREEN CARD*, Юрисдикции, О практике, FAQ, Контакты (без кейсов)
   const navLinks: NavItem[] = [
     { name: t('nav', 'services'), href: '/services' },
-    { name: t('nav', 'usaGreenCard'), href: '/usa', isUSA: true },
+    { name: `${t('nav', 'usaGreenCard')}*`, href: '/usa', isUSA: true },
     { name: t('nav', 'jurisdictions'), href: '/#countries' },
-    { name: t('nav', 'cases'), href: '/cases' },
     { name: t('nav', 'about'), href: '/#about' },
-    { name: t('nav', 'faq'), href: '/#faq' },
+    { name: 'FAQ', href: '/#faq' },
     { name: t('nav', 'contacts'), href: '/#contacts' },
   ];
 
