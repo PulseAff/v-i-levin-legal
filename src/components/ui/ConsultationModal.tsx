@@ -325,7 +325,10 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
                 href="https://t.me/VILEVIN_bot"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full py-2.5 px-4 rounded-lg font-serif font-bold text-xs uppercase tracking-wider bg-gradient-to-r from-[#DFBA73] via-[#F4DEAA] to-[#C99C4B] text-black shadow-[0_4px_20px_rgba(223,186,115,0.3)] hover:brightness-105 active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full py-3 px-6 rounded-md text-[#080B11] font-bold text-xs tracking-wider uppercase hover:brightness-105 active:scale-[0.98] transition-all shadow-md border border-[#FFE8A3]/50 cursor-pointer flex items-center justify-center gap-2 font-sans"
+                style={{
+                  background: 'linear-gradient(135deg, #F3E2B8 0%, #D4AF37 50%, #99742B 100%)',
+                }}
               >
                 <span>💬</span>
                 <span>
@@ -345,7 +348,7 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
 
               <button
                 onClick={onClose}
-                className="text-gray-400 hover:text-white text-[11px] font-serif uppercase tracking-widest transition-colors cursor-pointer block mx-auto pt-1"
+                className="text-gray-400 hover:text-white text-xs font-sans uppercase tracking-wider transition-colors cursor-pointer block mx-auto pt-1 font-medium"
               >
                 {t('modal', 'successBtn')}
               </button>
@@ -371,7 +374,7 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
 
               {/* 1. Category Dropdown (Выпадающий список направлений) */}
               <div ref={catRef} className="relative">
-                <label className="text-[10.5px] font-serif uppercase tracking-wider text-[#DFBA73] block mb-1 font-semibold">
+                <label className="text-xs font-sans font-semibold tracking-wider text-[#DFBA73] block mb-1.5 uppercase">
                   {categoryStepLabel}
                 </label>
                 <button
@@ -380,18 +383,18 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
                     setCatDropdownOpen(!catDropdownOpen);
                     setTopicDropdownOpen(false);
                   }}
-                  className="w-full h-9 sm:h-10 px-3 rounded-lg bg-[#101524] border border-white/[0.12] hover:border-white/25 focus:border-[#DFBA73]/70 flex items-center justify-between text-left text-xs sm:text-sm font-serif font-semibold text-white transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)] cursor-pointer select-none"
+                  className="w-full h-10 px-3.5 rounded-lg bg-[#101524] border border-white/[0.15] hover:border-white/30 focus:border-[#DFBA73] flex items-center justify-between text-left text-sm font-sans font-medium text-white transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)] cursor-pointer select-none"
                 >
-                  <div className="flex items-center gap-2 overflow-hidden">
+                  <div className="flex items-center gap-2.5 overflow-hidden">
                     {currentCategory.id === 'usa' ? (
                       <LuxuryUsaFlag size="xs" />
                     ) : (
-                      <span className="text-xs shrink-0">{currentCategory.icon}</span>
+                      <span className="text-sm shrink-0">{currentCategory.icon}</span>
                     )}
-                    <span className="truncate">{currentCategory.title}</span>
+                    <span className="truncate text-white font-medium">{currentCategory.title}</span>
                   </div>
                   <ChevronDown
-                    size={14}
+                    size={15}
                     className={`text-gray-400 shrink-0 transition-transform duration-200 ${
                       catDropdownOpen ? 'rotate-180 text-[#DFBA73]' : ''
                     }`}
@@ -400,7 +403,7 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
 
                 {/* Dropdown Menu */}
                 {catDropdownOpen && (
-                  <div className="absolute z-50 left-0 right-0 mt-1 p-1 bg-[#0D1220] border border-white/20 rounded-lg shadow-2xl shadow-black space-y-0.5 animate-in fade-in-50 zoom-in-95 duration-150">
+                  <div className="absolute z-50 left-0 right-0 mt-1 p-1.5 bg-[#0D1220] border border-white/20 rounded-lg shadow-2xl shadow-black space-y-0.5 animate-in fade-in-50 zoom-in-95 duration-150">
                     {categoriesList.map((cat) => {
                       const isSelected = selectedCat === cat.id;
                       return (
@@ -408,16 +411,16 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
                           key={cat.id}
                           type="button"
                           onClick={() => handleCatSelect(cat)}
-                          className={`w-full px-2.5 py-1.5 rounded-md text-xs sm:text-sm font-serif text-left flex items-center gap-2 transition-all cursor-pointer ${
+                          className={`w-full px-3 py-2 rounded-md text-sm font-sans text-left flex items-center gap-2.5 transition-all cursor-pointer ${
                             isSelected
-                              ? 'bg-[#DFBA73]/15 text-[#FFE8A3] border border-[#DFBA73]/30 font-semibold'
-                              : 'text-gray-300 hover:bg-white/5 hover:text-white border border-transparent'
+                              ? 'bg-[#DFBA73]/20 text-[#FFE8A3] border border-[#DFBA73]/40 font-semibold'
+                              : 'text-gray-200 hover:bg-white/10 hover:text-white border border-transparent'
                           }`}
                         >
                           {cat.id === 'usa' ? (
                             <LuxuryUsaFlag size="xs" />
                           ) : (
-                            <span className="text-xs">{cat.icon}</span>
+                            <span className="text-sm">{cat.icon}</span>
                           )}
                           <span className="truncate">{cat.title}</span>
                         </button>
@@ -429,7 +432,7 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
 
               {/* 2. Specific Topic Dropdown (Выпадающий список задач) */}
               <div ref={topicRef} className="relative">
-                <label className="text-[10.5px] font-serif uppercase tracking-wider text-[#DFBA73] block mb-1 font-semibold">
+                <label className="text-xs font-sans font-semibold tracking-wider text-[#DFBA73] block mb-1.5 uppercase">
                   {topicStepLabel}
                 </label>
                 <button
@@ -438,14 +441,14 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
                     setTopicDropdownOpen(!topicDropdownOpen);
                     setCatDropdownOpen(false);
                   }}
-                  className="w-full h-9 sm:h-10 px-3 rounded-lg bg-[#101524] border border-white/[0.12] hover:border-white/25 focus:border-[#DFBA73]/70 flex items-center justify-between text-left text-xs sm:text-sm font-serif font-medium text-gray-200 transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)] cursor-pointer select-none"
+                  className="w-full h-10 px-3.5 rounded-lg bg-[#101524] border border-white/[0.15] hover:border-white/30 focus:border-[#DFBA73] flex items-center justify-between text-left text-sm font-sans font-medium text-white transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)] cursor-pointer select-none"
                 >
-                  <div className="flex items-center gap-2 overflow-hidden">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#DFBA73] shrink-0 shadow-[0_0_6px_rgba(223,186,115,0.6)]" />
-                    <span className="truncate">{selectedChip}</span>
+                  <div className="flex items-center gap-2.5 overflow-hidden">
+                    <span className="w-2 h-2 rounded-full bg-[#DFBA73] shrink-0 shadow-[0_0_6px_rgba(223,186,115,0.7)]" />
+                    <span className="truncate text-white font-medium">{selectedChip}</span>
                   </div>
                   <ChevronDown
-                    size={14}
+                    size={15}
                     className={`text-gray-400 shrink-0 transition-transform duration-200 ${
                       topicDropdownOpen ? 'rotate-180 text-[#DFBA73]' : ''
                     }`}
@@ -454,7 +457,7 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
 
                 {/* Dropdown Menu */}
                 {topicDropdownOpen && (
-                  <div className="absolute z-40 left-0 right-0 mt-1 p-1 bg-[#0D1220] border border-white/20 rounded-lg shadow-2xl shadow-black space-y-0.5 animate-in fade-in-50 zoom-in-95 duration-150 max-h-48 overflow-y-auto scrollbar-none">
+                  <div className="absolute z-40 left-0 right-0 mt-1 p-1.5 bg-[#0D1220] border border-white/20 rounded-lg shadow-2xl shadow-black space-y-0.5 animate-in fade-in-50 zoom-in-95 duration-150 max-h-48 overflow-y-auto scrollbar-none">
                     {currentCategory.chips.map((chip) => {
                       const isSelected = selectedChip === chip;
                       return (
@@ -462,10 +465,10 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
                           key={chip}
                           type="button"
                           onClick={() => handleTopicSelect(chip)}
-                          className={`w-full px-2.5 py-1.5 rounded-md text-xs sm:text-sm font-serif text-left transition-all cursor-pointer ${
+                          className={`w-full px-3 py-2 rounded-md text-sm font-sans text-left transition-all cursor-pointer ${
                             isSelected
-                              ? 'bg-[#DFBA73]/15 text-[#FFE8A3] border border-[#DFBA73]/30 font-semibold'
-                              : 'text-gray-300 hover:bg-white/5 hover:text-white border border-transparent'
+                              ? 'bg-[#DFBA73]/20 text-[#FFE8A3] border border-[#DFBA73]/40 font-semibold'
+                              : 'text-gray-200 hover:bg-white/10 hover:text-white border border-transparent'
                           }`}
                         >
                           <span className="truncate">{chip}</span>
@@ -478,7 +481,7 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
 
               {/* 3. Contact Input */}
               <div>
-                <label className="text-[10.5px] font-serif uppercase tracking-wider text-[#DFBA73] block mb-1 font-semibold">
+                <label className="text-xs font-sans font-semibold tracking-wider text-[#DFBA73] block mb-1.5 uppercase">
                   {t('modal', 'contactLabel')}
                 </label>
                 <input
@@ -487,19 +490,19 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
                   value={contact}
                   onChange={(e) => setContact(e.target.value)}
                   placeholder={t('modal', 'contactPlaceholder')}
-                  className="w-full h-9 sm:h-10 px-3 rounded-lg bg-[#101524] border border-white/[0.12] focus:border-[#DFBA73]/80 focus:bg-[#141b2e] text-white placeholder-gray-400 font-serif text-xs sm:text-sm outline-none transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)]"
+                  className="w-full h-10 px-3.5 rounded-lg bg-[#101524] border border-white/[0.15] focus:border-[#DFBA73] focus:bg-[#141b2e] text-white placeholder-gray-400 font-sans text-sm outline-none transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)]"
                 />
               </div>
 
               {/* 4. Note / Description Textarea */}
-              <div className="rounded-lg p-2.5 bg-[#101524] border border-white/[0.12] focus-within:border-white/25 transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.4)]">
-                <div className="flex items-center justify-between pb-1 mb-1 border-b border-white/10">
-                  <label className="text-[10px] font-serif uppercase tracking-wider text-[#DFBA73] font-semibold flex items-center gap-1.5">
+              <div className="rounded-lg p-2.5 bg-[#101524] border border-white/[0.15] focus-within:border-white/30 transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.4)]">
+                <div className="flex items-center justify-between pb-1.5 mb-1.5 border-b border-white/10">
+                  <label className="text-xs font-sans uppercase tracking-wider text-[#DFBA73] font-semibold flex items-center gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#DFBA73]" />
                     {t('modal', 'noteLabel')}
                   </label>
-                  <span className="text-[9px] font-mono text-gray-400 uppercase tracking-widest flex items-center gap-1">
-                    <Lock size={8.5} /> Confidential
+                  <span className="text-[10px] font-mono text-gray-400 uppercase tracking-widest flex items-center gap-1">
+                    <Lock size={9} /> Confidential
                   </span>
                 </div>
                 <textarea
@@ -507,33 +510,33 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
                   value={note}
                   onChange={(e) => setNote(e.target.value)}
                   placeholder={t('modal', 'notePlaceholder')}
-                  className="w-full bg-transparent text-white placeholder-gray-500 font-serif text-xs sm:text-sm outline-none resize-none leading-snug"
+                  className="w-full bg-transparent text-white placeholder-gray-400 font-sans text-sm outline-none resize-none leading-relaxed"
                 />
               </div>
 
-              {/* 5. Submit Button */}
-              <div className="pt-1">
+              {/* 5. Submit Button — in Hero 'СТРАТЕГИЧЕСКАЯ КОНСУЛЬТАЦИЯ' style */}
+              <div className="pt-2">
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full h-10 sm:h-11 px-4 rounded-lg bg-gradient-to-r from-[#DFBA73] via-[#F5E2B3] to-[#C99C4B] text-black font-serif font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-[0_4px_20px_rgba(223,186,115,0.25),inset_0_1px_1px_rgba(255,255,255,0.6)] hover:brightness-105 active:scale-[0.99] transition-all cursor-pointer disabled:opacity-50 relative overflow-hidden"
+                  className="w-full py-3 px-6 rounded-md text-[#080B11] font-bold text-xs tracking-wider uppercase hover:brightness-105 active:scale-[0.98] transition-all shadow-md border border-[#FFE8A3]/50 cursor-pointer flex items-center justify-center font-sans disabled:opacity-50"
+                  style={{
+                    background: 'linear-gradient(135deg, #F3E2B8 0%, #D4AF37 50%, #99742B 100%)',
+                  }}
                 >
-                  {/* Subtle Glass Shimmer Effect */}
-                  <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-glass-shimmer pointer-events-none" />
-                  <Send size={13} className="relative z-10" />
-                  <span className="relative z-10 font-black">
+                  <span className="font-bold">
                     {isSubmitting ? t('modal', 'submitting') : t('modal', 'submitBtn')}
                   </span>
                 </button>
               </div>
 
               {/* Direct Telegram Link Alternative */}
-              <div className="pt-1 text-center">
+              <div className="pt-1.5 text-center">
                 <a
                   href="https://t.me/VILEVIN_bot"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-[11px] font-serif text-[#DFBA73]/80 hover:text-[#FFE8A3] transition-colors"
+                  className="inline-flex items-center gap-1.5 text-xs font-sans text-[#DFBA73] hover:text-[#FFE8A3] transition-colors py-0.5"
                 >
                   <span>
                     {currentLang === 'en'
