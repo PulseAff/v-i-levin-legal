@@ -333,7 +333,19 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
                 className="w-full py-2.5 px-4 rounded-lg font-serif font-bold text-xs uppercase tracking-wider bg-gradient-to-r from-[#DFBA73] via-[#F4DEAA] to-[#C99C4B] text-black shadow-[0_4px_20px_rgba(223,186,115,0.3)] hover:brightness-105 active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
                 <span>💬</span>
-                <span>Начать диалог с адвокатом в Telegram</span>
+                <span>
+                  {currentLang === 'en'
+                    ? 'Start dialogue with counsel / attorney in Telegram'
+                    : currentLang === 'uk'
+                    ? 'Розпочати діалог з юристом / адвокатом у Telegram'
+                    : currentLang === 'es'
+                    ? 'Iniciar diálogo con el jurista / abogado en Telegram'
+                    : currentLang === 'it'
+                    ? 'Avvia dialogo con il giurista / avvocato su Telegram'
+                    : currentLang === 'fr'
+                    ? 'Démarrer le dialogue avec le juriste / avocat sur Telegram'
+                    : 'Начать диалог с юристом / адвокатом в Telegram'}
+                </span>
               </a>
 
               <button
@@ -528,7 +540,19 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1 text-[11px] font-serif text-[#DFBA73]/80 hover:text-[#FFE8A3] transition-colors"
                 >
-                  <span>Или напишите адвокату напрямую в Telegram:</span>
+                  <span>
+                    {currentLang === 'en'
+                      ? 'Or contact legal counsel directly in Telegram:'
+                      : currentLang === 'uk'
+                      ? 'Або напишіть юристу напряму в Telegram:'
+                      : currentLang === 'es'
+                      ? 'O escriba al jurista directamente en Telegram:'
+                      : currentLang === 'it'
+                      ? 'O scrivi direttamente al giurista su Telegram:'
+                      : currentLang === 'fr'
+                      ? 'Ou écrivez directement au juriste sur Telegram:'
+                      : 'Или напишите юристу напрямую в Telegram:'}
+                  </span>
                   <span className="font-semibold underline underline-offset-2">@VILEVIN_bot</span>
                 </a>
               </div>
