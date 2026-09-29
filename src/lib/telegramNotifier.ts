@@ -10,8 +10,10 @@ export async function sendTelegramNotification(lead: any): Promise<boolean> {
   const escapeHtml = (str: string = '') =>
     str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
+  const leadNum = String(lead.id || '').replace(/^LEAD-?/i, '');
+
   const message = [
-    `⚖️ <b>НОВОЕ ОБРАЩЕНИЕ: V. I. LEVIN</b>`,
+    `⚖️ <b>V. I. LEVIN | НОВАЯ ЗАЯВКА №${leadNum}</b>`,
     `━━━━━━━━━━━━━━━━━━`,
     `🆔 <b>ID Заявки:</b> <code>${escapeHtml(lead.id)}</code>`,
     `📅 <b>Дата:</b> ${new Date(lead.createdAt).toLocaleString('ru-RU')}`,

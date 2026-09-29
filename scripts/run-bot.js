@@ -67,6 +67,30 @@ function saveLeadsToDisk() {
   }
 }
 
+const counterFilePath = path.join(__dirname, '..', 'data', 'lead_counter.json');
+
+function getNextLeadId() {
+  let seq = 100;
+  try {
+    if (fs.existsSync(counterFilePath)) {
+      const data = JSON.parse(fs.readFileSync(counterFilePath, 'utf8') || '{}');
+      if (typeof data.seq === 'number' && data.seq >= 100) {
+        seq = data.seq;
+      }
+    }
+  } catch (e) {}
+
+  const leadId = 'LEAD-' + String(seq).padStart(6, '0');
+
+  try {
+    const dir = path.dirname(counterFilePath);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(counterFilePath, JSON.stringify({ seq: seq + 1 }, null, 2), 'utf8');
+  } catch (e) {}
+
+  return leadId;
+}
+
 function escapeHtml(text = '') {
   return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
@@ -192,11 +216,86 @@ const I18N = {
     contactPrompt: 'Крок 5 із 5: Вкажіть ваш <b>Telegram, WhatsApp або Email</b> для зв’язку:',
     finish: '✅ <b>Ваше звернення зареєстровано!</b>\n\nНаші юристи проводять первинний аналіз і зв’яжуться з вами найближчим часом.',
   },
-};
 
-I18N.es = I18N.en;
-I18N.it = I18N.en;
-I18N.fr = I18N.en;
+  es: {
+    welcome: '⚖️ <b>V. I. LEVIN — Práctica Jurídica Internacional</b>\n\nBienvenido a nuestra pasarela segura de evaluación legal preliminar.\n\n🔒 Todas las comunicaciones están protegidas por el secreto profesional (Attorney-Client Privilege) y confidencialidad.\n\nPaso 1 de 5: Seleccione el <b>área de práctica</b> de su consulta:',
+    cats: [
+      [{ text: '🇺🇸 Inmigración a EE.UU. & Green Card', callback_data: 'cat:Inmigración a EE.UU.' }],
+      [{ text: '🌍 Contratos Internacionales & Estructuración', callback_data: 'cat:Contratos Internacionales' }],
+      [{ text: '⚖️ Arbitraje & Litigios Transfronterizos', callback_data: 'cat:Arbitraje y Litigios' }],
+      [{ text: '💼 Derecho Corporativo & Protección Patrimonial', callback_data: 'cat:Derecho Corporativo' }],
+      [{ text: '❓ Otra Consulta Jurídica', callback_data: 'cat:Otra Consulta' }],
+    ],
+    jurTitle: 'Paso 2 de 5: Indique la <b>jurisdicción principal</b>:',
+    jurs: [
+      [{ text: '🇺🇸 Estados Unidos', callback_data: 'jur:EE.UU.' }, { text: '🇪🇺 UE / Alemania', callback_data: 'jur:UE' }],
+      [{ text: '🇦🇪 EAU (DIFC)', callback_data: 'jur:EAU' }, { text: '🇬🇧 Reino Unido', callback_data: 'jur:Reino Unido' }],
+      [{ text: '🇨🇾 Chipre', callback_data: 'jur:Chipre' }, { text: '🇬🇪 Georgia', callback_data: 'jur:Georgia' }],
+      [{ text: '🌍 Otra jurisdicción', callback_data: 'jur:custom' }],
+    ],
+    descPrompt: 'Paso 3 de 5: <b>Describa brevemente su situación</b> (hechos clave, fase actual, objetivos):\n\n<i>⚠️ No comparta contraseñas ni datos bancarios.</i>',
+    urgTitle: 'Paso 4 de 5: Seleccione el <b>nivel de urgencia</b>:',
+    urgs: [
+      [{ text: '🔥 Urgente (1-2 días)', callback_data: 'urg:Urgente' }],
+      [{ text: '⚡ En el plazo de una semana', callback_data: 'urg:Una semana' }],
+      [{ text: '📅 Consulta programada', callback_data: 'urg:Programada' }],
+    ],
+    contactPrompt: 'Paso 5 de 5: Indique su <b>Telegram, WhatsApp o Email</b> de contacto:',
+    finish: '✅ <b>¡Su solicitud ha sido registrada con éxito!</b>\n\nNuestro equipo jurídico está realizando la evaluación preliminar y se pondrá en contacto con usted a la brevedad.',
+  },
+  it: {
+    welcome: '⚖️ <b>V. I. LEVIN — Pratica Legale Internazionale</b>\n\nBenvenuti nel gateway sicuro di valutazione legale preliminare.\n\n🔒 Tutte le comunicazioni sono protette dal segreto professionale (Attorney-Client Privilege) e da accordi di riservatezza.\n\nPasso 1 di 5: Selezioni il <b>settore di attività</b> della Sua richiesta:',
+    cats: [
+      [{ text: '🇺🇸 Immigrazione USA & Green Card', callback_data: 'cat:Immigrazione USA' }],
+      [{ text: '🌍 Contratti Internazionali & Strutturazione', callback_data: 'cat:Contratti Internazionali' }],
+      [{ text: '⚖️ Arbitrato & Contenziosi Transfrontalieri', callback_data: 'cat:Arbitrato e Contenziosi' }],
+      [{ text: '💼 Diritto Societario & Tutela Patrimoniale', callback_data: 'cat:Diritto Societario' }],
+      [{ text: '❓ Altro Quesito Legale', callback_data: 'cat:Altro' }],
+    ],
+    jurTitle: 'Passo 2 di 5: Indichi la <b>giurisdizione principale</b>:',
+    jurs: [
+      [{ text: '🇺🇸 Stati Uniti', callback_data: 'jur:USA' }, { text: '🇪🇺 UE / Germania', callback_data: 'jur:UE' }],
+      [{ text: '🇦🇪 EAU (DIFC)', callback_data: 'jur:EAU' }, { text: '🇬🇧 Regno Unito', callback_data: 'jur:UK' }],
+      [{ text: '🇨🇾 Cipro', callback_data: 'jur:Cipro' }, { text: '🇬🇪 Georgia', callback_data: 'jur:Georgia' }],
+      [{ text: '🌍 Altra giurisdizione', callback_data: 'jur:custom' }],
+    ],
+    descPrompt: 'Passo 3 di 5: <b>Descriva brevemente la Sua situazione</b> (fatti salienti, fase attuale, obiettivi):\n\n<i>⚠️ Non condivida password né dati di pagamento.</i>',
+    urgTitle: 'Passo 4 di 5: Selezioni il <b>livello di urgenza</b>:',
+    urgs: [
+      [{ text: '🔥 Urgente (1-2 giorni)', callback_data: 'urg:Urgente' }],
+      [{ text: '⚡ Entro una settimana', callback_data: 'urg:Una settimana' }],
+      [{ text: '📅 Consulenza programmata', callback_data: 'urg:Programmata' }],
+    ],
+    contactPrompt: 'Passo 5 di 5: Indichi il Suo contatto <b>Telegram, WhatsApp o Email</b>:',
+    finish: '✅ <b>La Sua richiesta è stata registrata con successo!</b>\n\nIl nostro team legale sta esaminando il caso e La ricontatterà al più presto.',
+  },
+  fr: {
+    welcome: '⚖️ <b>V. I. LEVIN — Pratique Juridique Internationale</b>\n\nBienvenue sur notre portail sécurisé d’évaluation juridique préliminaire.\n\n🔒 Toutes les communications sont strictement protégées par le secret professionnel (Attorney-Client Privilege) et la confidentialité.\n\nÉtape 1 sur 5 : Sélectionnez le <b>domaine juridique</b> de votre demande :',
+    cats: [
+      [{ text: '🇺🇸 Immigration USA & Green Card', callback_data: 'cat:Immigration USA' }],
+      [{ text: '🌍 Contrats Internationaux & Structuration', callback_data: 'cat:Contrats Internationaux' }],
+      [{ text: '⚖️ Arbitrage & Contentieux Transfrontaliers', callback_data: 'cat:Arbitrage' }],
+      [{ text: '💼 Droit des Sociétés & Protection d’Actifs', callback_data: 'cat:Droit des Sociétés' }],
+      [{ text: '❓ Autre Question Juridique', callback_data: 'cat:Autre' }],
+    ],
+    jurTitle: 'Étape 2 sur 5 : Précisez la <b>juridiction principale</b> :',
+    jurs: [
+      [{ text: '🇺🇸 États-Unis', callback_data: 'jur:USA' }, { text: '🇪🇺 UE / Allemagne', callback_data: 'jur:UE' }],
+      [{ text: '🇦🇪 ÉAU (DIFC)', callback_data: 'jur:ÉAU' }, { text: '🇬🇧 Royaume-Uni', callback_data: 'jur:UK' }],
+      [{ text: '🇨🇾 Chypre', callback_data: 'jur:Chypre' }, { text: '🇬🇪 Géorgie', callback_data: 'jur:Géorgie' }],
+      [{ text: '🌍 Autre juridiction', callback_data: 'jur:custom' }],
+    ],
+    descPrompt: 'Étape 3 sur 5 : <b>Décrivez brièvement votre situation</b> (faits essentiels, phase actuelle, objectifs) :\n\n<i>⚠️ Ne transmettez ni mots de passe ni coordonnées bancaires.</i>',
+    urgTitle: 'Étape 4 sur 5 : Choisissez le <b>degré d’urgence</b> :',
+    urgs: [
+      [{ text: '🔥 Urgent (1-2 jours)', callback_data: 'urg:Urgent' }],
+      [{ text: '⚡ D’ici une semaine', callback_data: 'urg:Une semaine' }],
+      [{ text: '📅 Consultation planifiée', callback_data: 'urg:Planifiée' }],
+    ],
+    contactPrompt: 'Étape 5 sur 5 : Indiquez votre <b>Telegram, WhatsApp ou Email</b> de contact :',
+    finish: '✅ <b>Votre demande a été enregistrée avec succès !</b>\n\nNotre équipe juridique effectue l’analyse préliminaire et prendra contact avec vous dans les meilleurs délais.',
+  },
+};
 
 async function notifyAdminLead(lead) {
   leadsCache.set(lead.id, lead);
@@ -204,12 +303,14 @@ async function notifyAdminLead(lead) {
 
   if (!ADMIN_CHAT_ID) return;
 
+  const leadNum = String(lead.id || '').replace(/^LEAD-?/i, '');
+
   const adminMsg = [
-    `⚖️ <b>НОВАЯ ЗАЯВКА ИЗ СИСТЕМЫ</b>`,
+    `⚖️ <b>V. I. LEVIN | НОВАЯ ЗАЯВКА №${leadNum}</b>`,
     `━━━━━━━━━━━━━━━━━━`,
     `🆔 <b>ID Заявки:</b> <code>${escapeHtml(lead.id)}</code>`,
     `📅 <b>Время:</b> ${new Date(lead.createdAt).toLocaleString('ru-RU')}`,
-    `🌐 <b>Язык:</b> <code>${escapeHtml(lead.lang || 'ru').toUpperCase()}</code>`,
+    `🌐 <b>Язык доверителя:</b> <code>${escapeHtml(lead.lang || 'ru').toUpperCase()}</code>`,
     ``,
     `📁 <b>Направление:</b> ${escapeHtml(lead.serviceCategory)}`,
     `🌍 <b>Юрисдикция:</b> ${escapeHtml(lead.jurisdiction)}`,
@@ -253,10 +354,12 @@ async function forwardLeadToLawyer(leadId) {
   lead.assignedTo = LAWYER_CHAT_ID;
   saveLeadsToDisk();
 
+  const leadNum = String(lead.id || '').replace(/^LEAD-?/i, '');
+
   const lawyerMsg = [
-    `⚖️ <b>V. I. LEVIN | ПОРУЧЕНИЕ ПО НОВОМУ КЕЙСУ</b>`,
+    `⚖️ <b>V. I. LEVIN | НОВАЯ ЗАЯВКА №${leadNum}</b>`,
     `━━━━━━━━━━━━━━━━━━`,
-    `Руководитель практики перенаправил вам новое обращение доверителя:`,
+    `Вам перенаправлено новое обращение доверителя:`,
     ``,
     `🆔 <b>ID Дела:</b> <code>${escapeHtml(lead.id)}</code>`,
     `📅 <b>Дата поступления:</b> ${new Date(lead.createdAt).toLocaleString('ru-RU')}`,
@@ -758,8 +861,12 @@ async function handleUpdate(update) {
 
     // Step: contact (Step 5)
     if (session.step === 'contact') {
+      if (!session.contact) session.contact = {};
+      if (!session.contact.telegramUsername && fromUser?.username) {
+        session.contact.telegramUsername = fromUser.username;
+      }
       session.contact.info = text;
-      session.id = 'LEAD-' + Date.now().toString().slice(-6);
+      session.id = getNextLeadId();
       session.createdAt = new Date().toISOString();
       session.chatId = chatId;
       session.status = 'new';

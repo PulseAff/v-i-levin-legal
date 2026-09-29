@@ -51,12 +51,36 @@ export function getAllLeads(): LeadRecord[] {
   }
 }
 
+const counterFilePath = path.join(process.cwd(), 'data', 'lead_counter.json');
+
+function getNextLeadId(): string {
+  let seq = 100;
+  try {
+    if (fs.existsSync(counterFilePath)) {
+      const data = JSON.parse(fs.readFileSync(counterFilePath, 'utf-8') || '{}');
+      if (typeof data.seq === 'number' && data.seq >= 100) {
+        seq = data.seq;
+      }
+    }
+  } catch (e) {}
+
+  const leadId = `LEAD-${String(seq).padStart(6, '0')}`;
+
+  try {
+    const dir = path.dirname(counterFilePath);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(counterFilePath, JSON.stringify({ seq: seq + 1 }, null, 2), 'utf-8');
+  } catch (e) {}
+
+  return leadId;
+}
+
 export function saveLead(lead: Omit<LeadRecord, 'id' | 'createdAt' | 'status'>): LeadRecord {
   ensureDataFile();
   const leads = getAllLeads();
   const newLead: LeadRecord = {
     ...lead,
-    id: `LEAD-${Date.now().toString(36).toUpperCase()}-${Math.floor(Math.random() * 1000)}`,
+    id: getNextLeadId(),
     createdAt: new Date().toISOString(),
     status: 'New',
   };
