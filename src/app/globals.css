@@ -49,3 +49,24 @@
 .animate-fadeIn {
   animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
+@keyframes glassShimmer {
+  0% {
+    transform: translateX(-150%) skewX(-20deg);
+  }
+  50%, 100% {
+    transform: translateX(250%) skewX(-20deg);
+  }
+}
+
+.animate-glass-shimmer {
+  animation: glassShimmer 4.5s ease-in-out infinite;
+}
+
+.glass-specular-top {
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.25), 0 20px 50px 0 rgba(0, 0, 0, 0.55);
+}
+
+.glass-sheen {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.01) 40%, transparent 100%);
+}

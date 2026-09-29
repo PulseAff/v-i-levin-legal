@@ -386,7 +386,7 @@ export const Header: React.FC = () => {
 
       {/* Main Header with Segmented Navigation */}
       <header
-        className={`sticky ${showSwitcher ? 'top-[41px]' : 'top-0'} z-50 w-full transition-all duration-200 h-16 sm:h-18 bg-black/95 backdrop-blur-md border-b border-[#181818]`}
+        className={`sticky ${showSwitcher ? 'top-[41px]' : 'top-0'} z-50 w-full transition-all duration-200 h-16 sm:h-18 bg-[#04070E]/85 backdrop-blur-2xl border-b border-white/[0.08] shadow-[inset_0_-1px_0_rgba(255,255,255,0.06),0_10px_35px_rgba(0,0,0,0.6)]`}
       >
         <div className="max-w-7xl mx-auto h-full px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
           {/* Logo with 30px symbol matching the exact height of 2 text lines */}
@@ -394,22 +394,22 @@ export const Header: React.FC = () => {
 
           {/* Continuous Segmented Pill Container (Center Navigation) */}
           <nav
-            className={`hidden lg:inline-flex items-center rounded-md transition-all ${
+            className={`hidden lg:inline-flex items-center rounded-lg transition-all ${
               activeVariantId === 2
-                ? 'bg-[#0E1522] p-1.5 border border-[#2B3952] shadow-inner' // 5.2 Platinum
+                ? 'bg-[#0E1522]/90 backdrop-blur-xl p-1.5 border border-[#2B3952] shadow-[inset_0_1px_1px_rgba(255,255,255,0.15)]' // 5.2 Platinum
                 : activeVariantId === 3
-                ? 'bg-[#080E1C] p-1.5 border border-[#1E3A8A]/60 shadow-[0_0_15px_rgba(30,58,138,0.2)]' // 5.3 Sapphire
+                ? 'bg-[#080E1C]/90 backdrop-blur-xl p-1.5 border border-[#1E3A8A]/60 shadow-[inset_0_1px_1px_rgba(255,255,255,0.15),0_0_15px_rgba(30,58,138,0.2)]' // 5.3 Sapphire
                 : activeVariantId === 4
-                ? 'bg-[#051410] p-1.5 border border-[#065F46]/60 shadow-[0_0_15px_rgba(6,95,70,0.2)]' // 5.4 Emerald
+                ? 'bg-[#051410]/90 backdrop-blur-xl p-1.5 border border-[#065F46]/60 shadow-[inset_0_1px_1px_rgba(255,255,255,0.15),0_0_15px_rgba(6,95,70,0.2)]' // 5.4 Emerald
                 : activeVariantId === 5
-                ? 'bg-white/5 backdrop-blur-2xl p-1.5 border border-white/10 shadow-2xl' // 5.5 Frosted Glass
+                ? 'bg-white/5 backdrop-blur-2xl p-1.5 border border-white/15 shadow-[inset_0_1px_1px_rgba(255,255,255,0.25),0_10px_30px_rgba(0,0,0,0.5)]' // 5.5 Frosted Glass
                 : activeVariantId === 6
-                ? 'bg-[#0A0E17] p-1.5 border border-[#222E42] shadow-inner' // 5.6 Titanium Carbon
+                ? 'bg-[#0A0E17]/90 backdrop-blur-xl p-1.5 border border-[#222E42] shadow-[inset_0_1px_1px_rgba(255,255,255,0.12)]' // 5.6 Titanium Carbon
                 : activeVariantId === 8
-                ? 'bg-[#0B101A] p-1 border border-[#1E293B]' // 5.8 Ultra-compact
+                ? 'bg-[#0B101A]/90 p-1 border border-[#1E293B]' // 5.8 Ultra-compact
                 : activeVariantId === 10 || activeVariantId === 4
-                ? 'bg-[#051410] p-1.5 border border-[#065F46]/70 shadow-[0_0_18px_rgba(6,95,70,0.3)]' // 5.10 Emerald Green Card
-                : 'bg-[#0E1420] p-1.5 border border-[#1E293B] shadow-lg shadow-black/40' // 5.1 & 5.7 Default
+                ? 'bg-[#051410]/90 backdrop-blur-xl p-1.5 border border-[#065F46]/70 shadow-[inset_0_1px_1px_rgba(255,255,255,0.2),0_0_18px_rgba(6,95,70,0.3)]' // 5.10 Emerald Green Card
+                : 'bg-[#0B101C]/85 backdrop-blur-xl p-1.5 border border-white/[0.12] shadow-[inset_0_1px_1px_rgba(255,255,255,0.2),0_8px_25px_rgba(0,0,0,0.5)]' // 5.1 & 5.7 Default
             }`}
           >
             {translatedNavItems.map((link) => {
@@ -441,7 +441,7 @@ export const Header: React.FC = () => {
           <div className="hidden lg:flex items-center gap-3 shrink-0">
             <button
               onClick={() => openConsultation()}
-              className="px-3.5 py-1.5 rounded-md bg-gradient-to-r from-[#F3E2B8] via-[#D4AF37] to-[#A0782A] text-black font-bold text-xs tracking-wider uppercase hover:brightness-110 active:scale-[0.98] transition-all shadow-[0_2px_10px_rgba(212,175,55,0.3)] border border-[#FFE8A3] cursor-pointer"
+              className="px-3.5 py-1.5 rounded-md bg-gradient-to-r from-[#F3E2B8] via-[#D4AF37] to-[#A0782A] text-black font-bold text-xs tracking-wider uppercase hover:brightness-110 active:scale-[0.98] transition-all shadow-[0_2px_15px_rgba(212,175,55,0.25),inset_0_1px_1px_rgba(255,255,255,0.5)] border border-[#FFE8A3] cursor-pointer"
             >
               {t('nav', 'bookConsultation')}
             </button>
