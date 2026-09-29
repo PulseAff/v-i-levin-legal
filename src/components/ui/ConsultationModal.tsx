@@ -202,7 +202,7 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
   const L = {
     stepTitle: currentLang === 'en' ? 'For a faster response, send your inquiry via our Telegram bot' : currentLang === 'uk' ? 'Для швидшої відповіді надішліть вашу заявку через наш Telegram-бот' : currentLang === 'es' ? 'Para una respuesta más rápida, envíe su consulta a través de nuestro bot de Telegram' : currentLang === 'it' ? 'Per una risposta più rapida, invii la Sua richiesta tramite il nostro bot Telegram' : currentLang === 'fr' ? 'Pour une réponse plus rapide, envoyez votre demande via notre bot Telegram' : 'Для более быстрого ответа отправьте вашу заявку через наш Telegram-бот',
     stepSub: currentLang === 'en' ? 'Direct secure connection with legal counsel in one click.' : currentLang === 'uk' ? 'Прямий захищений зв’язок із юристом в один клік.' : currentLang === 'es' ? 'Conexión segura directa con el jurista en un clic.' : currentLang === 'it' ? 'Collegamento sicuro diretto con il giurista in un clic.' : currentLang === 'fr' ? 'Liaison sécurisée directe avec le juriste en un clic.' : 'Прямая защищенная связь с юристом в один клик.',
-    tgBtn: currentLang === 'en' ? '💬 SEND VIA TELEGRAM BOT' : currentLang === 'uk' ? '💬 ВІДПРАВИТИ ЧЕРЕЗ TELEGRAM-БОТ' : currentLang === 'es' ? '💬 ENVIAR POR TELEGRAM BOT' : currentLang === 'it' ? '💬 INVIA TRAMITE BOT TELEGRAM' : currentLang === 'fr' ? '💬 ENVOYER VIA LE BOT TELEGRAM' : '💬 ОТПРАВИТЬ ЧЕРЕЗ TELEGRAM-БОТ',
+    tgBtn: currentLang === 'en' ? 'SEND VIA TELEGRAM BOT' : currentLang === 'uk' ? 'ВІДПРАВИТИ ЧЕРЕЗ TELEGRAM-БОТ' : currentLang === 'es' ? 'ENVIAR POR TELEGRAM BOT' : currentLang === 'it' ? 'INVIA TRAMITE BOT TELEGRAM' : currentLang === 'fr' ? 'ENVOYER VIA LE BOT TELEGRAM' : 'ОТПРАВИТЬ ЧЕРЕЗ TELEGRAM-БОТ',
     noTgCheckbox: currentLang === 'en' ? 'I do not have Telegram' : currentLang === 'uk' ? 'У мене немає Telegram' : currentLang === 'es' ? 'No tengo Telegram' : currentLang === 'it' ? 'Non ho Telegram' : currentLang === 'fr' ? 'Je n’ai pas Telegram' : 'У меня нет Telegram',
     catLabel: currentLang === 'en' ? 'LEGAL DIRECTION:' : currentLang === 'uk' ? 'НАПРЯМОК ПИТАННЯ:' : currentLang === 'es' ? 'ÁREA JURÍDICA:' : currentLang === 'it' ? 'AMBITO LEGALE:' : currentLang === 'fr' ? 'DOMAINE JURIDIQUE :' : 'НАПРАВЛЕНИЕ ВОПРОСА:',
     topicLabel: currentLang === 'en' ? 'SPECIFIC MATTER / SERVICE:' : currentLang === 'uk' ? 'КОНКРЕТИЗАЦІЯ ЗАВДАННЯ:' : currentLang === 'es' ? 'ASUNTO ESPECÍFICO:' : currentLang === 'it' ? 'OGGETTO SPECIFICO:' : currentLang === 'fr' ? 'OBJET SPÉCIFIQUE :' : 'КОНКРЕТИЗАЦИЯ ЗАДАЧИ:',
@@ -349,23 +349,42 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
           /* SINGLE DIRECT SCREEN: TELEGRAM BOT PRIORITY OR EXPANDABLE WHATSAPP/EMAIL */
           <div className="space-y-3 relative z-10 animate-in fade-in duration-200">
             {/* Header */}
-            <div className="pr-6">
+            <div className="text-center px-4 pt-1">
               <h3 className="text-xs sm:text-sm font-sans font-bold text-white leading-snug">
                 {L.stepTitle}
               </h3>
-              <p className="text-[11px] font-sans text-gray-400 mt-0.5 leading-tight">
+              <p className="text-[11px] font-sans text-gray-400 mt-1 leading-tight">
                 {L.stepSub}
               </p>
             </div>
 
-            {/* Priority Channel: Telegram Bot Button */}
+            {/* Clickable Gold Seal Emblem (Direct link to Telegram Bot) */}
+            <div className="flex justify-center py-1">
+              <a
+                href="https://t.me/VILEVIN_bot"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={onClose}
+                title="Перейти в Telegram-бот @VILEVIN_bot"
+                className="group relative block rounded-full transition-transform duration-200 hover:scale-105 active:scale-95 cursor-pointer"
+              >
+                <div className="absolute inset-0 rounded-full bg-[#DFBA73]/20 blur-md group-hover:bg-[#DFBA73]/40 transition-colors pointer-events-none" />
+                <img
+                  src="/images/v_levin_seal.png"
+                  alt="V. I. LEVIN Legal Counsel"
+                  className="relative w-20 h-20 sm:w-[88px] sm:h-[88px] object-contain drop-shadow-[0_4px_16px_rgba(212,175,55,0.3)] select-none pointer-events-none"
+                />
+              </a>
+            </div>
+
+            {/* Priority Channel: Telegram Bot Button (Clean gold button without white circle/emoji) */}
             <div className="pt-0.5">
               <a
                 href="https://t.me/VILEVIN_bot"
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={onClose}
-                className="w-full py-2.5 px-4 rounded-md text-[#080B11] font-bold text-xs tracking-wider uppercase hover:brightness-105 active:scale-[0.98] transition-all shadow-md border border-[#FFE8A3]/50 cursor-pointer flex items-center justify-center gap-2 font-sans"
+                className="w-full py-2.5 px-4 rounded-md text-[#080B11] font-bold text-xs tracking-wider uppercase hover:brightness-105 active:scale-[0.98] transition-all shadow-md border border-[#FFE8A3]/50 cursor-pointer flex items-center justify-center font-sans"
                 style={{
                   background: 'linear-gradient(135deg, #F3E2B8 0%, #D4AF37 50%, #99742B 100%)',
                 }}
