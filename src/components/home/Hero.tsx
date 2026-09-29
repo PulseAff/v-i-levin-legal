@@ -130,13 +130,15 @@ export const Hero: React.FC<HeroProps> = ({ onOpenConsultation }) => {
           </div>
 
           {/* Credibility Badge */}
-          <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-md bg-black/85 border border-[#2A2A2A] text-xs text-gray-200 shadow-xl backdrop-blur-md">
+          <div className="inline-flex items-center gap-2 sm:gap-2.5 px-3.5 py-1.5 rounded-md bg-black/85 border border-[#2A2A2A] text-xs text-gray-200 shadow-xl backdrop-blur-md">
             <span className="font-semibold flex items-center gap-1.5 text-white whitespace-nowrap">
               <LuxuryUsaFlag size="sm" />
               <span>{t('hero', 'badgeNy')}</span>
             </span>
             <span className="text-[#D4AF37]/60 font-mono">·</span>
             <span className="text-gold-300 font-medium whitespace-nowrap">{t('hero', 'badgeCitizen')}</span>
+            <span className="text-[#D4AF37]/60 font-mono">·</span>
+            <span className="text-[#FFE29A] font-semibold whitespace-nowrap">{t('hero', 'badgeLawyer')}</span>
           </div>
 
           {/* Action Button: Gold Primary CTA */}
