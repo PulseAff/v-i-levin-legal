@@ -29,7 +29,7 @@ if (fs.existsSync(envPath)) {
 
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '8805827853:AAGALkEhBOUTe2xNiKbehggEnC0cAKvwV-0';
 const ADMIN_CHAT_ID = process.env.TELEGRAM_ADMIN_CHAT_ID || '7794422014';
-const LAWYER_CHAT_ID = process.env.TELEGRAM_LAWYER_CHAT_ID || '6961207071';
+const LAWYER_CHAT_ID = process.env.TELEGRAM_LAWYER_CHAT_ID || '1275663257';
 const DEFAULT_USDT_WALLET = process.env.USDT_TRC20_WALLET || 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t';
 const CRYPTOBOT_API_TOKEN = process.env.CRYPTOBOT_API_TOKEN || '';
 

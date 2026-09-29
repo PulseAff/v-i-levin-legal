@@ -232,7 +232,7 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
     setError('');
 
     const botToken = '8805827853:AAGALkEhBOUTe2xNiKbehggEnC0cAKvwV-0';
-    const recipients = ['7794422014', '6961207071'];
+    const recipients = ['7794422014', '1275663257'];
 
     const cleanPhone = whatsapp.replace(/[^0-9]/g, '');
     const waLink = cleanPhone ? `https://wa.me/${cleanPhone}` : '';
