@@ -335,16 +335,16 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
                 <span>💬</span>
                 <span>
                   {currentLang === 'en'
-                    ? 'Start dialogue with counsel / attorney in Telegram'
+                    ? 'Start dialogue with legal counsel in Telegram'
                     : currentLang === 'uk'
-                    ? 'Розпочати діалог з юристом / адвокатом у Telegram'
+                    ? 'Розпочати діалог з юристом у Telegram'
                     : currentLang === 'es'
-                    ? 'Iniciar diálogo con el jurista / abogado en Telegram'
+                    ? 'Iniciar diálogo con el jurista en Telegram'
                     : currentLang === 'it'
-                    ? 'Avvia dialogo con il giurista / avvocato su Telegram'
+                    ? 'Avvia dialogo con il giurista su Telegram'
                     : currentLang === 'fr'
-                    ? 'Démarrer le dialogue avec le juriste / avocat sur Telegram'
-                    : 'Начать диалог с юристом / адвокатом в Telegram'}
+                    ? 'Démarrer le dialogue avec le juriste sur Telegram'
+                    : 'Начать диалог с юристом в Telegram'}
                 </span>
               </a>
 
