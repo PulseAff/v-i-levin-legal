@@ -13,8 +13,10 @@ export async function sendTelegramNotification(lead: any): Promise<boolean> {
   const leadNum = String(lead.id || '').replace(/^LEAD-?/i, '');
 
   const message = [
-    `⚖️ <b>V. I. LEVIN | НОВАЯ ЗАЯВКА №${leadNum}</b>`,
+    `⚖️ <b>V. I. LEVIN | НОВАЯ ЗАЯВКА</b>`,
     `━━━━━━━━━━━━━━━━━━`,
+    `Новое обращение с веб-сайта:`,
+    ``,
     `🆔 <b>ID Заявки:</b> <code>${escapeHtml(lead.id)}</code>`,
     `📅 <b>Дата:</b> ${new Date(lead.createdAt).toLocaleString('ru-RU')}`,
     `🌐 <b>Источник:</b> ${escapeHtml(lead.source || 'Веб-сайт')}`,
@@ -35,7 +37,7 @@ export async function sendTelegramNotification(lead: any): Promise<boolean> {
     `• Телефон: ${escapeHtml(lead.contact?.phone || 'Не указан')}`,
     `━━━━━━━━━━━━━━━━━━`,
     `🔒 <b>Статус:</b> <code>New (Квалификация)</code>`
-  ].filter(Boolean).join('\n');
+  ].filter((line) => typeof line === 'string').join('\n');
 
   try {
     const res = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {

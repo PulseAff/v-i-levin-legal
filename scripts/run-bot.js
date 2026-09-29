@@ -91,6 +91,47 @@ function getNextLeadId() {
   return leadId;
 }
 
+// Persistent Bot Users storage (users who clicked /start or interacted)
+const usersFilePath = path.join(__dirname, '..', 'data', 'bot_users.json');
+const botUsers = new Map();
+
+try {
+  if (fs.existsSync(usersFilePath)) {
+    const list = JSON.parse(fs.readFileSync(usersFilePath, 'utf8') || '[]');
+    list.forEach((u) => botUsers.set(String(u.id), u));
+  }
+} catch (e) {
+  console.log('No prior bot_users cache.');
+}
+
+function saveBotUser(chatId, fromUser, extra = {}) {
+  const strId = String(chatId);
+  const now = new Date().toISOString();
+  const existing = botUsers.get(strId) || {
+    id: strId,
+    firstSeen: now,
+  };
+
+  const updated = {
+    ...existing,
+    username: fromUser?.username ? `@${fromUser.username}` : (existing.username || ''),
+    firstName: fromUser?.first_name || existing.firstName || '',
+    lastName: fromUser?.last_name || existing.lastName || '',
+    lastSeen: now,
+    ...extra,
+  };
+
+  botUsers.set(strId, updated);
+  try {
+    const dir = path.dirname(usersFilePath);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(usersFilePath, JSON.stringify(Array.from(botUsers.values()), null, 2), 'utf8');
+  } catch (err) {
+    console.error('Error saving bot users:', err.message);
+  }
+  return updated;
+}
+
 function escapeHtml(text = '') {
   return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
@@ -306,8 +347,10 @@ async function notifyAdminLead(lead) {
   const leadNum = String(lead.id || '').replace(/^LEAD-?/i, '');
 
   const adminMsg = [
-    `⚖️ <b>V. I. LEVIN | НОВАЯ ЗАЯВКА №${leadNum}</b>`,
+    `⚖️ <b>V. I. LEVIN | НОВАЯ ЗАЯВКА</b>`,
     `━━━━━━━━━━━━━━━━━━`,
+    `Новое обращение доверителя:`,
+    ``,
     `🆔 <b>ID Заявки:</b> <code>${escapeHtml(lead.id)}</code>`,
     `📅 <b>Время:</b> ${new Date(lead.createdAt).toLocaleString('ru-RU')}`,
     `🌐 <b>Язык доверителя:</b> <code>${escapeHtml(lead.lang || 'ru').toUpperCase()}</code>`,
@@ -324,7 +367,7 @@ async function notifyAdminLead(lead) {
     `• Телефон / WhatsApp / Email: ${escapeHtml(lead.contact?.info || 'Не указан')}`,
     `━━━━━━━━━━━━━━━━━━`,
     `🔒 <i>Заявка поступила руководителю практики. Выберите действие:</i>`
-  ].filter(Boolean).join('\n');
+  ].filter((line) => typeof line === 'string').join('\n');
 
   const res = await sendMessage(ADMIN_CHAT_ID, adminMsg, {
     inline_keyboard: [
@@ -354,10 +397,8 @@ async function forwardLeadToLawyer(leadId) {
   lead.assignedTo = LAWYER_CHAT_ID;
   saveLeadsToDisk();
 
-  const leadNum = String(lead.id || '').replace(/^LEAD-?/i, '');
-
   const lawyerMsg = [
-    `⚖️ <b>V. I. LEVIN | НОВАЯ ЗАЯВКА №${leadNum}</b>`,
+    `⚖️ <b>V. I. LEVIN | НОВАЯ ЗАЯВКА</b>`,
     `━━━━━━━━━━━━━━━━━━`,
     `Вам перенаправлено новое обращение доверителя:`,
     ``,
@@ -375,7 +416,7 @@ async function forwardLeadToLawyer(leadId) {
     `• Контакт (WhatsApp/Email): ${escapeHtml(lead.contact?.info || 'Не указан')}`,
     `━━━━━━━━━━━━━━━━━━`,
     `🔒 <i>Подтвердите готовность взять кейс в работу или отклоните:</i>`
-  ].filter(Boolean).join('\n');
+  ].filter((line) => typeof line === 'string').join('\n');
 
   try {
     const res = await sendMessage(LAWYER_CHAT_ID, lawyerMsg, {
@@ -567,6 +608,7 @@ async function handleUpdate(update) {
     const cb = update.callback_query;
     const chatId = cb.message.chat.id;
     const data = cb.data;
+    saveBotUser(chatId, cb.from);
     let session = userSessions.get(chatId) || { lang: 'ru', step: 'lang' };
     const t = I18N[session.lang] || I18N.ru;
 
@@ -576,6 +618,7 @@ async function handleUpdate(update) {
       session.lang = chosenLang;
       session.step = 'category';
       userSessions.set(chatId, session);
+      saveBotUser(chatId, cb.from, { lang: chosenLang });
 
       const localizedT = I18N[chosenLang] || I18N.ru;
       await sendMessage(chatId, localizedT.welcome, {
@@ -728,6 +771,7 @@ async function handleUpdate(update) {
     const chatId = update.message.chat.id;
     const text = update.message.text.trim();
     const fromUser = update.message.from;
+    saveBotUser(chatId, fromUser);
     const isStaff = String(chatId) === String(ADMIN_CHAT_ID) || String(chatId) === String(LAWYER_CHAT_ID);
 
     // Cancel active input mode
@@ -786,6 +830,23 @@ async function handleUpdate(update) {
 
     // Staff commands
     if (isStaff) {
+      if (text === '/users' || text === '/stats') {
+        const allUsers = Array.from(botUsers.values());
+        const allLeads = Array.from(leadsCache.values());
+        const report = [
+          `📊 <b>БАЗА ПОЛЬЗОВАТЕЛЕЙ И СТАТИСТИКА:</b>`,
+          `━━━━━━━━━━━━━━━━━━`,
+          `👥 <b>Всего пользователей в базе:</b> ${allUsers.length}`,
+          `📁 <b>Всего заявок в системе:</b> ${allLeads.length}`,
+          ``,
+          `<b>Последние доверители (нажали /start):</b>`,
+          ...allUsers.slice(-10).reverse().map((u, i) => 
+            `${i+1}. ${escapeHtml(u.firstName || '')} ${escapeHtml(u.lastName || '')} (${u.username || 'нет username'}) — ID: <code>${u.id}</code> [${new Date(u.lastSeen).toLocaleDateString('ru-RU')}]`
+          )
+        ].join('\n');
+        await sendMessage(chatId, report);
+        return;
+      }
       if (text.startsWith('/invoice')) {
         if (String(chatId) !== String(ADMIN_CHAT_ID)) {
           await sendMessage(chatId, '⛔ <b>Доступ ограничен.</b> Выставлять счета на оплату имеет право исключительно руководитель практики.');
@@ -817,6 +878,7 @@ async function handleUpdate(update) {
 
     // User /start
     if (text.startsWith('/start')) {
+      saveBotUser(chatId, fromUser, { started: true });
       session = {
         lang: 'ru',
         step: 'lang',
@@ -870,6 +932,7 @@ async function handleUpdate(update) {
       session.createdAt = new Date().toISOString();
       session.chatId = chatId;
       session.status = 'new';
+      saveBotUser(chatId, fromUser, { hasLead: true, lastLeadId: session.id });
 
       await sendMessage(chatId, t.finish);
       await notifyAdminLead(session);
