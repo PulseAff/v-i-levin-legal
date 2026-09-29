@@ -237,60 +237,73 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
     const cleanPhone = whatsapp.replace(/[^0-9]/g, '');
     const waLink = cleanPhone ? `https://wa.me/${cleanPhone}` : '';
 
-    const messageText = 
-      `⚖️ *НОВАЯ ЗАЯВКА НА КОНСУЛЬТАЦИЮ (БЕЗ TELEGRAM)*\n` +
-      `━━━━━━━━━━━━━━━━━━━━\n` +
-      `📂 *Направление:* ${currentCategory.icon} ${currentCategory.title}\n` +
-      `📌 *Подкатегория:* ${selectedChip}\n\n` +
-      (whatsapp.trim() ? `🟢 *WhatsApp:* \`${whatsapp.trim()}\`${waLink ? ` ([Открыть WhatsApp](${waLink}))` : ''}\n` : '') +
-      (email.trim() ? `✉️ *Email:* \`${email.trim()}\`\n` : '') +
-      (note.trim() ? `\n💬 *Суть вопроса:* ${note.trim()}\n` : '') +
-      `\n🌐 *Язык сайта:* ${currentLang.toUpperCase()}\n` +
-      `🕒 *Время:* ${new Date().toLocaleString('ru-RU')}`;
+    const escapeHtml = (str: string = '') =>
+      str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
+    const htmlMessage = [
+      `⚖️ <b>V. I. LEVIN | НОВАЯ ЗАЯВКА</b>`,
+      `━━━━━━━━━━━━━━━━━━`,
+      `Вам перенаправлено новое обращение доверителя:`,
+      ``,
+      `📁 <b>Направление:</b> ${escapeHtml(currentCategory.title)}`,
+      `📌 <b>Подкатегория:</b> ${escapeHtml(selectedChip)}`,
+      ``,
+      whatsapp.trim() ? `🟢 <b>WhatsApp / Телефон:</b> <code>${escapeHtml(whatsapp.trim())}</code>` : '',
+      email.trim() ? `✉️ <b>Email:</b> <code>${escapeHtml(email.trim())}</code>` : '',
+      ``,
+      note.trim() ? `📝 <b>Суть вопроса:</b>\n<i>${escapeHtml(note.trim())}</i>\n` : '',
+      `🌐 <b>Язык сайта:</b> <code>${currentLang.toUpperCase()}</code>`,
+      `🕒 <b>Время:</b> ${new Date().toLocaleString('ru-RU')}`,
+    ].filter((line) => typeof line === 'string').join('\n');
+
+    // ONLY valid https:// links are permitted by Telegram in inline_keyboard
     const inlineKeyboard: Array<Array<{ text: string; url: string }>> = [];
     if (waLink) {
       inlineKeyboard.push([{ text: '🟢 Написать клиенту в WhatsApp', url: waLink }]);
     }
-    if (email.trim()) {
-      inlineKeyboard.push([{ text: '✉️ Отправить Email клиенту', url: `mailto:${email.trim()}` }]);
-    }
 
     try {
-      // Direct delivery to Telegram Bot API with quick action buttons
+      // Direct delivery to Telegram Bot API (Admin & Lawyer)
       await Promise.all(recipients.map(async (chatId) => {
         try {
-          await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+          const res = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               chat_id: chatId,
-              text: messageText,
-              parse_mode: 'Markdown',
+              text: htmlMessage,
+              parse_mode: 'HTML',
               reply_markup: inlineKeyboard.length > 0 ? { inline_keyboard: inlineKeyboard } : undefined,
             }),
           });
+          const data = await res.json();
+          // Fallback to plain text without markup if HTML parsing ever fails
+          if (!data.ok) {
+            await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                chat_id: chatId,
+                text: [
+                  '⚖️ V. I. LEVIN | НОВАЯ ЗАЯВКА',
+                  '━━━━━━━━━━━━━━━━━━',
+                  'Вам перенаправлено новое обращение доверителя:',
+                  '',
+                  `Направление: ${currentCategory.title}`,
+                  `Подкатегория: ${selectedChip}`,
+                  whatsapp.trim() ? `WhatsApp/Телефон: ${whatsapp.trim()}` : '',
+                  email.trim() ? `Email: ${email.trim()}` : '',
+                  note.trim() ? `Суть вопроса: ${note.trim()}` : '',
+                  `Язык сайта: ${currentLang.toUpperCase()}`,
+                  `Время: ${new Date().toLocaleString('ru-RU')}`,
+                ].filter(Boolean).join('\n'),
+              }),
+            });
+          }
         } catch {
           // ignore individual timeout
         }
       }));
-
-      // Background sync to /api/leads
-      try {
-        fetch('/api/leads', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            source: 'Modal (No-Telegram direct)',
-            serviceCategory: currentCategory.title,
-            topic: selectedChip,
-            contact: { whatsapp: whatsapp.trim(), email: email.trim() },
-            description: note.trim(),
-          }),
-        }).catch(() => {});
-      } catch {
-        // ignore
-      }
 
       setIsSuccess(true);
     } catch {
