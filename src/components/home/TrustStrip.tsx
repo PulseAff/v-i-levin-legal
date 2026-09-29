@@ -37,7 +37,7 @@ export const TrustStrip: React.FC = () => {
             const Icon = item.icon;
             return (
               <div key={idx} className="flex items-start space-x-3.5 group">
-                <div className="p-2.5 rounded bg-navy-850 border border-gold-500/20 text-gold-400 group-hover:border-gold-500/40 transition-colors">
+                <div className="p-2.5 rounded-md bg-navy-850 border border-gold-500/20 text-gold-400 transition-colors">
                   <Icon size={20} />
                 </div>
                 <div>

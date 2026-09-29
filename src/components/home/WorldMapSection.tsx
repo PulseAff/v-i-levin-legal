@@ -30,7 +30,7 @@ export const WorldMapSection: React.FC = () => {
             <button
               key={country.code}
               onClick={() => setActiveCode(country.code)}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-medium transition-all ${
+              className={`flex items-center gap-2 px-3.5 py-2 rounded-md text-xs font-medium transition-all ${
                 activeCode === country.code
                   ? 'bg-gold-500 text-navy-950 font-semibold shadow-gold-sm'
                   : 'bg-navy-900 text-gray-300 hover:text-white hover:bg-navy-850 border border-surface-border'
@@ -43,7 +43,7 @@ export const WorldMapSection: React.FC = () => {
         </div>
 
         {/* Active Country Detail Showcase */}
-        <div className="bg-navy-900 border border-gold-500/30 rounded-2xl p-6 lg:p-10 shadow-xl">
+        <div className="bg-navy-900 border border-gold-500/30 rounded-md p-6 lg:p-10 shadow-xl">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             <div className="lg:col-span-7 space-y-5">
               <div className="flex items-center gap-3">
@@ -76,7 +76,7 @@ export const WorldMapSection: React.FC = () => {
                 </ul>
               </div>
 
-              <div className="p-3.5 bg-navy-950 border border-surface-border rounded text-[11px] text-gray-400 flex items-start gap-2.5">
+              <div className="p-3.5 bg-navy-950 border border-surface-border rounded-md text-[11px] text-gray-400 flex items-start gap-2.5">
                 <Shield size={16} className="text-gold-500 shrink-0 mt-0.5" />
                 <span>
                   <strong className="text-gray-200">Процессуальное разграничение:</strong> {activeCountry.localCounselRequirement}
@@ -84,7 +84,7 @@ export const WorldMapSection: React.FC = () => {
               </div>
             </div>
 
-            <div className="lg:col-span-5 flex flex-col justify-between h-full bg-navy-950/80 p-6 rounded-xl border border-surface-border space-y-6">
+            <div className="lg:col-span-5 flex flex-col justify-between h-full bg-navy-950/80 p-6 rounded-md border border-surface-border space-y-6">
               <div>
                 <h4 className="text-xs font-semibold text-white uppercase tracking-wider mb-3">
                   Фокусные практики в регионе
@@ -93,7 +93,7 @@ export const WorldMapSection: React.FC = () => {
                   {activeCountry.keyPracticeAreas.map((area, idx) => (
                     <span
                       key={idx}
-                      className="px-2.5 py-1 rounded bg-navy-850 border border-gold-500/20 text-gold-300 text-xs"
+                      className="px-2.5 py-1 rounded-md bg-navy-850 border border-gold-500/20 text-gold-300 text-xs"
                     >
                       {area}
                     </span>
@@ -107,7 +107,7 @@ export const WorldMapSection: React.FC = () => {
                 </div>
                 <Link
                   href={`/countries/${activeCountry.code}`}
-                  className="w-full py-3 px-4 bg-gradient-to-r from-gold-600 to-gold-500 text-navy-950 text-xs font-semibold tracking-wider uppercase rounded hover:brightness-110 transition-all flex items-center justify-center gap-2"
+                  className="w-full py-2.5 px-4 bg-[#DFBA73] hover:bg-[#cfab5b] text-[#080B11] text-xs font-bold tracking-wider uppercase rounded-md hover:brightness-105 active:scale-[0.98] transition-all flex items-center justify-center gap-2 border border-[#FFE8A3]/40 shadow-md cursor-pointer"
                 >
                   <span>Полный профиль юрисдикции</span>
                   <ArrowUpRight size={15} />

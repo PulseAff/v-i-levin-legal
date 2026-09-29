@@ -40,7 +40,7 @@ export default function ArticleDetailPage({ params }: PageProps) {
 
         <header className="space-y-4 border-b border-surface-border pb-8">
           <div className="flex flex-wrap items-center gap-4 text-xs text-gray-400">
-            <span className="px-2.5 py-1 rounded bg-navy-850 text-gold-400 border border-gold-500/20 font-semibold uppercase">
+            <span className="px-2.5 py-1 rounded-md bg-navy-850 text-gold-400 border border-gold-500/20 font-semibold uppercase">
               {article.category}
             </span>
             <span className="flex items-center gap-1.5">
@@ -70,7 +70,7 @@ export default function ArticleDetailPage({ params }: PageProps) {
         />
 
         {/* Threads synergy box */}
-        <div className="p-6 rounded-xl bg-navy-900 border border-surface-border flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="p-6 rounded-md bg-navy-900 border border-surface-border flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
             <h4 className="text-sm font-serif text-white font-bold">
               Обсуждайте кейс в Threads
@@ -83,14 +83,14 @@ export default function ArticleDetailPage({ params }: PageProps) {
             href="https://threads.net/@v.i.levin"
             target="_blank"
             rel="noopener noreferrer"
-            className="px-5 py-2.5 bg-navy-850 hover:bg-navy-800 text-gold-400 border border-gold-500/30 text-xs font-semibold uppercase rounded transition-colors inline-flex items-center gap-1.5 shrink-0"
+            className="px-4 py-2 bg-navy-850 hover:bg-navy-800 text-gold-400 border border-gold-500/30 text-xs font-semibold uppercase rounded-md transition-colors inline-flex items-center gap-1.5 shrink-0"
           >
             Открыть Threads <ArrowUpRight size={14} />
           </a>
         </div>
 
         {/* CTA */}
-        <div className="text-center p-8 rounded-xl bg-gradient-to-r from-navy-900 via-navy-850 to-navy-900 border border-gold-500/30 space-y-3">
+        <div className="text-center p-8 rounded-md bg-gradient-to-r from-navy-900 via-navy-850 to-navy-900 border border-gold-500/30 space-y-3">
           <h3 className="text-xl font-serif text-white font-bold">
             Нужен персональный правовой анализ?
           </h3>
@@ -99,10 +99,10 @@ export default function ArticleDetailPage({ params }: PageProps) {
           </p>
           <div className="pt-2">
             <a
-              href={`https://t.me/V_I_Levin_bot?start=art_${article.slug}`}
+              href={`https://t.me/VILEVIN_bot?start=art_${article.slug}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-gold-600 to-gold-500 text-navy-950 text-xs font-semibold uppercase tracking-wider rounded shadow-gold-sm"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#DFBA73] hover:bg-[#cfab5b] text-[#080B11] text-xs font-bold uppercase tracking-wider rounded-md border border-[#FFE8A3]/40 shadow-md hover:brightness-105 active:scale-[0.98] transition-all cursor-pointer"
             >
               <MessageSquare size={15} /> Разобрать ситуацию в Telegram
             </a>

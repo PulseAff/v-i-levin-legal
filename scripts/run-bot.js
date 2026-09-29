@@ -29,14 +29,21 @@ if (fs.existsSync(envPath)) {
 
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '8805827853:AAGALkEhBOUTe2xNiKbehggEnC0cAKvwV-0';
 const ADMIN_CHAT_ID = process.env.TELEGRAM_ADMIN_CHAT_ID || '7794422014';
-const LAWYER_CHAT_ID = process.env.TELEGRAM_LAWYER_CHAT_ID || '1275663257';
+const LAWYER_CHAT_ID = process.env.TELEGRAM_LAWYER_CHAT_ID || '6961207071';
+const DEFAULT_USDT_WALLET = process.env.USDT_TRC20_WALLET || 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t';
+const CRYPTOBOT_API_TOKEN = process.env.CRYPTOBOT_API_TOKEN || '';
 
 console.log('🚀 Запуск Telegram-бота V. I. LEVIN (@VILEVIN_bot)...');
 console.log(`👑 Admin Chat ID: ${ADMIN_CHAT_ID}`);
 console.log(`👨‍⚖️ Lawyer Chat ID: ${LAWYER_CHAT_ID}`);
+console.log(`💳 USDT TRC-20 Wallet: ${DEFAULT_USDT_WALLET}`);
+console.log(`💎 CryptoBot API: ${CRYPTOBOT_API_TOKEN ? 'Подключен (Crypto Pay API)' : 'Не указан (Резервный режим)'}`);
 
 const userSessions = new Map();
 const leadsCache = new Map();
+const msgToLeadMap = new Map(); // messageId -> leadId
+const activeReplySessions = new Map(); // chatId -> { leadId, clientChatId, role }
+const activePayInputSessions = new Map(); // chatId -> { leadId, clientChatId }
 
 // Load persistent leads
 const dataFilePath = path.join(__dirname, '..', 'data', 'leads.json');
@@ -47,6 +54,17 @@ try {
   }
 } catch (e) {
   console.log('No prior leads cache.');
+}
+
+function saveLeadsToDisk() {
+  try {
+    const dir = path.dirname(dataFilePath);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    const all = Array.from(leadsCache.values());
+    fs.writeFileSync(dataFilePath, JSON.stringify(all, null, 2), 'utf8');
+  } catch (err) {
+    console.error('Error saving leads:', err.message);
+  }
 }
 
 function escapeHtml(text = '') {
@@ -97,7 +115,7 @@ async function sendMessage(chatId, text, replyMarkup = null) {
 
 const I18N = {
   ru: {
-    welcome: '⚖️ <b>V. I. LEVIN — Международная юридическая практика</b>\n\nДобро пожаловать в защищенный шлюз первичной правовой оценки.\n\n🔒 Все переданные сведения охраняются адвокатской тайной (Attorney-Client Privilege) и режимом строгой конфиденциальности.\n\nШаг 1 из 5: Выберите <b>направление вашего вопроса</b>:',
+    welcome: '⚖️ <b>V. I. LEVIN — Международная юридическая практика</b>\n\nДобро пожаловать в защищенный шлюз первичной правовой оценки.\n\n🔒 Все переданные сведения охраняются режимом строгой конфиденциальности (Attorney-Client Privilege).\n\nШаг 1 из 5: Выберите <b>направление вашего вопроса</b>:',
     cats: [
       [{ text: '🇺🇸 Иммиграция США & Green Card', callback_data: 'cat:Иммиграция США / Green Card' }],
       [{ text: '🌍 Международные контракты & Структурирование', callback_data: 'cat:Международные контракты' }],
@@ -119,7 +137,7 @@ const I18N = {
       [{ text: '⚡ В течение недели', callback_data: 'urg:В течение недели' }],
       [{ text: '📅 Плановый разбор', callback_data: 'urg:Плановый разбор' }],
     ],
-    contactPrompt: 'Шаг 5 из 5: Укажите ваше <b>имя</b> и удобный способ связи (номер телефона или email):',
+    contactPrompt: 'Шаг 5 из 5: Укажите ваш <b>Telegram, WhatsApp или Email</b> для связи:',
     finish: '✅ <b>Ваше обращение принято и зарегистрировано!</b>\n\nНаши юристы проводят первичный правовой аудит ситуации и свяжутся с вами в ближайшее время.',
   },
   en: {
@@ -145,11 +163,11 @@ const I18N = {
       [{ text: '⚡ Within a week', callback_data: 'urg:Within a week' }],
       [{ text: '📅 Planned consultation', callback_data: 'urg:Planned' }],
     ],
-    contactPrompt: 'Step 5 of 5: Please provide your <b>name</b> and contact preferences (phone or email):',
+    contactPrompt: 'Step 5 of 5: Please provide your <b>Telegram, WhatsApp, or Email</b> for contact:',
     finish: '✅ <b>Your inquiry has been securely registered!</b>\n\nOur legal team is conducting an initial assessment and will contact you promptly.',
   },
   uk: {
-    welcome: '⚖️ <b>V. I. LEVIN — Міжнародна юридична практика</b>\n\nЛаскаво просимо до захищеного шлюзу попередньої правової оцінки.\n\n🔒 Усі відомості захищені режимом адвокатської таємниці та суворої конфіденційності.\n\nКрок 1 із 5: Оберіть <b>напрямок питання</b>:',
+    welcome: '⚖️ <b>V. I. LEVIN — Міжнародна юридична практика</b>\n\nЛаскаво просимо до захищеного шлюзу попередньої правової оцінки.\n\n🔒 Усі відомості захищені режимом суворої конфіденційності (Attorney-Client Privilege).\n\nКрок 1 із 5: Оберіть <b>напрямок питання</b>:',
     cats: [
       [{ text: '🇺🇸 Імміграція до США & Green Card', callback_data: 'cat:Імміграція США' }],
       [{ text: '🌍 Міжнародні контракти & Структурування', callback_data: 'cat:Міжнародні контракти' }],
@@ -171,7 +189,7 @@ const I18N = {
       [{ text: '⚡ Протягом тижня', callback_data: 'urg:Протягом тижня' }],
       [{ text: '📅 Плановий аудит', callback_data: 'urg:Плановий' }],
     ],
-    contactPrompt: 'Крок 5 із 5: Вкажіть ваше <b>ім’я</b> та зручний спосіб зв’язку:',
+    contactPrompt: 'Крок 5 із 5: Вкажіть ваш <b>Telegram, WhatsApp або Email</b> для зв’язку:',
     finish: '✅ <b>Ваше звернення зареєстровано!</b>\n\nНаші юристи проводять первинний аналіз і зв’яжуться з вами найближчим часом.',
   },
 };
@@ -182,12 +200,7 @@ I18N.fr = I18N.en;
 
 async function notifyAdminLead(lead) {
   leadsCache.set(lead.id, lead);
-
-  // Save to leads.json
-  const dir = path.dirname(dataFilePath);
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-  const all = Array.from(leadsCache.values());
-  fs.writeFileSync(dataFilePath, JSON.stringify(all, null, 2), 'utf8');
+  saveLeadsToDisk();
 
   if (!ADMIN_CHAT_ID) return;
 
@@ -206,21 +219,27 @@ async function notifyAdminLead(lead) {
     `<i>${escapeHtml(lead.description)}</i>`,
     ``,
     `👤 <b>Контакты доверителя:</b>`,
-    `• Имя: ${escapeHtml(lead.contact?.name || 'Не указано')}`,
     `• Telegram: ${lead.contact?.telegramUsername ? '@' + escapeHtml(lead.contact.telegramUsername) : 'Не указан'}`,
-    `• Телефон / Email: ${escapeHtml(lead.contact?.info || lead.contact?.phone || lead.contact?.email || 'Не указан')}`,
+    `• Телефон / WhatsApp / Email: ${escapeHtml(lead.contact?.info || 'Не указан')}`,
     `━━━━━━━━━━━━━━━━━━`,
-    `🔒 <b>Действия администратора:</b>`
+    `🔒 <i>Заявка поступила руководителю практики. Выберите действие:</i>`
   ].filter(Boolean).join('\n');
 
-  await sendMessage(ADMIN_CHAT_ID, adminMsg, {
+  const res = await sendMessage(ADMIN_CHAT_ID, adminMsg, {
     inline_keyboard: [
       [
-        { text: '👨‍⚖️ Переслать юристу (1275663257)', callback_data: `admin:forward:${lead.id}` },
-        { text: '💳 Инвойс USDT', callback_data: `admin:cryptomus:${lead.id}` }
+        { text: '👨‍⚖️ Направить юристу', callback_data: `admin:forward:${lead.id}` },
+        { text: '💬 Ответить клиенту', callback_data: `admin:reply:${lead.id}` }
+      ],
+      [
+        { text: '💳 Выставить счет (CryptoBot / USDT)', callback_data: `admin:pay:${lead.id}` }
       ]
     ]
   });
+
+  if (res.ok && res.result?.message_id) {
+    msgToLeadMap.set(String(res.result.message_id), lead.id);
+  }
 }
 
 async function forwardLeadToLawyer(leadId) {
@@ -229,6 +248,10 @@ async function forwardLeadToLawyer(leadId) {
     await sendMessage(ADMIN_CHAT_ID, `⚠️ Заявка <code>${leadId}</code> не найдена в кэше.`);
     return;
   }
+
+  lead.status = 'assigned';
+  lead.assignedTo = LAWYER_CHAT_ID;
+  saveLeadsToDisk();
 
   const lawyerMsg = [
     `⚖️ <b>V. I. LEVIN | ПОРУЧЕНИЕ ПО НОВОМУ КЕЙСУ</b>`,
@@ -245,22 +268,193 @@ async function forwardLeadToLawyer(leadId) {
     `<i>${escapeHtml(lead.description)}</i>`,
     ``,
     `👤 <b>Данные доверителя:</b>`,
-    `• Имя: ${escapeHtml(lead.contact?.name || 'Не указано')}`,
     `• Telegram: ${lead.contact?.telegramUsername ? '@' + escapeHtml(lead.contact.telegramUsername) : 'Не указан'}`,
-    `• Контакт: ${escapeHtml(lead.contact?.info || lead.contact?.phone || lead.contact?.email || 'Не указан')}`,
+    `• Контакт (WhatsApp/Email): ${escapeHtml(lead.contact?.info || 'Не указан')}`,
     `━━━━━━━━━━━━━━━━━━`,
-    `🔒 <i>Режим Attorney-Client Privilege. Пожалуйста, проведите аудит ситуации и подготовьте проект правовой позиции.</i>`
+    `🔒 <i>Подтвердите готовность взять кейс в работу или отклоните:</i>`
   ].filter(Boolean).join('\n');
 
   try {
-    const res = await sendMessage(LAWYER_CHAT_ID, lawyerMsg);
+    const res = await sendMessage(LAWYER_CHAT_ID, lawyerMsg, {
+      inline_keyboard: [
+        [
+          { text: '✅ Берусь за дело', callback_data: `lawyer:accept:${lead.id}` },
+          { text: '❌ Отклонить кейс', callback_data: `lawyer:reject:${lead.id}` }
+        ],
+        [
+          { text: '💬 Ответить клиенту', callback_data: `lawyer:reply:${lead.id}` }
+        ]
+      ]
+    });
+
     if (res.ok) {
-      await sendMessage(ADMIN_CHAT_ID, `✅ <b>Дело #${leadId} успешно перенаправлено юристу!</b>\n\n• Получатель ID: <code>${LAWYER_CHAT_ID}</code>\n• Статус: Доставлено`);
+      if (res.result?.message_id) {
+        msgToLeadMap.set(String(res.result.message_id), lead.id);
+      }
+      await sendMessage(ADMIN_CHAT_ID, `✅ <b>Дело #${leadId} успешно направлено юристу!</b>\n\n• Получатель ID: <code>${LAWYER_CHAT_ID}</code>\n• Статус: Ожидает подтверждения (Берусь / Отклоняю)`);
     } else {
       await sendMessage(ADMIN_CHAT_ID, `⚠️ <b>Не удалось доставить юристу (ID ${LAWYER_CHAT_ID}):</b>\n<code>${JSON.stringify(res)}</code>\n\n<i>Примечание: юрист должен хотя бы раз нажать /start в боте @VILEVIN_bot для получения сообщений.</i>`);
     }
   } catch (err) {
     await sendMessage(ADMIN_CHAT_ID, `❌ Ошибка отправки: ${err.message}`);
+  }
+}
+
+async function handleLawyerAccept(leadId) {
+  const lead = leadsCache.get(leadId);
+  if (!lead) return;
+
+  lead.status = 'accepted';
+  lead.acceptedAt = new Date().toISOString();
+  saveLeadsToDisk();
+
+  await sendMessage(LAWYER_CHAT_ID, `✅ <b>Вы подтвердили взятие дела #${lead.id} в работу!</b>\n\nВы можете вести диалог с клиентом через кнопку «Ответить клиенту» или отвечая на карточку дела.`);
+  
+  await sendMessage(ADMIN_CHAT_ID, [
+    `✅ <b>ОТЧЕТ: ЮРИСТ ВЗЯЛ КЕЙС В РАБОТУ</b>`,
+    `━━━━━━━━━━━━━━━━━━`,
+    `• Кейс: <code>#${lead.id}</code>`,
+    `• Юрист ID: <code>${LAWYER_CHAT_ID}</code>`,
+    `• Специализация: ${lead.serviceCategory}`,
+    `• Клиент: ${lead.contact?.telegramUsername ? '@' + lead.contact.telegramUsername : lead.contact?.info || 'Анонимно'}`,
+    `• Статус: <b>В производстве</b>`
+  ].join('\n'));
+}
+
+async function handleLawyerReject(leadId) {
+  const lead = leadsCache.get(leadId);
+  if (!lead) return;
+
+  lead.status = 'rejected';
+  lead.rejectedAt = new Date().toISOString();
+  saveLeadsToDisk();
+
+  await sendMessage(LAWYER_CHAT_ID, `❌ <b>Вы отклонили кейс #${lead.id}.</b> Руководитель уведомлен.`);
+  
+  await sendMessage(ADMIN_CHAT_ID, [
+    `⚠️ <b>ВНИМАНИЕ: ЮРИСТ ОТКЛОНИЛ КЕЙС!</b>`,
+    `━━━━━━━━━━━━━━━━━━`,
+    `• Кейс: <code>#${lead.id}</code>`,
+    `• Юрист ID: <code>${LAWYER_CHAT_ID}</code>`,
+    `• Направление: ${lead.serviceCategory}`,
+    `• Описание: <i>${escapeHtml(lead.description)}</i>`,
+    ``,
+    `Вы можете ответить клиенту самостоятельно или переназначить дело.`
+  ].join('\n'), {
+    inline_keyboard: [
+      [
+        { text: '💬 Ответить клиенту лично', callback_data: `admin:reply:${lead.id}` },
+        { text: '💳 Выставить счет', callback_data: `admin:pay:${lead.id}` }
+      ]
+    ]
+  });
+}
+
+async function createCryptoBotInvoice(amount, asset = 'USDT', description = 'Legal services') {
+  if (!CRYPTOBOT_API_TOKEN) return null;
+  return new Promise((resolve) => {
+    const payload = JSON.stringify({
+      asset: asset,
+      amount: String(amount),
+      description: description,
+      paid_btn_name: 'callback',
+      paid_btn_url: 'https://t.me/VILEVIN_bot'
+    });
+
+    const options = {
+      hostname: 'pay.crypt.bot',
+      port: 443,
+      path: '/api/createInvoice',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Crypto-Pay-API-Token': CRYPTOBOT_API_TOKEN,
+        'Content-Length': Buffer.byteLength(payload),
+      },
+    };
+
+    const req = https.request(options, (res) => {
+      let body = '';
+      res.on('data', (chunk) => (body += chunk));
+      res.on('end', () => {
+        try {
+          const json = JSON.parse(body);
+          if (json.ok && json.result) {
+            resolve(json.result);
+          } else {
+            console.error('CryptoBot API response:', body);
+            resolve(null);
+          }
+        } catch (e) {
+          resolve(null);
+        }
+      });
+    });
+
+    req.on('error', (err) => {
+      console.error('CryptoBot request failed:', err.message);
+      resolve(null);
+    });
+
+    req.write(payload);
+    req.end();
+  });
+}
+
+async function sendPaymentInvoiceToClient(leadId, amount, initiatorChatId) {
+  const lead = leadsCache.get(leadId);
+  if (!lead || !lead.chatId) {
+    await sendMessage(initiatorChatId, `⚠️ Не удалось отправить счет: клиентский чат не найден для дела #${leadId}.`);
+    return;
+  }
+
+  let cryptoBotUrl = 'https://t.me/CryptoBot?start=invoice';
+  let isOfficialInvoice = false;
+
+  if (CRYPTOBOT_API_TOKEN) {
+    const inv = await createCryptoBotInvoice(amount, 'USDT', `Оплата юридических услуг V. I. LEVIN по делу #${lead.id}`);
+    if (inv && inv.pay_url) {
+      cryptoBotUrl = inv.pay_url;
+      isOfficialInvoice = true;
+    }
+  }
+
+  const invoiceMsg = [
+    `💳 <b>СЧЕТ НА ОПЛАТУ ЮРИДИЧЕСКИХ УСЛУГ V. I. LEVIN</b>`,
+    `━━━━━━━━━━━━━━━━━━`,
+    `• <b>Номер дела:</b> <code>#${escapeHtml(lead.id)}</code>`,
+    `• <b>Назначение:</b> Правовой аудит и юридический анализ кейса`,
+    `• <b>Сумма к оплате:</b> <b>${amount} USDT</b>`,
+    ``,
+    `💎 <b>Способ 1: Оплата через Telegram @CryptoBot</b>`,
+    isOfficialInvoice
+      ? `Официальный счет сформирован. Нажмите кнопку ниже для моментальной оплаты в 1 клик через @CryptoBot:`
+      : `Быстрая оплата в 1 клик через официального бота Telegram без комиссии сети:`,
+    `👉 <a href="${cryptoBotUrl}">Оплатить через @CryptoBot</a>`,
+    ``,
+    `🏦 <b>Способ 2: Прямой перевод USDT (TRC-20)</b>`,
+    `Сеть: <b>TRON (TRC-20)</b>`,
+    `Адрес кошелька (нажмите для копирования):`,
+    `<code>${DEFAULT_USDT_WALLET}</code>`,
+    ``,
+    `<i>⚠️ Важно: перевод отправляйте строго в сети TRON (TRC-20). После совершения перевода нажмите кнопку ниже или отправьте хеш транзакции (TXID) в этот чат.</i>`
+  ].join('\n');
+
+  const clientRes = await sendMessage(lead.chatId, invoiceMsg, {
+    inline_keyboard: [
+      [
+        { text: `🚀 Оплатить ${amount} USDT в @CryptoBot`, url: cryptoBotUrl }
+      ],
+      [
+        { text: '✅ Я оплатил (подтвердить)', callback_data: `client:paid:${lead.id}` }
+      ]
+    ]
+  });
+
+  if (clientRes.ok) {
+    await sendMessage(initiatorChatId, `✅ <b>Счет на ${amount} USDT успешно выставлен клиенту по делу #${lead.id}!</b>\n\n${isOfficialInvoice ? '💎 <i>Сгенерирован персональный инвойс Crypto Pay API</i>\n' : ''}Клиент получил реквизиты кошелька и ссылку на @CryptoBot.`);
+  } else {
+    await sendMessage(initiatorChatId, `⚠️ Ошибка отправки счета клиенту: ${JSON.stringify(clientRes)}`);
   }
 }
 
@@ -294,14 +488,99 @@ async function handleUpdate(update) {
       return;
     }
 
-    // Admin action: Cryptomus invoice
-    if (data.startsWith('admin:cryptomus:')) {
-      const leadId = data.replace('admin:cryptomus:', '');
-      await sendMessage(chatId, `💳 <b>Инвойс USDT (Cryptomus) для дела #${leadId}</b>\n\n• Платежная система: Cryptomus Gateway\n• Валюта: USDT (сеть TRC-20, ERC-20, Polygon)\n• Назначение: Индивидуальный правовой аудит и юридические услуги V. I. LEVIN\n\nДля выставления счета клиенту отправьте ссылку из мерчант-кабинета или используйте команду:\n<code>/invoice 500</code> (где 500 — сумма в USDT)`);
+    // Lawyer action: Accept case
+    if (data.startsWith('lawyer:accept:')) {
+      const leadId = data.replace('lawyer:accept:', '');
+      await handleLawyerAccept(leadId);
       return;
     }
 
-    // Category
+    // Lawyer action: Reject case
+    if (data.startsWith('lawyer:reject:')) {
+      const leadId = data.replace('lawyer:reject:', '');
+      await handleLawyerReject(leadId);
+      return;
+    }
+
+    // Reply to client prompt
+    if (data.startsWith('admin:reply:') || data.startsWith('lawyer:reply:')) {
+      const isLawyer = data.startsWith('lawyer:reply:');
+      const leadId = data.replace(isLawyer ? 'lawyer:reply:' : 'admin:reply:', '');
+      const lead = leadsCache.get(leadId);
+      if (!lead || !lead.chatId) {
+        await sendMessage(chatId, `⚠️ Клиентский чат не найден для дела #${leadId}.`);
+        return;
+      }
+      activeReplySessions.set(chatId, { leadId, clientChatId: lead.chatId, role: isLawyer ? 'lawyer' : 'admin' });
+      await sendMessage(chatId, `✍️ <b>Режим прямого ответа клиенту по делу #${leadId}:</b>\n\nНапишите текст ответа следующим сообщением (или отправьте /cancel для отмены). Он будет доставлен клиенту от имени юридической практики V. I. LEVIN.`);
+      return;
+    }
+
+    // Invoicing options prompt (Admin ONLY)
+    if (data.startsWith('admin:pay:')) {
+      if (String(chatId) !== String(ADMIN_CHAT_ID)) {
+        await sendMessage(chatId, '⛔ <b>Доступ ограничен.</b> Выставлять счета на оплату имеет право исключительно руководитель практики.');
+        return;
+      }
+      const leadId = data.replace('admin:pay:', '');
+      await sendMessage(chatId, `💳 <b>Выставление счета для дела #${leadId}:</b>\n\nВыберите фиксированную сумму или введите команду <code>/invoice ${leadId} СУММА</code>:`, {
+        inline_keyboard: [
+          [
+            { text: '100 USDT', callback_data: `sendpay:${leadId}:100` },
+            { text: '300 USDT', callback_data: `sendpay:${leadId}:300` },
+            { text: '500 USDT', callback_data: `sendpay:${leadId}:500` }
+          ],
+          [
+            { text: '1,000 USDT', callback_data: `sendpay:${leadId}:1000` },
+            { text: '2,500 USDT', callback_data: `sendpay:${leadId}:2500` },
+            { text: '5,000 USDT', callback_data: `sendpay:${leadId}:5000` }
+          ],
+          [
+            { text: '✏️ Ввести другую сумму', callback_data: `custompay:${leadId}` }
+          ]
+        ]
+      });
+      return;
+    }
+
+    // Send preset payment invoice (Admin ONLY)
+    if (data.startsWith('sendpay:')) {
+      if (String(chatId) !== String(ADMIN_CHAT_ID)) {
+        await sendMessage(chatId, '⛔ <b>Доступ ограничен.</b> Выставлять счета на оплату имеет право исключительно руководитель практики.');
+        return;
+      }
+      const parts = data.split(':');
+      const leadId = parts[1];
+      const amount = parts[2];
+      await sendPaymentInvoiceToClient(leadId, amount, chatId);
+      return;
+    }
+
+    // Custom pay prompt (Admin ONLY)
+    if (data.startsWith('custompay:')) {
+      if (String(chatId) !== String(ADMIN_CHAT_ID)) {
+        await sendMessage(chatId, '⛔ <b>Доступ ограничен.</b> Выставлять счета на оплату имеет право исключительно руководитель практики.');
+        return;
+      }
+      const leadId = data.replace('custompay:', '');
+      const lead = leadsCache.get(leadId);
+      activePayInputSessions.set(chatId, { leadId, clientChatId: lead?.chatId });
+      await sendMessage(chatId, `💵 <b>Введите сумму в USDT (только число, например 750):</b>`);
+      return;
+    }
+
+    // Client clicked: I paid
+    if (data.startsWith('client:paid:')) {
+      const leadId = data.replace('client:paid:', '');
+      await sendMessage(chatId, `✅ <b>Спасибо! Уведомление об оплате передано финансовому отделу.</b>\n\nДля ускорения проверки отправьте хеш транзакции (TXID) или скриншот квитанции в этот чат.`);
+      
+      const paidNotification = `🔔 <b>КЛИЕНТ СООБЩИЛ ОБ ОПЛАТЕ ПО ДЕЛУ #${leadId}!</b>\n\nПроверьте поступление USDT (TRC-20) на кошелек или в @CryptoBot.`;
+      if (ADMIN_CHAT_ID) await sendMessage(ADMIN_CHAT_ID, paidNotification);
+      if (LAWYER_CHAT_ID) await sendMessage(LAWYER_CHAT_ID, paidNotification);
+      return;
+    }
+
+    // Category selection
     if (data.startsWith('cat:')) {
       session.serviceCategory = data.replace('cat:', '');
       session.step = 'jurisdiction';
@@ -313,7 +592,7 @@ async function handleUpdate(update) {
       return;
     }
 
-    // Jurisdiction
+    // Jurisdiction selection
     if (data.startsWith('jur:')) {
       const jur = data.replace('jur:', '');
       if (jur === 'custom') {
@@ -330,7 +609,7 @@ async function handleUpdate(update) {
       return;
     }
 
-    // Urgency
+    // Urgency selection
     if (data.startsWith('urg:')) {
       session.urgency = data.replace('urg:', '');
       session.step = 'contact';
@@ -346,11 +625,80 @@ async function handleUpdate(update) {
     const chatId = update.message.chat.id;
     const text = update.message.text.trim();
     const fromUser = update.message.from;
-    let session = userSessions.get(chatId) || { lang: 'ru', step: 'lang' };
-    const t = I18N[session.lang] || I18N.ru;
+    const isStaff = String(chatId) === String(ADMIN_CHAT_ID) || String(chatId) === String(LAWYER_CHAT_ID);
 
-    // Admin commands
-    if (String(chatId) === String(ADMIN_CHAT_ID)) {
+    // Cancel active input mode
+    if (text === '/cancel') {
+      activeReplySessions.delete(chatId);
+      activePayInputSessions.delete(chatId);
+      await sendMessage(chatId, '❌ Текущее действие отменено.');
+      return;
+    }
+
+    // Custom pay input
+    if (activePayInputSessions.has(chatId)) {
+      const paySession = activePayInputSessions.get(chatId);
+      activePayInputSessions.delete(chatId);
+      const cleanAmount = text.replace(/[^0-9.]/g, '');
+      if (cleanAmount && !isNaN(cleanAmount)) {
+        await sendPaymentInvoiceToClient(paySession.leadId, cleanAmount, chatId);
+        return;
+      } else {
+        await sendMessage(chatId, '⚠️ Некорректная сумма. Пожалуйста, используйте число (например, 750).');
+        return;
+      }
+    }
+
+    // Active reply session (admin or lawyer answering client)
+    if (activeReplySessions.has(chatId)) {
+      const replyData = activeReplySessions.get(chatId);
+      activeReplySessions.delete(chatId);
+
+      const clientMsg = `⚖️ <b>Сообщение от юридической практики V. I. LEVIN:</b>\n\n${escapeHtml(text)}`;
+      const res = await sendMessage(replyData.clientChatId, clientMsg);
+      if (res.ok) {
+        await sendMessage(chatId, `✅ <b>Сообщение успешно доставлено клиенту по делу #${replyData.leadId}!</b>`);
+      } else {
+        await sendMessage(chatId, `⚠️ Не удалось доставить сообщение клиенту: ${JSON.stringify(res)}`);
+      }
+      return;
+    }
+
+    // Native Telegram Swipe-to-Reply from Admin or Lawyer
+    if (isStaff && update.message.reply_to_message) {
+      const replyToId = String(update.message.reply_to_message.message_id);
+      const leadId = msgToLeadMap.get(replyToId);
+      if (leadId) {
+        const lead = leadsCache.get(leadId);
+        if (lead && lead.chatId) {
+          const clientMsg = `⚖️ <b>Сообщение от юридической практики V. I. LEVIN:</b>\n\n${escapeHtml(text)}`;
+          const res = await sendMessage(lead.chatId, clientMsg);
+          if (res.ok) {
+            await sendMessage(chatId, `✅ <b>Ваш ответ отправлен клиенту по делу #${leadId}!</b>`);
+            return;
+          }
+        }
+      }
+    }
+
+    // Staff commands
+    if (isStaff) {
+      if (text.startsWith('/invoice')) {
+        if (String(chatId) !== String(ADMIN_CHAT_ID)) {
+          await sendMessage(chatId, '⛔ <b>Доступ ограничен.</b> Выставлять счета на оплату имеет право исключительно руководитель практики.');
+          return;
+        }
+        const parts = text.split(' ');
+        const leadId = parts[1] || '';
+        const amount = parts[2] || '500';
+        if (leadId) {
+          await sendPaymentInvoiceToClient(leadId, amount, chatId);
+          return;
+        } else {
+          await sendMessage(chatId, 'Используйте: <code>/invoice ID_КЕЙСА СУММА</code> (например: <code>/invoice LEAD-123456 750</code>)');
+          return;
+        }
+      }
       if (text.startsWith('/forward') || text.startsWith('/assign')) {
         const parts = text.split(' ');
         const leadId = parts[1] || '';
@@ -359,18 +707,17 @@ async function handleUpdate(update) {
           return;
         }
       }
-      if (text.startsWith('/invoice')) {
-        const amount = text.split(' ')[1] || '500';
-        await sendMessage(chatId, `💳 <b>Инвойс Cryptomus сформирован:</b>\n\n• Сумма к оплате: <code>${amount} USDT</code>\n• Сети: TRC20 / ERC20 / Polygon\n• Статус: Ожидает оплаты\n• Фискальный статус: Закрывающие акты и договор формируются автоматически.`);
-        return;
-      }
     }
+
+    let session = userSessions.get(chatId) || { lang: 'ru', step: 'lang' };
+    const t = I18N[session.lang] || I18N.ru;
 
     // User /start
     if (text.startsWith('/start')) {
       session = {
         lang: 'ru',
         step: 'lang',
+        chatId: chatId,
         contact: {
           telegramUsername: fromUser.username || '',
           name: [fromUser.first_name, fromUser.last_name].filter(Boolean).join(' ')
@@ -409,11 +756,13 @@ async function handleUpdate(update) {
       return;
     }
 
-    // Step: contact
+    // Step: contact (Step 5)
     if (session.step === 'contact') {
       session.contact.info = text;
       session.id = 'LEAD-' + Date.now().toString().slice(-6);
       session.createdAt = new Date().toISOString();
+      session.chatId = chatId;
+      session.status = 'new';
 
       await sendMessage(chatId, t.finish);
       await notifyAdminLead(session);
@@ -422,12 +771,61 @@ async function handleUpdate(update) {
       return;
     }
 
+    // Client wrote a regular message (feedback or continuation)
+    let clientLead = null;
+    for (const lead of leadsCache.values()) {
+      if (String(lead.chatId) === String(chatId)) {
+        clientLead = lead;
+        break;
+      }
+    }
+
+    if (clientLead) {
+      const incomingNote = [
+        `💬 <b>Входящее сообщение от клиента по делу #${clientLead.id}</b>`,
+        `━━━━━━━━━━━━━━━━━━`,
+        `От: ${escapeHtml(fromUser.first_name)} (@${fromUser.username || 'нет username'})`,
+        `Текст: <i>${escapeHtml(text)}</i>`,
+        ``,
+        `<i>Вы можете ответить клиенту прямо сейчас: используйте кнопку «Ответить» или Swipe-to-Reply в Telegram.</i>`
+      ].join('\n');
+
+      if (ADMIN_CHAT_ID) {
+        const res = await sendMessage(ADMIN_CHAT_ID, incomingNote, {
+          inline_keyboard: [
+            [
+              { text: '💬 Ответить клиенту', callback_data: `admin:reply:${clientLead.id}` },
+              { text: '💳 Выставить счет', callback_data: `admin:pay:${clientLead.id}` }
+            ]
+          ]
+        });
+        if (res.ok && res.result?.message_id) {
+          msgToLeadMap.set(String(res.result.message_id), clientLead.id);
+        }
+      }
+
+      if (clientLead.assignedTo && String(clientLead.assignedTo) === String(LAWYER_CHAT_ID)) {
+        const res = await sendMessage(LAWYER_CHAT_ID, incomingNote, {
+          inline_keyboard: [
+            [
+              { text: '💬 Ответить клиенту', callback_data: `lawyer:reply:${clientLead.id}` },
+              { text: '💳 Выставить счет', callback_data: `lawyer:pay:${clientLead.id}` }
+            ]
+          ]
+        });
+        if (res.ok && res.result?.message_id) {
+          msgToLeadMap.set(String(res.result.message_id), clientLead.id);
+        }
+      }
+      return;
+    }
+
     // Fallback
-    await sendMessage(chatId, 'Для начала работы или смены языка отправьте /start');
+    await sendMessage(chatId, 'Для начала работы или нового обращения отправьте команду /start');
   }
 }
 
-// Long Polling
+// Long Polling loop
 let lastUpdateId = 0;
 async function pollUpdates() {
   try {

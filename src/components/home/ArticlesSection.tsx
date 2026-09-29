@@ -42,7 +42,7 @@ export const ArticlesSection: React.FC = () => {
           {articlesData.map((article) => (
             <article
               key={article.slug}
-              className="bg-navy-950 border border-surface-border hover:border-gold-500/40 rounded-xl p-6 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 hover:shadow-gold-sm group"
+              className="bg-navy-950 border border-surface-border rounded-md p-6 flex flex-col justify-between transition-all duration-200 ease-out hover:-translate-y-0.5 group"
             >
               <div>
                 <div className="flex items-center justify-between text-[11px] text-gray-400 mb-3">

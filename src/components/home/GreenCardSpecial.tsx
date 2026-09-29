@@ -11,111 +11,139 @@ import {
 } from 'lucide-react';
 import { LuxuryUsaFlag } from '../ui/LuxuryUsaFlag';
 import { useConsultation } from '@/context/ConsultationContext';
+import { useLanguage } from '@/context/LanguageContext';
 
 export const GreenCardSpecial: React.FC = () => {
   const { openConsultation } = useConsultation();
+  const { t, currentLang } = useLanguage();
 
   const usPracticeCards = [
     {
-      code: 'GREEN CARD',
-      title: 'Green Card & Иммиграция',
-      desc: 'Индивидуальная стратегия получения статуса резидента: визы талантов EB-1A / EB-2 NIW, смена статуса и семейные петиции.',
+      code: t('greenCard', 'gc1Code') || '#GREEN CARD',
+      title: t('greenCard', 'c1Title'),
+      desc: t('greenCard', 'c1Desc'),
       href: '/usa/green-card',
-      image: '/images/gc-card-greencard-v1.jpg', // Выбор пользователя: Form I-797 & Green Card
-      tag: 'Популярное',
-      tagColor: 'bg-gold-500/20 text-gold-300 border-gold-500/30',
+      image: '/images/gc-card-greencard-v1.jpg',
+      tag: t('greenCard', 'c1Tag'),
+      tagColor: 'bg-gold-500/20 text-[#FFE8A3] border-[#FFE8A3]/30',
       highlight: false,
     },
     {
-      code: 'CITIZENSHIP',
-      title: 'Гражданство США',
-      desc: 'Комплексный юридический трекинг заявителя до принятия присяги и получения американского паспорта.',
+      code: t('greenCard', 'gc2Code') || '#CITIZENSHIP',
+      title: t('greenCard', 'c2Title'),
+      desc: t('greenCard', 'c2Desc'),
       href: '/usa',
-      image: '/images/gc-card-citizenship-v2.jpg', // Выбор пользователя: Сертификат и паспорт США
-      tag: 'Флагман',
+      image: '/images/gc-card-citizenship-v2.jpg',
+      tag: t('greenCard', 'c2Tag'),
       tagColor: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
       highlight: true,
     },
     {
-      code: 'CIVICS TEST',
-      title: 'Civics Test 2026',
-      desc: 'Подготовка к актуальному тесту 2026 года на 128 вопросов: история США, Конституция, устройство органов власти и языковой минимум.',
+      code: t('greenCard', 'gc3Code') || '#CIVICS TEST',
+      title: t('greenCard', 'c3Title'),
+      desc: t('greenCard', 'c3Desc'),
       href: '/usa/immigration-test',
-      image: '/images/gc-card-civics-cards.jpg', // Новое фото: Официальные материалы экзамена USCIS 2026 и флэш-карты
-      tag: '2026 Test',
+      image: '/images/gc-card-civics-cards.jpg',
+      tag: t('greenCard', 'c3Tag'),
       tagColor: 'bg-blue-500/20 text-blue-300 border-blue-400/30',
       highlight: false,
     },
     {
-      code: 'INTERVIEW',
-      title: 'Подготовка к интервью USCIS',
-      desc: 'Репетиция стресс-собеседований с американским офицером: что спрашивают, как отвечать и как устранить двусмысленности.',
+      code: t('greenCard', 'gc4Code') || '#USCIS INTERVIEW',
+      title: t('greenCard', 'c4Title'),
+      desc: t('greenCard', 'c4Desc'),
       href: '/usa/interview',
-      image: '/images/gc-card-interview-v1.jpg', // Выбор пользователя: Интервью с офицером USCIS
-      tag: 'Mock Interview',
+      image: '/images/gc-card-interview-v1.jpg',
+      tag: t('greenCard', 'c4Tag'),
       tagColor: 'bg-purple-500/20 text-purple-300 border-purple-500/30',
       highlight: false,
     },
     {
-      code: 'N-400 AUDIT',
-      title: 'Аудит заявления N-400',
-      desc: 'Построчный юридический разбор анкеты на натурализацию до её подачи для исключения скрытых процессуальных ловушек.',
+      code: t('greenCard', 'gc5Code') || '#N-400 AUDIT',
+      title: t('greenCard', 'c5Title'),
+      desc: t('greenCard', 'c5Desc'),
       href: '/usa',
-      image: '/images/gc-card-n400-v1.jpg', // Выбор пользователя: Аудит N-400 красной ручкой
-      tag: 'Аудит рисков',
+      image: '/images/gc-card-n400-v1.jpg',
+      tag: t('greenCard', 'c5Tag'),
       tagColor: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
       highlight: false,
     },
     {
-      code: 'STRATEGY',
-      title: 'Индивидуальный аудит и стратегия',
-      desc: 'Персональная оценка шансов на гражданство или Green Card с моделированием критических зон вашего дела.',
+      code: t('greenCard', 'gc6Code') || '#STRATEGY',
+      title: t('greenCard', 'c6Title'),
+      desc: t('greenCard', 'c6Desc'),
       href: '/contacts',
-      image: '/images/gc-card-strategy-v3.jpg', // Выбор пользователя: Папка Confidential и компас
-      tag: 'Bespoke',
-      tagColor: 'bg-gold-500/20 text-gold-300 border-gold-500/30',
+      image: '/images/gc-card-strategy-v3.jpg',
+      tag: t('greenCard', 'c6Tag'),
+      tagColor: 'bg-gold-500/20 text-[#FFE8A3] border-[#FFE8A3]/30',
       highlight: true,
     },
   ];
 
-  // 7-Stage Naturalization Process from the Manifesto (No leading zeros)
-  const naturalizationStages = [
+  // 7-Stage US Citizenship Preparation Process (No leading zeros)
+  const citizenshipStages = [
     {
       step: '1',
-      title: 'Анализ N-400',
-      desc: 'Построчный разбор анкеты и выявление потенциально проблемных мест до отправки.',
+      title: t('greenCard', 's1Title'),
+      desc: t('greenCard', 's1Desc'),
     },
     {
       step: '2',
-      title: 'Вопросы офицера',
-      desc: 'Что спрашивает офицер, как корректно формулировать ответы по вашей ситуации.',
+      title: t('greenCard', 's2Title'),
+      desc: t('greenCard', 's2Desc'),
     },
     {
       step: '3',
-      title: '2026 Civics Test',
-      desc: 'Отработка 128 вопросов по истории и устройству США (до 20 задают, 12 для зачета).',
+      title: t('greenCard', 's3Title'),
+      desc: t('greenCard', 's3Desc'),
     },
     {
       step: '4',
-      title: 'English Component',
-      desc: 'Подготовка к языковой части интервью: чтение, письмо и разговорные команды.',
+      title: t('greenCard', 's4Title'),
+      desc: t('greenCard', 's4Desc'),
     },
     {
       step: '5',
-      title: 'Mock Interview',
-      desc: 'Полная имитация настоящего собеседования в формате стресс-тестирования.',
+      title: t('greenCard', 's5Title'),
+      desc: t('greenCard', 's5Desc'),
     },
     {
       step: '6',
-      title: 'Разбор ошибок',
-      desc: 'Устранение нестыковок и двусмысленностей, вызывающих подозрения офицера.',
+      title: t('greenCard', 's6Title'),
+      desc: t('greenCard', 's6Desc'),
     },
     {
       step: '7',
-      title: 'Индивидуальная стратегия',
-      desc: 'Финальная подгонка под персональный бэкграунд заявителя.',
+      title: t('greenCard', 's7Title'),
+      desc: t('greenCard', 's7Desc'),
     },
   ];
+
+  const learnMoreText =
+    currentLang === 'en'
+      ? 'Learn more'
+      : currentLang === 'uk'
+      ? 'Дізнатися більше'
+      : currentLang === 'es'
+      ? 'Más información'
+      : currentLang === 'it'
+      ? 'Maggiori dettagli'
+      : currentLang === 'fr'
+      ? 'En savoir plus'
+      : 'Узнать подробнее';
+
+  const tgReviewText =
+    currentLang === 'en'
+      ? 'Telegram Review'
+      : currentLang === 'uk'
+      ? 'Telegram-аналіз'
+      : currentLang === 'es'
+      ? 'Consulta por Telegram'
+      : currentLang === 'it'
+      ? 'Analisi Telegram'
+      : currentLang === 'fr'
+      ? 'Audit Telegram'
+      : 'Telegram-разбор';
 
   return (
     <section className="relative bg-[#04060C] scroll-mt-20 pt-14 pb-20 lg:pt-16 lg:pb-24 border-t border-b border-[#1A2538] overflow-hidden" id="greencard">
@@ -144,41 +172,31 @@ export const GreenCardSpecial: React.FC = () => {
           <div className="lg:col-span-7 space-y-4">
             {/* Badge on its own line higher up with generous breathing room to the text below */}
             <div className="mb-6 sm:mb-8">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0E1624]/90 backdrop-blur-md border border-gold-500/50 text-gold-300 text-[11px] font-mono uppercase tracking-[0.2em] shadow-lg shadow-black/60">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-md bg-[#0E1624]/90 backdrop-blur-md border border-gold-500/50 text-gold-300 text-[11px] font-mono uppercase tracking-[0.2em] shadow-lg shadow-black/60">
                 <LuxuryUsaFlag size="xs" />
-                <span>КЛЮЧЕВАЯ ВЕРТИКАЛЬНАЯ ПРАКТИКА</span>
+                <span>{t('greenCard', 'badge')}</span>
               </div>
             </div>
 
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif text-white font-bold leading-tight drop-shadow-md">
-              США: Иммиграция, Гражданство <br />
-              <span className="text-[#E5C37A] italic font-normal drop-shadow-[0_2px_12px_rgba(229,195,122,0.25)]">
-                и Защита статуса
+              {t('greenCard', 'title1')} <br />
+              <span className="text-[#FFE29A] italic font-normal drop-shadow-[0_2px_12px_rgba(255,226,154,0.3)]">
+                {t('greenCard', 'title2')}
               </span>
             </h2>
 
             <p className="text-sm sm:text-base text-gray-200 font-light leading-relaxed max-w-xl drop-shadow-sm">
-              Не «репетиторство» и не конвейерное заполнение форм. Мы готовим к прохождению реального американского процесса натурализации с глубоким пониманием системы изнутри.
+              {t('greenCard', 'desc')}
             </p>
 
-            <div className="flex flex-wrap items-center gap-3 pt-2">
+            <div className="pt-2">
               <button
                 onClick={() => openConsultation('Иммиграция и Green Card США')}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-[#F3E2B8] via-[#D8B467] to-[#A0782A] text-[#070A0F] font-bold text-xs tracking-wider uppercase hover:brightness-110 active:scale-[0.98] transition-all shadow-[0_4px_15px_rgba(216,180,103,0.3)] border border-[#FFE8A3] cursor-pointer"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-md bg-[#DFBA73] hover:bg-[#cfab5b] text-[#080B11] font-bold text-xs tracking-wider uppercase hover:brightness-105 active:scale-[0.98] transition-all shadow-md border border-[#FFE8A3]/40 cursor-pointer"
               >
-                <FileCheck size={14} />
-                <span>Оценить шансы на Green Card</span>
+                <FileCheck size={15} />
+                <span>{t('greenCard', 'ctaAudit')}</span>
               </button>
-
-              <a
-                href="https://t.me/V_I_Levin_bot?start=usa_greencard"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-black/60 hover:bg-black/90 text-gold-300 border border-gold-500/30 text-xs font-semibold tracking-wide backdrop-blur-md transition-all cursor-pointer"
-              >
-                <Send size={13} />
-                <span>Telegram-разбор</span>
-              </a>
             </div>
           </div>
 
@@ -193,7 +211,7 @@ export const GreenCardSpecial: React.FC = () => {
               <Link
                 key={card.code}
                 href={card.href}
-                className="group relative rounded-xl bg-[#090E1A] border border-[#1A2840] hover:border-gold-500/60 transition-all duration-300 overflow-hidden flex flex-col justify-between hover:-translate-y-1 hover:shadow-[0_15px_35px_rgba(0,0,0,0.85)]"
+                className="group relative rounded-md bg-[#090E1A] border border-[#1A2840] hover:border-[#2B3F63] transition-all duration-[400ms] ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden flex flex-col justify-between hover:-translate-y-[3.8px] hover:shadow-[0_10px_24px_rgba(0,0,0,0.6)] transform-gpu backface-hidden will-change-transform"
               >
                 {/* Photographic Cover — Clear, crisp, scaled proportionally */}
                 <div className="relative h-44 w-full overflow-hidden bg-black border-b border-[#1A2840]">
@@ -203,13 +221,10 @@ export const GreenCardSpecial: React.FC = () => {
                     className="w-full h-full object-cover object-center contrast-[1.05] brightness-[1.03]"
                   />
                   
-                  {/* Top Badges */}
-                  <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none">
-                    <span className="text-[9.5px] font-mono px-2.5 py-1 rounded bg-[#050810]/90 border border-[#203048] text-gold-300 uppercase tracking-widest backdrop-blur-md">
+                  {/* Top Hashtag: Luminous Light Champagne Gold Tone */}
+                  <div className="absolute top-3 left-3 pointer-events-none">
+                    <span className="text-[10px] font-mono px-2.5 py-1 rounded-md bg-[#050810]/90 border border-[#FFE8A3]/30 text-[#FFE8A3] uppercase tracking-wider backdrop-blur-md shadow-sm font-semibold">
                       {card.code}
-                    </span>
-                    <span className={`text-[9.5px] font-mono px-2 py-0.5 rounded border backdrop-blur-md ${card.tagColor}`}>
-                      {card.tag}
                     </span>
                   </div>
                 </div>
@@ -217,7 +232,7 @@ export const GreenCardSpecial: React.FC = () => {
                 {/* Card Body */}
                 <div className="p-5 sm:p-6 space-y-4 flex-grow flex flex-col justify-between">
                   <div className="space-y-2.5">
-                    <h3 className="text-lg sm:text-[19px] font-serif font-bold text-white group-hover:text-gold-300 transition-colors leading-snug drop-shadow-sm">
+                    <h3 className="text-lg sm:text-[19px] font-serif font-bold text-white group-hover:text-gold-200 transition-colors leading-snug drop-shadow-sm">
                       {card.title}
                     </h3>
                     <p className="text-xs sm:text-[13px] text-gray-300 font-light leading-relaxed">
@@ -225,10 +240,10 @@ export const GreenCardSpecial: React.FC = () => {
                     </p>
                   </div>
 
-                  {/* Bottom link */}
-                  <div className="pt-3 border-t border-[#141F32] flex items-center justify-between text-xs text-gold-400 font-medium group-hover:text-gold-300">
-                    <span className="tracking-wide uppercase text-[11px] font-mono">Узнать подробнее</span>
-                    <ArrowRight size={14} className="transform group-hover:translate-x-1.5 transition-transform" />
+                  {/* Bottom link: Expressive font-serif typography & matching champagne tone */}
+                  <div className="pt-3 border-t border-[#141F32] flex items-center justify-between text-[#FFE8A3] group-hover:text-white transition-colors">
+                    <span className="text-[12.5px] font-serif tracking-[0.07em] font-semibold uppercase">{learnMoreText}</span>
+                    <ArrowRight size={15} className="transform group-hover:translate-x-1.5 transition-transform duration-200 ease-out text-[#FFE8A3] group-hover:text-white" />
                   </div>
                 </div>
               </Link>
@@ -236,19 +251,19 @@ export const GreenCardSpecial: React.FC = () => {
           })}
         </div>
 
-        {/* 7-Stage Naturalization Architecture Strip — 15% narrower */}
-        <div className="max-w-[1060px] mx-auto rounded-2xl bg-[#080D18] border border-gold-500/30 p-6 lg:p-8 space-y-6 shadow-2xl">
+        {/* 7-Stage US Citizenship Preparation Strip — 15% narrower */}
+        <div className="max-w-[1060px] mx-auto rounded-md bg-[#080D18] border border-gold-500/30 p-6 lg:p-8 space-y-6 shadow-2xl">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#1A2942] pb-4">
             <div>
               <div className="text-[10px] font-mono text-gold-400 uppercase tracking-widest">
-                ФИРМЕННАЯ МЕТОДОЛОГИЯ ПОДГОТОВКИ
+                CIVICS & N-400 METHODOLOGY
               </div>
               <h3 className="text-xl sm:text-2xl font-serif font-bold text-white mt-1">
-                7 этапов подготовки к гражданству США
+                {t('greenCard', 'stageTitle')}
               </h3>
             </div>
             <div className="text-xs text-gray-400 max-w-sm font-light">
-              Не просто заучивание вопросов, а системное устранение слабых мест заявителя до визита в USCIS.
+              Analyze → Pre-audit → Stress Interview → Oath Ceremony
             </div>
           </div>
 
@@ -256,12 +271,12 @@ export const GreenCardSpecial: React.FC = () => {
           <div className="relative pt-2">
             <div className="hidden lg:block absolute top-10 left-10 right-10 h-[1px] bg-gradient-to-r from-gold-500/10 via-gold-500/40 to-gold-500/10 pointer-events-none z-0" />
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-3 relative z-10">
-              {naturalizationStages.map((stg) => (
+              {citizenshipStages.map((stg) => (
                 <div
                   key={stg.step}
-                  className="p-4 rounded-xl bg-[#0A101C] border border-[#18263B] hover:border-gold-400/70 hover:bg-[#0F182A] transition-all group flex flex-col items-center text-center shadow-md hover:-translate-y-1"
+                  className="p-4 rounded-md bg-[#0A101C] border border-[#18263B] hover:border-[#283e60] transition-all duration-200 ease-out group flex flex-col items-center text-center shadow-md hover:-translate-y-0.5"
                 >
-                  <div className="w-8 h-8 rotate-45 flex items-center justify-center bg-[#070B14] border border-gold-400/80 mb-4 shadow-[0_0_12px_rgba(212,175,55,0.25)] group-hover:border-gold-300 group-hover:scale-110 transition-all shrink-0">
+                  <div className="w-8 h-8 rotate-45 flex items-center justify-center bg-[#070B14] border border-gold-400/80 mb-4 shadow-[0_0_12px_rgba(212,175,55,0.25)] group-hover:scale-105 transition-all shrink-0">
                     <span className="-rotate-45 font-mono font-black text-xs text-gold-300">
                       {stg.step}
                     </span>

@@ -48,7 +48,7 @@ export const THEMES: ThemeConfig[] = [
   },
   {
     id: 3,
-    name: '03. Federal US Naturalization',
+    name: '03. Federal US Citizenship',
     tag: '3D Паспорт & Гражданство',
     heroVisualType: 'passport',
     heroImage: '/images/usa-passport-naturalization.jpg',
@@ -58,7 +58,7 @@ export const THEMES: ThemeConfig[] = [
     cardBg: '#0B1528',
     cardBorder: 'border-[#1E3A8A]',
     fontClass: 'font-serif',
-    description: 'Фотореалистичный 3D-паспорт США, сертификат натурализации, мрамор Nero Marquina',
+    description: 'Фотореалистичный 3D-паспорт США, сертификат о гражданстве, мрамор Nero Marquina',
   },
   {
     id: 4,

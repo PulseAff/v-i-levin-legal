@@ -90,7 +90,7 @@ export default function ImmigrationTestPage() {
         </nav>
 
         <div className="border-b border-surface-border pb-8">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-navy-850 text-gold-400 border border-gold-500/20 text-xs font-semibold uppercase tracking-wider mb-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-navy-850 text-gold-400 border border-gold-500/20 text-xs font-semibold uppercase tracking-wider mb-3">
             <Award size={14} /> Интерактивная экспресс-оценка
           </div>
           <h1 className="text-3xl sm:text-4xl font-serif text-white font-bold">
@@ -114,7 +114,7 @@ export default function ImmigrationTestPage() {
                 return (
                   <div
                     key={q.id}
-                    className="p-5 rounded-xl bg-navy-900 border border-surface-border space-y-3"
+                    className="p-5 rounded-md bg-navy-900 border border-surface-border space-y-3"
                   >
                     <div className="flex items-center justify-between text-[11px]">
                       <span className="font-mono text-gold-400 font-semibold">Вопрос {q.id}</span>
@@ -127,7 +127,7 @@ export default function ImmigrationTestPage() {
                       <button
                         type="button"
                         onClick={() => handleSelect(q.id, true)}
-                        className={`px-4 py-2 rounded text-xs font-semibold transition-all ${
+                        className={`px-4 py-2 rounded-md text-xs font-semibold transition-all ${
                           ans === true
                             ? 'bg-gold-500 text-navy-950 font-bold shadow-gold-sm'
                             : 'bg-navy-950 text-gray-400 hover:text-white border border-surface-border'
@@ -138,7 +138,7 @@ export default function ImmigrationTestPage() {
                       <button
                         type="button"
                         onClick={() => handleSelect(q.id, false)}
-                        className={`px-4 py-2 rounded text-xs font-semibold transition-all ${
+                        className={`px-4 py-2 rounded-md text-xs font-semibold transition-all ${
                           ans === false
                             ? 'bg-navy-800 text-gray-300 border border-surface-border'
                             : 'bg-navy-950 text-gray-400 hover:text-white border border-surface-border'
@@ -157,9 +157,9 @@ export default function ImmigrationTestPage() {
                 type="button"
                 disabled={answeredCount < 10}
                 onClick={() => setIsCompleted(true)}
-                className={`px-8 py-3.5 rounded text-xs font-semibold tracking-wider uppercase transition-all ${
+                className={`px-6 py-2.5 rounded-md text-xs font-bold tracking-wider uppercase transition-all ${
                   answeredCount === 10
-                    ? 'bg-gradient-to-r from-gold-600 to-gold-500 text-navy-950 hover:brightness-110 shadow-gold-sm'
+                    ? 'bg-[#DFBA73] hover:bg-[#cfab5b] text-[#080B11] border border-[#FFE8A3]/40 shadow-md hover:brightness-105 active:scale-[0.98]'
                     : 'bg-navy-900 text-gray-500 cursor-not-allowed border border-surface-border'
                 }`}
               >
@@ -168,7 +168,7 @@ export default function ImmigrationTestPage() {
             </div>
           </div>
         ) : (
-          <div className="bg-navy-900 border border-gold-500/30 rounded-2xl p-8 lg:p-10 space-y-6 text-center animate-fadeIn">
+          <div className="bg-navy-900 border border-gold-500/30 rounded-md p-8 lg:p-10 space-y-6 text-center animate-fadeIn">
             <div className="w-20 h-20 mx-auto rounded-full bg-navy-950 border-2 border-gold-500 flex items-center justify-center text-3xl font-serif font-bold text-gold-400">
               {score}/10
             </div>
@@ -189,10 +189,10 @@ export default function ImmigrationTestPage() {
 
             <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
               <a
-                href={`https://t.me/V_I_Levin_bot?start=test_score_${score}`}
+                href={`https://t.me/VILEVIN_bot?start=test_score_${score}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-gold-600 to-gold-500 text-navy-950 text-xs font-semibold tracking-wider uppercase rounded hover:brightness-110 shadow-gold-sm flex items-center justify-center gap-2"
+                className="w-full sm:w-auto px-6 py-2.5 bg-[#DFBA73] hover:bg-[#cfab5b] text-[#080B11] text-xs font-bold tracking-wider uppercase rounded-md hover:brightness-105 active:scale-[0.98] transition-all border border-[#FFE8A3]/40 shadow-md flex items-center justify-center gap-2 cursor-pointer"
               >
                 <MessageSquare size={16} />
                 <span>Отправить результат юристу в Telegram</span>
@@ -204,7 +204,7 @@ export default function ImmigrationTestPage() {
                   setAnswers({});
                   setIsCompleted(false);
                 }}
-                className="w-full sm:w-auto px-5 py-3.5 text-xs text-gray-400 hover:text-white flex items-center justify-center gap-1.5"
+                className="w-full sm:w-auto px-4 py-2.5 text-xs text-gray-400 hover:text-white flex items-center justify-center gap-1.5"
               >
                 <RefreshCw size={14} /> Пройти заново
               </button>

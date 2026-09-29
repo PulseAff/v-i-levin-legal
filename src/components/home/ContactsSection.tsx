@@ -11,126 +11,131 @@ export const ContactsSection: React.FC = () => {
 
   const labels = {
     ru: {
-      title: 'Контакты',
-      desc: 'Для получения юридической помощи и правового аудита ситуации отправьте форму или напишите в Telegram.',
-      btnForm: 'Заполнить форму на сайте',
-      btnTg: 'Написать в Telegram',
-      fast: 'Быстрая связь',
-      confidential: 'Конфиденциально (ваши данные под защитой)',
-      avail: 'Доступно 24/7 (в экстренных случаях)',
+      title: 'Контакты и прием обращений',
+      desc: 'Все обращения доверителей рассматриваются в строгом соответствии со стандартами конфиденциальности. Заполните форму для проведения правового анализа вашей ситуации.',
+      btnForm: 'Записаться на консультацию',
+      botNote: 'Для экспресс-квалификации вашего дела доступен официальный бот-ассистент',
+      botLink: '@VILEVIN_bot',
+      feature1: 'Индивидуальный правовой аудит ситуации экспертом практики',
+      feature2: 'Конфиденциальность и защита переданных сведений (Rule 1.6 Attorney-Client Privilege)',
+      feature3: 'Регистрация обращения и подготовка позиции в течение 24 часов',
     },
     en: {
-      title: 'Contacts',
-      desc: 'For strategic legal assistance and confidential risk assessment, submit an inquiry or message us on Telegram.',
-      btnForm: 'Submit Online Inquiry',
-      btnTg: 'Message on Telegram',
-      fast: 'Direct Communication',
-      confidential: 'Strict Confidentiality (Attorney-Client Privilege)',
-      avail: 'Available 24/7 (for critical matters)',
+      title: 'Contacts & Client Intake',
+      desc: 'All inquiries are reviewed in strict compliance with attorney-client privilege. Complete the form to initiate an in-depth legal analysis of your situation.',
+      btnForm: 'Request Legal Consultation',
+      botNote: 'For automated preliminary case triage, our official bot is available',
+      botLink: '@VILEVIN_bot',
+      feature1: 'Direct senior risk evaluation and case roadmap',
+      feature2: 'Strict Attorney-Client Privilege & confidentiality (Rule 1.6)',
+      feature3: 'Case registration and initial legal feedback within 24 hours',
     },
     uk: {
-      title: 'Контакти',
-      desc: 'Для отримання правової допомоги та аудиту ситуації надішліть запит через сайт або зв’яжіться в Telegram.',
-      btnForm: 'Заповнити форму на сайті',
-      btnTg: 'Написати в Telegram',
-      fast: 'Швидкий зв’язок',
-      confidential: 'Конфіденційно (адвокатська таємниця)',
-      avail: 'Доступно 24/7 (в екстрених випадках)',
+      title: 'Контакти та прийом звернень',
+      desc: 'Усі звернення розглядаються з дотриманням повної конфіденційності. Заповніть форму для правового аудиту вашої справи.',
+      btnForm: 'Записатися на консультацію',
+      botNote: 'Для експрес-кваліфікації доступний офіційний бот-асистент',
+      botLink: '@VILEVIN_bot',
+      feature1: 'Персональний правовий аудит ситуації провідним юристом',
+      feature2: 'Повна конфіденційність та захист даних (Rule 1.6 Attorney-Client Privilege)',
+      feature3: 'Реєстрація звернення та підготовка позиції протягом 24 годин',
     },
     es: {
-      title: 'Contacto',
-      desc: 'Para asistencia jurídica estratégica y auditoría de riesgos, envíe el formulario o escríbanos por Telegram.',
-      btnForm: 'Completar formulario web',
-      btnTg: 'Escribir por Telegram',
-      fast: 'Comunicación directa',
-      confidential: 'Confidencialidad absoluta (Secreto profesional)',
-      avail: 'Disponible 24/7 (asuntos urgentes)',
+      title: 'Contacto y recepción de casos',
+      desc: 'Todas las consultas se tramitan bajo estricto secreto profesional. Complete el formulario para iniciar la auditoría legal de su caso.',
+      btnForm: 'Solicitar consulta legal',
+      botNote: 'Para cualificación previa automatizada, está disponible el bot oficial',
+      botLink: '@VILEVIN_bot',
+      feature1: 'Evaluación jurídica personalizada por abogado',
+      feature2: 'Secreto profesional y confidencialidad absoluta (Rule 1.6)',
+      feature3: 'Registro del expediente y respuesta en 24 horas',
     },
     it: {
-      title: 'Contatti',
-      desc: 'Per assistenza legale internazionale e analisi riservata del caso, compili il modulo o ci scriva su Telegram.',
-      btnForm: 'Compila il modulo online',
-      btnTg: 'Scrivi su Telegram',
-      fast: 'Contatto diretto',
-      confidential: 'Riservatezza assoluta (Segreto professionale)',
-      avail: 'Reperibilità 24/7 (casi urgenti)',
+      title: 'Contatti e ricezione incarichi',
+      desc: 'Tutte le richieste sono gestite nel rispetto del segreto professionale. Compili il modulo per una valutazione legale riservata del caso.',
+      btnForm: 'Richiedi consulenza legale',
+      botNote: 'Per una pre-qualificazione immediata è disponibile il bot ufficiale',
+      botLink: '@VILEVIN_bot',
+      feature1: 'Analisi strategica del caso da parte dell’avvocato',
+      feature2: 'Segreto professionale e massima tutela dei dati (Rule 1.6)',
+      feature3: 'Apertura fascicolo e primo riscontro entro 24 ore',
     },
     fr: {
-      title: 'Contacts',
-      desc: 'Pour toute assistance juridique internationale et analyse confidentielle, remplissez le formulaire ou écrivez-nous sur Telegram.',
-      btnForm: 'Remplir le formulaire en ligne',
-      btnTg: 'Écrire sur Telegram',
-      fast: 'Communication directe',
-      confidential: 'Confidentialité stricte (Secret professionnel)',
-      avail: 'Disponible 24/7 (cas d’urgence)',
+      title: 'Contacts & Réception des dossiers',
+      desc: 'Toutes les demandes sont traitées sous le sceau du secret professionnel. Remplissez le formulaire pour obtenir une analyse juridique approfondie.',
+      btnForm: 'Demander une consultation',
+      botNote: 'Pour une qualification préliminaire de votre dossier, le bot officiel est disponible',
+      botLink: '@VILEVIN_bot',
+      feature1: 'Audit juridique direct et feuille de route par l’avocat',
+      feature2: 'Secret professionnel et confidentialité absolue (Rule 1.6)',
+      feature3: 'Enregistrement du dossier et retour sous 24 heures',
     },
   };
 
   const c = labels[currentLang] || labels.ru;
 
   return (
-    <section className="relative bg-[#070A0F] py-14 border-b border-[#1A2230] overflow-hidden" id="contacts">
-      {/* City skyline background on right */}
-      <div
-        className="absolute inset-0 bg-cover bg-right opacity-30 pointer-events-none mix-blend-luminosity"
-        style={{ backgroundImage: "url('/contacts-bg.jpg')" }}
-      />
-      <div className="absolute inset-0 bg-gradient-to-r from-[#070A0F] via-[#070A0F]/90 to-transparent pointer-events-none" />
+    <section className="relative bg-[#070A0F] py-16 border-b border-[#1A2230] overflow-hidden" id="contacts">
+      {/* Subtle ambient lighting */}
+      <div className="absolute top-1/2 right-1/4 -translate-y-1/2 w-96 h-96 bg-gold-500/5 rounded-full blur-3xl pointer-events-none" />
+
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
           <div className="md:col-span-7 space-y-4">
-            <h2 className="text-2xl sm:text-3xl font-serif text-white font-bold">
+            <h2 className="text-2xl sm:text-3xl font-serif text-white font-bold tracking-tight">
               {c.title}
             </h2>
-            <p className="text-xs text-gray-300 font-light max-w-md">
+            <p className="text-xs sm:text-sm text-gray-300 font-light max-w-lg leading-relaxed">
               {c.desc}
             </p>
-            <div className="pt-2 flex flex-wrap items-center gap-3">
+            <div className="pt-2 flex flex-col sm:flex-row items-start sm:items-center gap-3">
               <button
                 onClick={() => openConsultation('Индивидуальный аудит')}
-                className="inline-flex items-center gap-2 px-7 py-3 rounded-full bg-gradient-to-r from-[#F3E2B8] via-[#D8B467] to-[#A0782A] text-[#070A0F] font-bold text-xs tracking-wider uppercase hover:brightness-110 active:scale-[0.98] transition-all shadow-[0_4px_20px_rgba(216,180,103,0.35)] border border-[#FFE8A3] cursor-pointer"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-md bg-gradient-to-r from-[#F3E2B8] via-[#D4AF37] to-[#A0782A] text-black font-bold text-xs uppercase tracking-wider hover:brightness-110 active:scale-[0.98] transition-all shadow-[0_4px_20px_rgba(212,175,55,0.35)] border border-[#FFE8A3] cursor-pointer"
               >
                 <FileText size={14} />
                 <span>{c.btnForm}</span>
               </button>
+            </div>
+            <p className="text-[11px] text-gray-400 font-light pt-1">
+              {c.botNote}{' '}
               <a
                 href="https://t.me/VILEVIN_bot"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#111927] hover:bg-[#182337] text-gold-300 border border-gold-500/30 text-xs font-semibold tracking-wide transition-all shadow"
+                className="text-gold-400 hover:text-gold-300 font-mono underline underline-offset-2"
               >
-                <Send size={13} />
-                <span>{c.btnTg}</span>
+                {c.botLink}
               </a>
-            </div>
+            </p>
           </div>
 
-          <div className="md:col-span-5 space-y-3 z-10">
-            <div className="flex items-center gap-3">
-              <div className="w-7 h-7 rounded-full border border-gold-500/40 flex items-center justify-center text-gold-400 shrink-0">
-                <Zap size={14} />
+          <div className="md:col-span-5 space-y-3.5 z-10">
+            <div className="flex items-center gap-3 p-3 rounded-md bg-[#0A0F1A]/80 border border-[#1C273B]">
+              <div className="w-8 h-8 rounded-md bg-[#121B2C] border border-gold-500/40 flex items-center justify-center text-gold-400 shrink-0">
+                <FileText size={15} />
               </div>
-              <div className="text-xs text-gray-300 font-light">
-                <strong className="text-white font-medium">{c.fast}</strong>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <div className="w-7 h-7 rounded-full border border-gold-500/40 flex items-center justify-center text-gold-400 shrink-0">
-                <Shield size={14} />
-              </div>
-              <div className="text-xs text-gray-300 font-light">
-                <strong className="text-white font-medium">{c.confidential}</strong>
+              <div className="text-xs text-gray-300 font-light leading-snug">
+                <strong className="text-white font-medium block">{c.feature1}</strong>
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
-              <div className="w-7 h-7 rounded-full border border-gold-500/40 flex items-center justify-center text-gold-400 shrink-0">
-                <Clock size={14} />
+            <div className="flex items-center gap-3 p-3 rounded-md bg-[#0A0F1A]/80 border border-[#1C273B]">
+              <div className="w-8 h-8 rounded-md bg-[#121B2C] border border-gold-500/40 flex items-center justify-center text-gold-400 shrink-0">
+                <Shield size={15} />
               </div>
-              <div className="text-xs text-gray-300 font-light">
-                <strong className="text-white font-medium">{c.avail}</strong>
+              <div className="text-xs text-gray-300 font-light leading-snug">
+                <strong className="text-white font-medium block">{c.feature2}</strong>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 p-3 rounded-md bg-[#0A0F1A]/80 border border-[#1C273B]">
+              <div className="w-8 h-8 rounded-md bg-[#121B2C] border border-gold-500/40 flex items-center justify-center text-gold-400 shrink-0">
+                <Clock size={15} />
+              </div>
+              <div className="text-xs text-gray-300 font-light leading-snug">
+                <strong className="text-white font-medium block">{c.feature3}</strong>
               </div>
             </div>
           </div>

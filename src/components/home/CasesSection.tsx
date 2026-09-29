@@ -35,7 +35,7 @@ export const CasesSection: React.FC = () => {
           {casesData.map((c) => (
             <div
               key={c.id}
-              className="bg-navy-950 border border-surface-border hover:border-gold-500/40 rounded-xl p-6 lg:p-8 flex flex-col justify-between transition-all duration-300 hover:shadow-gold-sm"
+              className="bg-navy-950 border border-surface-border rounded-md p-6 lg:p-8 flex flex-col justify-between transition-all duration-200 ease-out"
             >
               <div className="space-y-4">
                 <div className="flex items-center justify-between">

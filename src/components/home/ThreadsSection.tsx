@@ -34,7 +34,7 @@ export const ThreadsSection: React.FC = () => {
 
           {/* Threads Profile Card Mockup */}
           <div className="lg:col-span-6 flex justify-center lg:justify-end">
-            <div className="w-full max-w-md p-6 rounded-2xl bg-[#090E17] border border-gold-500/30 shadow-xl space-y-4">
+            <div className="w-full max-w-md p-6 rounded-md bg-[#090E17] border border-gold-500/30 shadow-xl space-y-4">
               
               {/* Header: Black Circle Avatar with Gold Monogram */}
               <div className="flex items-center gap-4 border-b border-[#182438] pb-4">
@@ -60,7 +60,7 @@ export const ThreadsSection: React.FC = () => {
 
               <div className="pt-2 border-t border-[#182438] flex items-center justify-between">
                 <a
-                  href="https://t.me/V_I_Levin_bot"
+                  href="https://t.me/VILEVIN_bot"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-xs text-gold-400 hover:text-white font-medium inline-flex items-center gap-1.5"

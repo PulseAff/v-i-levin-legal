@@ -5,61 +5,89 @@ import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { LuxuryUsaFlag } from '../ui/LuxuryUsaFlag';
 import { useSiteTheme } from '@/context/ThemeContext';
+import { useLanguage } from '@/context/LanguageContext';
 
 export const ServicesSection: React.FC = () => {
   const { currentTheme } = useSiteTheme();
+  const { t, currentLang } = useLanguage();
 
   const practices = [
     {
-      title: 'США: Green Card, EB-1A / NIW & Гражданство',
-      code: 'US IMMIGRATION & STATUS',
-      desc: 'Индивидуальная стратегия получения статуса резидента США: визы талантов EB-1A, национальные интересы EB-2 NIW, смена статуса и юридический трекинг натурализации.',
+      title: t('services', 'c1Title'),
+      code: t('services', 'c1Code'),
+      desc: t('services', 'c1Desc'),
       image: '/images/card-usa-v2.jpg',
       href: '/usa/green-card',
       highlight: true,
       num: '01',
     },
     {
-      title: 'Международный бизнес и трансграничные контракты',
-      code: 'CORPORATE & CROSS-BORDER',
-      desc: 'Корпоративное структурирование в США (Delaware, Wyoming), Великобритании, ЕС и ОАЭ (DIFC / ADGM). Международные контракты и комплаенс.',
+      title: t('services', 'c2Title'),
+      code: t('services', 'c2Code'),
+      desc: t('services', 'c2Desc'),
       image: '/images/card-biz-v1.jpg',
       href: '/services/business',
       num: '02',
     },
     {
-      title: 'Защита частных активов, фонды и трасты',
-      code: 'PRIVATE WEALTH & TRUSTS',
-      desc: 'Формирование безотзывных международных трастов, защита капитала от притязаний, безопасное владение активами и трансграничная налоговая защита.',
-      image: '/images/card-wealth-v1.jpg',
+      title: t('services', 'c3Title'),
+      code: t('services', 'c3Code'),
+      desc: t('services', 'c3Desc'),
+      image: '/images/card-wealth-obsidian.jpg',
       href: '/services/legal-consultation',
       num: '03',
     },
     {
-      title: 'Трансграничные судебные споры и арбитраж',
-      code: 'DISPUTES & ARBITRATION',
-      desc: 'Защита интересов частных лиц и компаний в международных коммерческих конфликтах, арбитраж и признание судебных решений в иностранных юрисдикциях.',
+      title: t('services', 'c4Title'),
+      code: t('services', 'c4Code'),
+      desc: t('services', 'c4Desc'),
       image: '/images/card-arb-v2.jpg',
       href: '/services/representation',
       num: '04',
     },
     {
-      title: 'Аудит юридических рисков и Due Diligence',
-      code: 'RISK AUDIT & COMPLIANCE',
-      desc: 'Построчный юридический аудит документов до их подписания: выявление ловушек, проверка контрагентов, аудит иммиграционных кейсов и договоров.',
-      image: '/images/card-audit-v1.jpg',
+      title: t('services', 'c5Title'),
+      code: t('services', 'c5Code'),
+      desc: t('services', 'c5Desc'),
+      image: '/images/card-audit-modern.jpg',
       href: '/services/legal-consultation',
       num: '05',
     },
     {
-      title: 'Индивидуальная трансграничная стратегия',
-      code: 'STRATEGIC COUNSEL',
-      desc: 'Комплексный юридический маршрут для нестандартных ситуаций на стыке американского и международного права по принципу Analyze → Strategize → Act.',
+      title: t('services', 'c6Title'),
+      code: t('services', 'c6Code'),
+      desc: t('services', 'c6Desc'),
       image: '/images/card-strat-v2.jpg',
       href: '/contacts',
       num: '06',
     },
   ];
+
+  const exploreText =
+    currentLang === 'en'
+      ? 'Explore practice'
+      : currentLang === 'uk'
+      ? 'Перейти до напрямку'
+      : currentLang === 'es'
+      ? 'Ver área de práctica'
+      : currentLang === 'it'
+      ? 'Dettagli pratica'
+      : currentLang === 'fr'
+      ? 'Consulter la pratique'
+      : 'Перейти к направлению';
+
+  const flagshipBadge =
+    currentLang === 'en'
+      ? 'Flagship'
+      : currentLang === 'uk'
+      ? 'Флагман'
+      : currentLang === 'es'
+      ? 'Principal'
+      : currentLang === 'it'
+      ? 'Di punta'
+      : currentLang === 'fr'
+      ? 'Excellence'
+      : 'Флагман';
 
   return (
     <section className="relative py-16 lg:py-20 bg-[#05070E] border-b border-[#1A2538] overflow-hidden" id="services">
@@ -77,25 +105,22 @@ export const ServicesSection: React.FC = () => {
         <div className="max-w-[1060px] mx-auto flex flex-col lg:flex-row lg:items-end justify-between mb-10 gap-6">
           <div className="space-y-3 max-w-2xl">
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif text-white font-bold tracking-tight">
-              Комплексные юридические решения{' '}
-              <span 
-                className="font-normal italic transition-colors duration-500"
-                style={{ color: currentTheme.accentGold }}
-              >
-                без шаблонов
+              {t('services', 'title1')}{' '}
+              <span className="font-normal italic text-[#FFE29A] drop-shadow-[0_2px_10px_rgba(255,226,154,0.25)]">
+                {t('services', 'title2')}
               </span>
             </h2>
 
             <p className="text-sm sm:text-base text-gray-300 font-light leading-relaxed">
-              V. I. LEVIN — частная практика для людей и бизнеса, которым необходимо разобраться в сложной ситуации, связанной с США или несколькими юрисдикциями.
+              {t('services', 'desc')}
             </p>
           </div>
 
           <Link
             href="/services"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#0D1524] hover:bg-[#162238] text-gray-200 hover:text-white border border-[#23334A] hover:border-gold-500/50 text-xs font-semibold uppercase tracking-wider transition-all shadow-md shrink-0 self-start lg:self-end"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-[#0D1524] hover:bg-[#162238] text-gray-200 hover:text-white border border-[#23334A] hover:border-[#334664] text-xs font-semibold uppercase tracking-wider transition-all shadow-md shrink-0 self-start lg:self-end"
           >
-            <span>Все направления практики</span>
+            <span>{t('services', 'btnAll')}</span>
             <ArrowRight size={14} className="text-gold-400" />
           </Link>
         </div>
@@ -106,7 +131,7 @@ export const ServicesSection: React.FC = () => {
             <Link
               key={idx}
               href={item.href}
-              className="group relative rounded-xl bg-[#090E1A] border border-[#1A2840] hover:border-gold-500/60 transition-all duration-300 overflow-hidden flex flex-col justify-between hover:-translate-y-1 hover:shadow-[0_15px_35px_rgba(0,0,0,0.85)]"
+              className="group relative rounded-md bg-[#090E1A] border border-[#1A2840] hover:border-[#2B3F63] transition-all duration-[400ms] ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden flex flex-col justify-between hover:-translate-y-[3.8px] hover:shadow-[0_10px_24px_rgba(0,0,0,0.6)] transform-gpu backface-hidden will-change-transform"
             >
               {/* Image Container — Clear, crisp, scaled proportionally */}
               <div className="relative h-44 w-full overflow-hidden bg-black border-b border-[#1A2840]">
@@ -116,23 +141,18 @@ export const ServicesSection: React.FC = () => {
                   className="w-full h-full object-cover object-center contrast-[1.05] brightness-[1.03]"
                 />
                 
-                {/* Top Badges */}
-                <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none">
-                  <span className="px-2.5 py-1 rounded bg-black/90 border border-[#2B3C58] text-[9.5px] font-mono text-gold-300 uppercase tracking-widest backdrop-blur-md shadow-md">
+                {/* Top Badges: Luminous Light Champagne Gold Tone */}
+                <div className="absolute top-3 left-3 pointer-events-none">
+                  <span className="px-2.5 py-1 rounded-md bg-[#070B14]/90 border border-[#FFE8A3]/30 text-[10px] font-mono font-semibold text-[#FFE8A3] uppercase tracking-wider backdrop-blur-md shadow-sm">
                     {item.code}
                   </span>
-                  {item.highlight && (
-                    <span className="px-2.5 py-1 rounded bg-gold-500/25 text-[#FFE8A3] border border-gold-400/50 text-[9.5px] font-mono font-bold flex items-center gap-1.5 backdrop-blur-md shadow-md">
-                      <LuxuryUsaFlag size="xs" /> Флагман
-                    </span>
-                  )}
                 </div>
               </div>
 
               {/* Card Body */}
               <div className="p-5 sm:p-6 space-y-4 flex-grow flex flex-col justify-between">
                 <div className="space-y-2.5">
-                  <h3 className="text-lg sm:text-[19px] font-serif font-bold text-white group-hover:text-gold-300 transition-colors leading-snug drop-shadow-sm">
+                  <h3 className="text-lg sm:text-[19px] font-serif font-bold text-white group-hover:text-gold-200 transition-colors leading-snug drop-shadow-sm">
                     {item.title}
                   </h3>
                   <p className="text-xs sm:text-[13px] text-gray-300 font-light leading-relaxed">
@@ -140,9 +160,10 @@ export const ServicesSection: React.FC = () => {
                   </p>
                 </div>
 
-                <div className="pt-3 border-t border-[#141F32] flex items-center justify-between text-xs text-gold-400 font-medium group-hover:text-gold-300">
-                  <span className="tracking-wide uppercase text-[11px] font-mono">Перейти к направлению</span>
-                  <ArrowRight size={14} className="transform group-hover:translate-x-1.5 transition-transform" />
+                {/* Bottom link: Expressive font-serif typography & matching champagne tone */}
+                <div className="pt-3 border-t border-[#141F32] flex items-center justify-between text-[#FFE8A3] group-hover:text-white transition-colors">
+                  <span className="text-[12.5px] font-serif tracking-[0.07em] font-semibold uppercase">{exploreText}</span>
+                  <ArrowRight size={15} className="transform group-hover:translate-x-1.5 transition-transform duration-200 ease-out text-[#FFE8A3] group-hover:text-white" />
                 </div>
               </div>
             </Link>

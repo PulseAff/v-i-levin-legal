@@ -83,7 +83,7 @@ export default function AdminLeadsPage() {
           <div className="flex items-center gap-3">
             <button
               onClick={fetchLeads}
-              className="p-2.5 bg-navy-900 border border-surface-border text-gray-300 hover:text-white rounded text-xs flex items-center gap-1.5 transition-colors"
+              className="px-3 py-2 bg-navy-900 border border-surface-border text-gray-300 hover:text-white rounded-md text-xs flex items-center gap-1.5 transition-colors"
               title="Обновить"
             >
               <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
@@ -93,7 +93,7 @@ export default function AdminLeadsPage() {
             <button
               onClick={exportCSV}
               disabled={!leads.length}
-              className="px-4 py-2.5 bg-gold-500 text-navy-950 font-semibold text-xs rounded hover:bg-gold-400 transition-colors flex items-center gap-1.5"
+              className="px-4 py-2 bg-gold-500 text-navy-950 font-semibold text-xs rounded-md hover:bg-gold-400 transition-colors flex items-center gap-1.5"
             >
               <Download size={14} />
               <span>Экспорт в CSV</span>
@@ -110,14 +110,14 @@ export default function AdminLeadsPage() {
               placeholder="Поиск по ID, имени, Telegram или описанию..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-navy-900 border border-surface-border text-gray-200 text-xs rounded focus:outline-none focus:border-gold-500"
+              className="w-full pl-10 pr-4 py-2 bg-navy-900 border border-surface-border text-gray-200 text-xs rounded-md focus:outline-none focus:border-gold-500"
             />
           </div>
 
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="bg-navy-900 border border-surface-border text-gray-200 text-xs rounded px-3 py-2 focus:outline-none focus:border-gold-500"
+            className="bg-navy-900 border border-surface-border text-gray-200 text-xs rounded-md px-3 py-2 focus:outline-none focus:border-gold-500"
           >
             <option value="All">Все статусы</option>
             <option value="New">New (Новые)</option>
@@ -131,7 +131,7 @@ export default function AdminLeadsPage() {
         </div>
 
         {/* Table */}
-        <div className="bg-navy-900 border border-surface-border rounded-xl overflow-hidden shadow-xl">
+        <div className="bg-navy-900 border border-surface-border rounded-md overflow-hidden shadow-xl">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs text-gray-300">
               <thead className="bg-navy-950 border-b border-surface-border text-[11px] uppercase tracking-wider text-gray-400">
@@ -168,7 +168,7 @@ export default function AdminLeadsPage() {
 
                       <td className="p-4 whitespace-nowrap">
                         <span
-                          className={`px-2 py-0.5 rounded text-[10px] font-semibold uppercase ${
+                          className={`px-2 py-0.5 rounded-md text-[10px] font-semibold uppercase ${
                             lead.urgency === 'Сегодня'
                               ? 'bg-rose-950 text-rose-300 border border-rose-800/40'
                               : lead.urgency === 'В течение недели'
@@ -192,7 +192,7 @@ export default function AdminLeadsPage() {
                       </td>
 
                       <td className="p-4 whitespace-nowrap">
-                        <span className="px-2.5 py-1 rounded-full bg-gold-500/10 text-gold-400 border border-gold-500/30 text-[10px] font-mono font-semibold uppercase">
+                        <span className="px-2.5 py-1 rounded-md bg-gold-500/10 text-gold-400 border border-gold-500/30 text-[10px] font-mono font-semibold uppercase">
                           {lead.status}
                         </span>
                       </td>

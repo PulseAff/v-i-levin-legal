@@ -29,7 +29,7 @@ export default function ArticlesPage() {
           {articlesData.map((article) => (
             <article
               key={article.slug}
-              className="bg-navy-900 border border-surface-border hover:border-gold-500/40 rounded-xl p-6 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 hover:shadow-gold-sm group"
+              className="bg-navy-900 border border-surface-border rounded-md p-6 flex flex-col justify-between transition-all duration-200 ease-out hover:-translate-y-0.5 group"
             >
               <div>
                 <div className="flex items-center justify-between text-[11px] text-gray-400 mb-3">
@@ -53,7 +53,7 @@ export default function ArticlesPage() {
 
                 <div className="flex flex-wrap gap-1.5 mb-6">
                   {article.tags.map((tag) => (
-                    <span key={tag} className="text-[10px] text-gray-400 px-2 py-0.5 rounded bg-navy-950 border border-surface-border">
+                    <span key={tag} className="text-[10px] text-gray-400 px-2 py-0.5 rounded-md bg-navy-950 border border-surface-border">
                       #{tag}
                     </span>
                   ))}

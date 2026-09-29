@@ -67,12 +67,12 @@ export const CasesDossierSection: React.FC = () => {
           {dossiers.map((d) => (
             <div
               key={d.id}
-              className="rounded-xl bg-[#0A0F19] border border-[#1A2538] hover:border-gold-500/40 p-6 sm:p-7 flex flex-col justify-between transition-all duration-300 hover:shadow-gold-sm relative group"
+              className="rounded-md bg-[#0A0F19] border border-[#1A2538] p-6 sm:p-7 flex flex-col justify-between transition-all duration-200 ease-out relative group"
             >
               <div className="space-y-4">
                 {/* Header with Case # and Jurisdiction */}
                 <div className="flex items-center justify-between border-b border-[#162135] pb-3">
-                  <span className="px-2.5 py-1 rounded bg-[#121B2C] text-gold-400 border border-gold-500/20 text-[11px] font-mono font-semibold">
+                  <span className="px-2.5 py-1 rounded-md bg-[#121B2C] text-gold-400 border border-gold-500/20 text-[11px] font-mono font-semibold">
                     {d.number}
                   </span>
                   <span className="text-[10px] font-mono text-gray-400">
@@ -99,7 +99,7 @@ export const CasesDossierSection: React.FC = () => {
                     <p className="text-gray-400 mt-1">{d.strategy}</p>
                   </div>
 
-                  <div className="p-3.5 rounded-lg bg-[#0E1624] border border-[#1E2C44]">
+                  <div className="p-3.5 rounded-md bg-[#0E1624] border border-[#1E2C44]">
                     <span className="text-[10px] uppercase font-mono text-emerald-400 tracking-wider block font-medium">
                       Процессуальный результат:
                     </span>

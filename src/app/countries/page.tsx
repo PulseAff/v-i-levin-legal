@@ -29,12 +29,12 @@ export default function CountriesPage() {
           {countriesData.map((country) => (
             <div
               key={country.code}
-              className="bg-navy-900 border border-surface-border hover:border-gold-500/40 rounded-xl p-6 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 hover:shadow-gold-sm group"
+              className="bg-navy-900 border border-surface-border rounded-md p-6 flex flex-col justify-between transition-all duration-200 ease-out hover:-translate-y-0.5 group"
             >
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-3xl">{country.flag}</span>
-                  <span className="text-[10px] text-gold-400 uppercase tracking-wider font-semibold px-2 py-0.5 rounded bg-navy-850 border border-gold-500/20">
+                  <span className="text-[10px] text-gold-400 uppercase tracking-wider font-semibold px-2 py-0.5 rounded-md bg-navy-850 border border-gold-500/20">
                     {country.region}
                   </span>
                 </div>
@@ -49,7 +49,7 @@ export default function CountriesPage() {
 
                 <div className="flex flex-wrap gap-1.5 mb-4">
                   {country.keyPracticeAreas.slice(0, 3).map((area, idx) => (
-                    <span key={idx} className="text-[10px] text-gray-300 px-2 py-0.5 rounded bg-navy-950 border border-surface-border">
+                    <span key={idx} className="text-[10px] text-gray-300 px-2 py-0.5 rounded-md bg-navy-950 border border-surface-border">
                       {area}
                     </span>
                   ))}

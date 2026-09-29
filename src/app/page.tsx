@@ -7,7 +7,6 @@ import { GreenCardSpecial } from '@/components/home/GreenCardSpecial';
 import { AboutSection } from '@/components/home/AboutSection';
 import { CountriesSection } from '@/components/home/CountriesSection';
 import { ContactsSection } from '@/components/home/ContactsSection';
-import { QuoteSection } from '@/components/home/QuoteSection';
 import { FAQSection } from '@/components/home/FAQSection';
 
 export default function HomePage() {
@@ -19,7 +18,6 @@ export default function HomePage() {
       <AboutSection />
       <CountriesSection />
       <ContactsSection />
-      <QuoteSection />
       <FAQSection />
     </>
   );

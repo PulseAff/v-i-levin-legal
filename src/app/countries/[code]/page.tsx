@@ -56,7 +56,7 @@ export default function CountryDetailPage({ params }: PageProps) {
         </div>
 
         {/* Scope of practice */}
-        <div className="bg-navy-900 border border-surface-border rounded-xl p-6 lg:p-8 space-y-4">
+        <div className="bg-navy-900 border border-surface-border rounded-md p-6 lg:p-8 space-y-4">
           <h2 className="text-xl font-serif text-white font-bold">
             Какие вопросы мы анализируем и сопровождаем
           </h2>
@@ -71,7 +71,7 @@ export default function CountryDetailPage({ params }: PageProps) {
         </div>
 
         {/* Procedural Boundary / Local counsel notice */}
-        <div className="p-5 rounded-xl bg-navy-900 border border-gold-500/30 space-y-2">
+        <div className="p-5 rounded-md bg-navy-900 border border-gold-500/30 space-y-2">
           <div className="flex items-center gap-2 text-xs font-semibold text-gold-400 uppercase tracking-wider">
             <Shield size={16} /> Профессиональное разграничение полномочий
           </div>
@@ -88,7 +88,7 @@ export default function CountryDetailPage({ params }: PageProps) {
             </h2>
             <div className="space-y-3">
               {country.faq.map((item, idx) => (
-                <div key={idx} className="p-5 rounded-lg bg-navy-900 border border-surface-border space-y-2">
+                <div key={idx} className="p-5 rounded-md bg-navy-900 border border-surface-border space-y-2">
                   <h3 className="text-sm font-serif text-white font-semibold">{item.q}</h3>
                   <p className="text-xs text-gray-300 font-light leading-relaxed">{item.a}</p>
                 </div>
@@ -98,7 +98,7 @@ export default function CountryDetailPage({ params }: PageProps) {
         )}
 
         {/* CTA */}
-        <div className="text-center p-8 rounded-xl bg-gradient-to-r from-navy-900 via-navy-850 to-navy-900 border border-gold-500/30 space-y-3">
+        <div className="text-center p-8 rounded-md bg-gradient-to-r from-navy-900 via-navy-850 to-navy-900 border border-gold-500/30 space-y-3">
           <h3 className="text-xl font-serif text-white font-bold">
             Нужна помощь по праву {country.name}?
           </h3>
@@ -107,10 +107,10 @@ export default function CountryDetailPage({ params }: PageProps) {
           </p>
           <div className="pt-2">
             <a
-              href={`https://t.me/V_I_Levin_bot?start=country_${country.code}`}
+              href={`https://t.me/VILEVIN_bot?start=country_${country.code}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-gold-600 to-gold-500 text-navy-950 text-xs font-semibold uppercase tracking-wider rounded shadow-gold-sm"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#DFBA73] hover:bg-[#cfab5b] text-[#080B11] text-xs font-bold uppercase tracking-wider rounded-md border border-[#FFE8A3]/40 shadow-md hover:brightness-105 active:scale-[0.98] transition-all cursor-pointer"
             >
               <MessageSquare size={15} /> Написать в Telegram
             </a>

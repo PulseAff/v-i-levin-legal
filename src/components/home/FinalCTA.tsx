@@ -71,7 +71,7 @@ export const FinalCTA: React.FC<FinalCTAProps> = ({ onOpenConsultation }) => {
   return (
     <section className="py-20 lg:py-24 bg-gradient-to-b from-[#070B14] via-[#05080E] to-[#05080E] border-b border-[#1A2230] relative overflow-hidden">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10 space-y-6">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gold-500/10 border border-gold-500/30 text-gold-400 text-xs uppercase tracking-wider font-semibold">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-gold-500/10 border border-gold-500/30 text-gold-400 text-xs uppercase tracking-wider font-semibold">
           <ShieldCheck size={14} /> <span>{l.badge}</span>
         </div>
 
@@ -83,22 +83,22 @@ export const FinalCTA: React.FC<FinalCTAProps> = ({ onOpenConsultation }) => {
           {l.desc}
         </p>
 
-        <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+        <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
           <button
             onClick={handleOpen}
-            className="w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-[#F3E2B8] via-[#D8B467] to-[#A0782A] text-[#070A0F] text-xs sm:text-sm font-bold tracking-wider uppercase rounded-full hover:brightness-110 active:scale-[0.98] transition-all shadow-[0_4px_20px_rgba(216,180,103,0.35)] border border-[#FFE8A3] flex items-center justify-center gap-2 cursor-pointer"
+            className="w-full sm:w-auto px-6 py-2.5 bg-[#DFBA73] hover:bg-[#cfab5b] text-[#080B11] text-xs font-bold tracking-wider uppercase rounded-md hover:brightness-105 active:scale-[0.98] transition-all shadow-md border border-[#FFE8A3]/40 flex items-center justify-center gap-2 cursor-pointer"
           >
             <span>{l.btnReview}</span>
-            <ArrowRight size={16} />
+            <ArrowRight size={15} />
           </button>
 
           <a
             href="https://t.me/VILEVIN_bot"
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full sm:w-auto px-6 py-3.5 bg-[#0F1624] hover:bg-[#162133] text-gold-300 border border-gold-500/30 text-xs sm:text-sm font-semibold tracking-wide rounded-full transition-all flex items-center justify-center gap-2 shadow"
+            className="w-full sm:w-auto px-5 py-2.5 bg-[#0F1624] hover:bg-[#162133] text-gold-300 border border-gold-500/30 text-xs font-semibold tracking-wide rounded-md transition-all flex items-center justify-center gap-2 shadow"
           >
-            <MessageSquare size={16} className="text-gold-400" />
+            <MessageSquare size={15} className="text-gold-400" />
             <span>{l.btnBot}</span>
           </a>
         </div>
