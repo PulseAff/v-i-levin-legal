@@ -289,18 +289,13 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
 
   return (
     <div 
-      className="fixed inset-0 z-[200] min-h-[100dvh] flex items-center justify-center p-3 sm:p-4 bg-black/25 backdrop-blur-[5px] overflow-y-auto animate-in fade-in duration-200"
+      className="fixed inset-0 z-[200] min-h-[100dvh] flex items-center justify-center p-3 sm:p-4 bg-black/40 backdrop-blur-sm overflow-y-auto animate-in fade-in duration-200"
       onClick={onClose}
     >
       <div 
-        className="relative w-full max-w-[420px] m-auto p-4 sm:p-5 rounded-xl bg-[#080C14]/85 backdrop-blur-2xl border border-white/[0.12] hover:border-[#DFBA73]/35 transition-colors shadow-[inset_0_1px_1px_rgba(255,255,255,0.25),0_20px_60px_rgba(0,0,0,0.6)] overflow-visible text-slate-100"
+        className="relative w-full max-w-[420px] m-auto p-4 sm:p-5 rounded-xl bg-[#0B0F19] border border-white/[0.12] hover:border-[#DFBA73]/35 transition-colors shadow-[0_25px_60px_rgba(0,0,0,0.95),inset_0_1px_1px_rgba(255,255,255,0.12)] overflow-visible text-slate-100"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Subtle Top Diagonal Specular Glass Glare */}
-        <div className="pointer-events-none absolute inset-0 rounded-xl overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-white/[0.08] via-transparent to-transparent" />
-        </div>
-
         {/* Close Button */}
         <button
           onClick={onClose}
@@ -385,7 +380,7 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
                     setCatDropdownOpen(!catDropdownOpen);
                     setTopicDropdownOpen(false);
                   }}
-                  className="w-full h-9 sm:h-10 px-3 rounded-lg bg-white/[0.04] border border-white/[0.12] hover:border-white/20 focus:border-[#DFBA73]/70 flex items-center justify-between text-left text-xs sm:text-sm font-serif font-semibold text-white transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.3)] cursor-pointer select-none"
+                  className="w-full h-9 sm:h-10 px-3 rounded-lg bg-[#101524] border border-white/[0.12] hover:border-white/25 focus:border-[#DFBA73]/70 flex items-center justify-between text-left text-xs sm:text-sm font-serif font-semibold text-white transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)] cursor-pointer select-none"
                 >
                   <div className="flex items-center gap-2 overflow-hidden">
                     {currentCategory.id === 'usa' ? (
@@ -405,7 +400,7 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
 
                 {/* Dropdown Menu */}
                 {catDropdownOpen && (
-                  <div className="absolute z-50 left-0 right-0 mt-1 p-1 bg-[#0A0E18]/95 backdrop-blur-2xl border border-white/15 rounded-lg shadow-2xl shadow-black/90 space-y-0.5 animate-in fade-in-50 zoom-in-95 duration-150">
+                  <div className="absolute z-50 left-0 right-0 mt-1 p-1 bg-[#0D1220] border border-white/20 rounded-lg shadow-2xl shadow-black space-y-0.5 animate-in fade-in-50 zoom-in-95 duration-150">
                     {categoriesList.map((cat) => {
                       const isSelected = selectedCat === cat.id;
                       return (
@@ -443,7 +438,7 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
                     setTopicDropdownOpen(!topicDropdownOpen);
                     setCatDropdownOpen(false);
                   }}
-                  className="w-full h-9 sm:h-10 px-3 rounded-lg bg-white/[0.04] border border-white/[0.12] hover:border-white/20 focus:border-[#DFBA73]/70 flex items-center justify-between text-left text-xs sm:text-sm font-serif font-medium text-gray-200 transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.3)] cursor-pointer select-none"
+                  className="w-full h-9 sm:h-10 px-3 rounded-lg bg-[#101524] border border-white/[0.12] hover:border-white/25 focus:border-[#DFBA73]/70 flex items-center justify-between text-left text-xs sm:text-sm font-serif font-medium text-gray-200 transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)] cursor-pointer select-none"
                 >
                   <div className="flex items-center gap-2 overflow-hidden">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#DFBA73] shrink-0 shadow-[0_0_6px_rgba(223,186,115,0.6)]" />
@@ -459,7 +454,7 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
 
                 {/* Dropdown Menu */}
                 {topicDropdownOpen && (
-                  <div className="absolute z-40 left-0 right-0 mt-1 p-1 bg-[#0A0E18]/95 backdrop-blur-2xl border border-white/15 rounded-lg shadow-2xl shadow-black/90 space-y-0.5 animate-in fade-in-50 zoom-in-95 duration-150 max-h-48 overflow-y-auto scrollbar-none">
+                  <div className="absolute z-40 left-0 right-0 mt-1 p-1 bg-[#0D1220] border border-white/20 rounded-lg shadow-2xl shadow-black space-y-0.5 animate-in fade-in-50 zoom-in-95 duration-150 max-h-48 overflow-y-auto scrollbar-none">
                     {currentCategory.chips.map((chip) => {
                       const isSelected = selectedChip === chip;
                       return (
@@ -492,12 +487,12 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
                   value={contact}
                   onChange={(e) => setContact(e.target.value)}
                   placeholder={t('modal', 'contactPlaceholder')}
-                  className="w-full h-9 sm:h-10 px-3 rounded-lg bg-white/[0.04] border border-white/[0.12] focus:border-[#DFBA73]/80 focus:bg-white/[0.07] text-white placeholder-gray-400 font-serif text-xs sm:text-sm outline-none transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.3)]"
+                  className="w-full h-9 sm:h-10 px-3 rounded-lg bg-[#101524] border border-white/[0.12] focus:border-[#DFBA73]/80 focus:bg-[#141b2e] text-white placeholder-gray-400 font-serif text-xs sm:text-sm outline-none transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)]"
                 />
               </div>
 
               {/* 4. Note / Description Textarea */}
-              <div className="rounded-lg p-2.5 bg-white/[0.02] border border-white/[0.10] focus-within:border-white/20 transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.2)]">
+              <div className="rounded-lg p-2.5 bg-[#101524] border border-white/[0.12] focus-within:border-white/25 transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.4)]">
                 <div className="flex items-center justify-between pb-1 mb-1 border-b border-white/10">
                   <label className="text-[10px] font-serif uppercase tracking-wider text-[#DFBA73] font-semibold flex items-center gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#DFBA73]" />
