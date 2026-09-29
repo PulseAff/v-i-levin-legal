@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Send, CheckCircle2, ChevronDown, Lock } from 'lucide-react';
+import { X, CheckCircle2, ChevronDown, ChevronLeft, Lock } from 'lucide-react';
 import { useLanguage, LanguageCode } from '@/context/LanguageContext';
 import { LuxuryUsaFlag } from '@/components/ui/LuxuryUsaFlag';
 
@@ -26,10 +26,19 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
   defaultService,
 }) => {
   const { currentLang, t } = useLanguage();
+  
+  // Step navigation: 1 = choose direction & topic, 2 = choose communication channel
+  const [step, setStep] = useState<1 | 2>(1);
+
   const [selectedCat, setSelectedCat] = useState<string>('usa');
   const [selectedChip, setSelectedChip] = useState<string>('EB-1A / EB-2 NIW');
-  const [contact, setContact] = useState('');
   const [note, setNote] = useState('');
+
+  // Step 2 state: No Telegram toggle & direct contacts
+  const [noTelegram, setNoTelegram] = useState(false);
+  const [whatsapp, setWhatsapp] = useState('');
+  const [email, setEmail] = useState('');
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState('');
@@ -55,15 +64,29 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Handle Escape key
+  // Handle Escape key & reset on open
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen) {
+      setCatDropdownOpen(false);
+      setTopicDropdownOpen(false);
+      return;
+    }
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
+
+  // Reset steps when modal is reopened
+  useEffect(() => {
+    if (isOpen) {
+      setStep(1);
+      setIsSuccess(false);
+      setError('');
+      setNoTelegram(false);
+    }
+  }, [isOpen]);
 
   const CHIPS_BY_LANG: Record<string, Record<LanguageCode, string[]>> = {
     usa: {
@@ -148,24 +171,22 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
     if (initial.includes('usa') || initial.includes('иммиграц') || initial.includes('green') || initial.includes('eb-') || initial.includes('сша')) {
       setSelectedCat('usa');
       setSelectedChip(categoriesList[0].chips[0]);
-    } else if (initial.includes('bus') || initial.includes('бизнес') || initial.includes('контракт') || initial.includes('компан')) {
+    } else if (initial.includes('business') || initial.includes('бизнес') || initial.includes('корпор') || initial.includes('компан')) {
       setSelectedCat('business');
       setSelectedChip(categoriesList[1].chips[0]);
-    } else if (initial.includes('dispute') || initial.includes('спор') || initial.includes('арбитраж') || initial.includes('суд') || initial.includes('долг')) {
+    } else if (initial.includes('dispute') || initial.includes('спор') || initial.includes('суд') || initial.includes('арбитраж')) {
       setSelectedCat('disputes');
       setSelectedChip(categoriesList[2].chips[0]);
     } else if (initial.includes('wealth') || initial.includes('траст') || initial.includes('актив') || initial.includes('капитал')) {
       setSelectedCat('wealth');
       setSelectedChip(categoriesList[3].chips[0]);
-    } else if (initial.includes('other') || initial.includes('ин') || initial.includes('друг') || initial.includes('индивидуальн')) {
+    } else if (initial) {
       setSelectedCat('other');
       setSelectedChip(categoriesList[4].chips[0]);
     }
-  }, [isOpen, defaultCategory, defaultService, currentLang]);
+  }, [isOpen, defaultCategory, defaultService]);
 
-  if (!isOpen) return null;
-
-  const currentCategory = categoriesList.find(c => c.id === selectedCat) || categoriesList[0];
+  const currentCategory = categoriesList.find((c) => c.id === selectedCat) || categoriesList[0];
 
   const handleCatSelect = (cat: CategoryOption) => {
     setSelectedCat(cat.id);
@@ -178,49 +199,44 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
     setTopicDropdownOpen(false);
   };
 
-  const contactErrorMsg =
-    currentLang === 'en'
-      ? 'Please provide your Telegram, WhatsApp, or phone number.'
-      : currentLang === 'uk'
-      ? 'Будь ласка, вкажіть ваш Telegram, телефон або WhatsApp для зв’язку.'
-      : currentLang === 'es'
-      ? 'Por favor, indique su Telegram, teléfono o WhatsApp de contacto.'
-      : currentLang === 'it'
-      ? 'Per favore, indichi il Suo Telegram, telefono o WhatsApp per il contatto.'
-      : currentLang === 'fr'
-      ? 'Veuillez indiquer votre Telegram, téléphone ou WhatsApp pour vous contacter.'
-      : 'Пожалуйста, укажите ваш Telegram, телефон или WhatsApp для связи.';
+  if (!isOpen) return null;
 
-  const categoryStepLabel =
-    currentLang === 'en'
-      ? 'Legal Direction:'
-      : currentLang === 'uk'
-      ? 'Напрямок питання:'
-      : currentLang === 'es'
-      ? 'Área jurídica:'
-      : currentLang === 'it'
-      ? 'Ambito legale:'
-      : currentLang === 'fr'
-      ? 'Domaine juridique :'
-      : 'Направление вопроса:';
+  // Localized microcopy
+  const L = {
+    modalTitle: t('modal', 'title'),
+    catLabel: currentLang === 'en' ? 'LEGAL DIRECTION:' : currentLang === 'uk' ? 'НАПРЯМОК ПИТАННЯ:' : currentLang === 'es' ? 'ÁREA JURÍDICA:' : currentLang === 'it' ? 'AMBITO LEGALE:' : currentLang === 'fr' ? 'DOMAINE JURIDIQUE :' : 'НАПРАВЛЕНИЕ ВОПРОСА:',
+    topicLabel: currentLang === 'en' ? 'SPECIFIC MATTER:' : currentLang === 'uk' ? 'КОНКРЕТИЗАЦІЯ ЗАВДАННЯ:' : currentLang === 'es' ? 'ASUNTO ESPECÍFICO:' : currentLang === 'it' ? 'OGGETTO SPECIFICO:' : currentLang === 'fr' ? 'OBJET SPÉCIFIQUE :' : 'КОНКРЕТИЗАЦИЯ ЗАДАЧИ:',
+    noteLabel: currentLang === 'en' ? 'BRIEF DETAILS (OPTIONAL):' : currentLang === 'uk' ? 'СУТЬ ПИТАННЯ (ОПЦІОНАЛЬНО):' : currentLang === 'es' ? 'DETALLES (OPCIONAL):' : currentLang === 'it' ? 'DETTAGLI (OPZIONALE):' : currentLang === 'fr' ? 'DÉTAILS (OPTIONNEL) :' : 'СУТЬ ВОПРОСА (ОПЦИОНАЛЬНО):',
+    notePlaceholder: currentLang === 'en' ? 'Key facts, jurisdiction or deadlines...' : currentLang === 'uk' ? 'Ключові обставини, терміни...' : currentLang === 'es' ? 'Circunstancias clave o plazos...' : currentLang === 'it' ? 'Circostanze chiave o scadenze...' : currentLang === 'fr' ? 'Circonstances clés ou délais...' : 'Ключевые обстоятельства, юрисдикции или дедлайны...',
+    nextBtn: currentLang === 'en' ? 'Continue →' : currentLang === 'uk' ? 'Продовжити →' : currentLang === 'es' ? 'Continuar →' : currentLang === 'it' ? 'Continua →' : currentLang === 'fr' ? 'Continuer →' : 'Продолжить →',
+    backBtn: currentLang === 'en' ? 'Back' : currentLang === 'uk' ? 'Назад' : currentLang === 'es' ? 'Atrás' : currentLang === 'it' ? 'Indietro' : currentLang === 'fr' ? 'Retour' : 'Назад',
+    step2Title: currentLang === 'en' ? 'For a faster response, send your inquiry via our Telegram bot' : currentLang === 'uk' ? 'Для швидшої відповіді надішліть вашу заявку через наш Telegram-бот' : currentLang === 'es' ? 'Para una respuesta más rápida, envíe su consulta por Telegram bot' : currentLang === 'it' ? 'Per una risposta più rapida, invii la richiesta tramite bot Telegram' : currentLang === 'fr' ? 'Pour une réponse plus rapide, envoyez votre demande via le bot Telegram' : 'Для более быстрого ответа отправьте вашу заявку через наш Telegram-бот',
+    step2Sub: currentLang === 'en' ? 'Direct secure connection with legal counsel in one click.' : currentLang === 'uk' ? 'Прямий захищений зв’язок із юристом в один клік.' : currentLang === 'es' ? 'Conexión segura directa con el jurista en un clic.' : currentLang === 'it' ? 'Collegamento sicuro diretto con il giurista in un clic.' : currentLang === 'fr' ? 'Liaison sécurisée directe avec le juriste en un clic.' : 'Прямая защищенная связь с юристом в один клик.',
+    tgBtn: currentLang === 'en' ? '💬 SEND VIA TELEGRAM BOT' : currentLang === 'uk' ? '💬 ВІДПРАВИТИ ЧЕРЕЗ TELEGRAM-БОТ' : currentLang === 'es' ? '💬 ENVIAR POR TELEGRAM BOT' : currentLang === 'it' ? '💬 INVIA TRAMITE BOT TELEGRAM' : currentLang === 'fr' ? '💬 ENVOYER VIA LE BOT TELEGRAM' : '💬 ОТПРАВИТЬ ЧЕРЕЗ TELEGRAM-БОТ',
+    noTgCheckbox: currentLang === 'en' ? 'I do not have Telegram' : currentLang === 'uk' ? 'У мене немає Telegram' : currentLang === 'es' ? 'No tengo Telegram' : currentLang === 'it' ? 'Non ho Telegram' : currentLang === 'fr' ? 'Je n’ai pas Telegram' : 'У меня нет Telegram',
+    waLabel: currentLang === 'en' ? 'WHATSAPP OR PHONE NUMBER:' : currentLang === 'uk' ? 'WHATSAPP АБО ТЕЛЕФОН:' : currentLang === 'es' ? 'WHATSAPP O TELÉFONO:' : currentLang === 'it' ? 'WHATSAPP O TELEFONO:' : currentLang === 'fr' ? 'WHATSAPP OU TÉLÉPHONE :' : 'WHATSAPP ИЛИ ТЕЛЕФОН:',
+    waPlaceholder: currentLang === 'en' ? '+1 (___) ___-____ or country code' : currentLang === 'uk' ? '+380 (__) ___-__-__ або код країни' : currentLang === 'es' ? '+34 (___) ___-___ o código de país' : currentLang === 'it' ? '+39 (___) ___-___ o prefisso' : currentLang === 'fr' ? '+33 (_) __ __ __ __ ou indicatif' : '+1 (___) ___-____ или номер с кодом страны',
+    emailLabel: currentLang === 'en' ? 'EMAIL ADDRESS:' : currentLang === 'uk' ? 'ЕЛЕКТРОННА ПОШТА (EMAIL):' : currentLang === 'es' ? 'CORREO ELECTRÓNICO (EMAIL):' : currentLang === 'it' ? 'INDIRIZZO EMAIL:' : currentLang === 'fr' ? 'ADRESSE EMAIL :' : 'ЭЛЕКТРОННАЯ ПОЧТА (EMAIL):',
+    emailPlaceholder: 'name@example.com',
+    submitDirectBtn: currentLang === 'en' ? 'Submit Inquiry' : currentLang === 'uk' ? 'Надіслати заявку' : currentLang === 'es' ? 'Enviar solicitud' : currentLang === 'it' ? 'Invia richiesta' : currentLang === 'fr' ? 'Envoyer la demande' : 'Отправить заявку',
+    submitting: currentLang === 'en' ? 'Sending...' : currentLang === 'uk' ? 'Надсилання...' : currentLang === 'es' ? 'Enviando...' : currentLang === 'it' ? 'Invio in corso...' : currentLang === 'fr' ? 'Envoi...' : 'Отправка...',
+    errorMissingContact: currentLang === 'en' ? 'Please provide your WhatsApp number or Email.' : currentLang === 'uk' ? 'Будь ласка, вкажіть ваш WhatsApp або Email.' : currentLang === 'es' ? 'Indique su WhatsApp o correo electrónico.' : currentLang === 'it' ? 'Indichi il Suo WhatsApp o indirizzo email.' : currentLang === 'fr' ? 'Veuillez indiquer votre WhatsApp ou Email.' : 'Пожалуйста, укажите WhatsApp или Email для связи.',
+    successTitle: currentLang === 'en' ? 'Inquiry Successfully Received' : currentLang === 'uk' ? 'Заявку успішно прийнято' : currentLang === 'es' ? 'Solicitud recibida con éxito' : currentLang === 'it' ? 'Richiesta ricevuta con successo' : currentLang === 'fr' ? 'Demande reçue avec succès' : 'Заявка успешно принята',
+    successDesc: currentLang === 'en' ? 'Details forwarded to legal counsel. We will contact you via WhatsApp or Email shortly.' : currentLang === 'uk' ? 'Деталі передано юристу практики. Ми зв’яжемося з вами за вказаним WhatsApp або Email.' : currentLang === 'es' ? 'Detalles enviados al jurista. Nos comunicaremos con usted por WhatsApp o Email en breve.' : currentLang === 'it' ? 'Dettagli inoltrati al giurista. La contatteremo a breve via WhatsApp o Email.' : currentLang === 'fr' ? 'Détails transmis au juriste. Nous vous contacterons rapidement par WhatsApp ou Email.' : 'Детали переданы юристу практики. Мы свяжемся с вами по указанному WhatsApp или Email в ближайшее время.',
+    closeBtn: currentLang === 'en' ? 'Close' : currentLang === 'uk' ? 'Закрити' : currentLang === 'es' ? 'Cerrar' : currentLang === 'it' ? 'Chiudi' : currentLang === 'fr' ? 'Fermer' : 'Закрыть',
+  };
 
-  const topicStepLabel =
-    currentLang === 'en'
-      ? 'Specific Matter / Service:'
-      : currentLang === 'uk'
-      ? 'Конкретизація завдання:'
-      : currentLang === 'es'
-      ? 'Asunto específico:'
-      : currentLang === 'it'
-      ? 'Oggetto specifico:'
-      : currentLang === 'fr'
-      ? 'Objet spécifique :'
-      : 'Конкретизация задачи:';
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Step 1: Proceed to communication channel selection
+  const handleProceedToContact = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!contact.trim()) {
-      setError(contactErrorMsg);
+    setStep(2);
+  };
+
+  // Step 2: Submit direct WhatsApp / Email application
+  const handleSubmitDirect = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!whatsapp.trim() && !email.trim()) {
+      setError(L.errorMissingContact);
       return;
     }
 
@@ -230,23 +246,30 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
     const botToken = '8805827853:AAGALkEhBOUTe2xNiKbehggEnC0cAKvwV-0';
     const recipients = ['7794422014', '6961207071'];
 
+    const cleanPhone = whatsapp.replace(/[^0-9]/g, '');
+    const waLink = cleanPhone ? `https://wa.me/${cleanPhone}` : '';
+
     const messageText = 
-      `⚖️ *НОВАЯ ЗАЯВКА НА КОНСУЛЬТАЦИЮ*
-` +
-      `📂 *Направление:* ${currentCategory.icon} ${currentCategory.title}
-` +
-      `📌 *Тема / Вопрос:* ${selectedChip}
-` +
-      `📱 *Контакт:* \`${contact.trim()}\`
-` +
-      (note.trim() ? `💬 *Примечание:* ${note.trim()}
-` : '') +
-      `🌐 *Язык:* ${currentLang.toUpperCase()}
-` +
+      `⚖️ *НОВАЯ ЗАЯВКА НА КОНСУЛЬТАЦИЮ (БЕЗ TELEGRAM)*\n` +
+      `━━━━━━━━━━━━━━━━━━━━\n` +
+      `📂 *Направление:* ${currentCategory.icon} ${currentCategory.title}\n` +
+      `📌 *Подкатегория:* ${selectedChip}\n\n` +
+      (whatsapp.trim() ? `🟢 *WhatsApp:* \`${whatsapp.trim()}\`${waLink ? ` ([Открыть чат](${waLink}))` : ''}\n` : '') +
+      (email.trim() ? `✉️ *Email:* \`${email.trim()}\`\n` : '') +
+      (note.trim() ? `\n💬 *Суть вопроса:* ${note.trim()}\n` : '') +
+      `\n🌐 *Язык сайта:* ${currentLang.toUpperCase()}\n` +
       `🕒 *Время:* ${new Date().toLocaleString('ru-RU')}`;
 
+    const inlineKeyboard: Array<Array<{ text: string; url: string }>> = [];
+    if (waLink) {
+      inlineKeyboard.push([{ text: '🟢 Написать клиенту в WhatsApp', url: waLink }]);
+    }
+    if (email.trim()) {
+      inlineKeyboard.push([{ text: '✉️ Отправить Email клиенту', url: `mailto:${email.trim()}` }]);
+    }
+
     try {
-      // Direct delivery to Telegram Bot API
+      // Direct delivery to Telegram Bot API with quick action buttons
       await Promise.all(recipients.map(async (chatId) => {
         try {
           await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
@@ -255,6 +278,8 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
             body: JSON.stringify({
               chat_id: chatId,
               text: messageText,
+              parse_mode: 'Markdown',
+              reply_markup: inlineKeyboard.length > 0 ? { inline_keyboard: inlineKeyboard } : undefined,
             }),
           });
         } catch {
@@ -268,10 +293,10 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            source: 'Liquid Glass Modal',
+            source: 'Modal (No-Telegram direct)',
             serviceCategory: currentCategory.title,
             topic: selectedChip,
-            contact: { contact: contact.trim() },
+            contact: { whatsapp: whatsapp.trim(), email: email.trim() },
             description: note.trim(),
           }),
         }).catch(() => {});
@@ -289,93 +314,64 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
 
   return (
     <div 
-      className="fixed inset-0 z-[200] min-h-[100dvh] flex items-center justify-center p-3 sm:p-4 bg-black/40 backdrop-blur-sm overflow-y-auto animate-in fade-in duration-200"
+      className="fixed inset-0 z-[200] min-h-[100dvh] flex items-center justify-center p-3 sm:p-4 bg-black/50 backdrop-blur-sm overflow-y-auto animate-in fade-in duration-200"
       onClick={onClose}
     >
       <div 
-        className="relative w-full max-w-[420px] m-auto p-4 sm:p-5 rounded-xl bg-[#0B0F19] border border-white/[0.12] hover:border-[#DFBA73]/35 transition-colors shadow-[0_25px_60px_rgba(0,0,0,0.95),inset_0_1px_1px_rgba(255,255,255,0.12)] overflow-visible text-slate-100"
+        className="relative w-full max-w-[390px] m-auto p-4 sm:p-5 rounded-xl bg-[#0B0F19] border border-white/[0.12] shadow-[0_20px_50px_rgba(0,0,0,0.95),inset_0_1px_1px_rgba(255,255,255,0.12)] overflow-visible text-slate-100"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-3.5 right-3.5 text-gray-400 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-colors cursor-pointer z-30"
+          className="absolute top-3 right-3 text-gray-400 hover:text-white p-1 rounded-md hover:bg-white/10 transition-colors cursor-pointer z-30"
           aria-label="Закрыть"
         >
-          <X size={16} />
+          <X size={15} />
         </button>
 
         {isSuccess ? (
-          <div className="py-6 text-center space-y-4">
-            <div className="w-12 h-12 bg-emerald-500/15 text-emerald-400 rounded-full flex items-center justify-center mx-auto border border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.2)]">
-              <CheckCircle2 size={26} />
+          /* SUCCESS SCREEN (FOR DIRECT WHATSAPP/EMAIL USERS) */
+          <div className="py-5 text-center space-y-3.5">
+            <div className="w-11 h-11 bg-emerald-500/15 text-emerald-400 rounded-full flex items-center justify-center mx-auto border border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+              <CheckCircle2 size={24} />
             </div>
             <div>
-              <h3 className="text-xl font-serif text-[#FFE8A3] font-bold tracking-tight">
-                {t('modal', 'successTitle')}
+              <h3 className="text-base font-serif text-[#FFE8A3] font-bold tracking-tight">
+                {L.successTitle}
               </h3>
-              <p className="text-gray-300 text-xs sm:text-sm max-w-xs mx-auto font-serif font-light leading-relaxed mt-1">
-                {t('modal', 'successDesc')}
+              <p className="text-gray-300 text-xs max-w-xs mx-auto font-sans font-light leading-relaxed mt-1">
+                {L.successDesc}
               </p>
             </div>
 
-            {/* Direct Telegram Connection Button */}
-            <div className="pt-2 space-y-2">
-              <a
-                href="https://t.me/VILEVIN_bot"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full py-3 px-6 rounded-md text-[#080B11] font-bold text-xs tracking-wider uppercase hover:brightness-105 active:scale-[0.98] transition-all shadow-md border border-[#FFE8A3]/50 cursor-pointer flex items-center justify-center gap-2 font-sans"
+            <div className="pt-2">
+              <button
+                onClick={onClose}
+                className="w-full py-2.5 px-4 rounded-md text-[#080B11] font-bold text-xs tracking-wider uppercase hover:brightness-105 active:scale-[0.98] transition-all shadow-md border border-[#FFE8A3]/50 cursor-pointer font-sans"
                 style={{
                   background: 'linear-gradient(135deg, #F3E2B8 0%, #D4AF37 50%, #99742B 100%)',
                 }}
               >
-                <span>💬</span>
-                <span>
-                  {currentLang === 'en'
-                    ? 'Start dialogue with legal counsel in Telegram'
-                    : currentLang === 'uk'
-                    ? 'Розпочати діалог з юристом у Telegram'
-                    : currentLang === 'es'
-                    ? 'Iniciar diálogo con el jurista en Telegram'
-                    : currentLang === 'it'
-                    ? 'Avvia dialogo con il giurista su Telegram'
-                    : currentLang === 'fr'
-                    ? 'Démarrer le dialogue avec le juriste sur Telegram'
-                    : 'Начать диалог с юристом в Telegram'}
-                </span>
-              </a>
-
-              <button
-                onClick={onClose}
-                className="text-gray-400 hover:text-white text-xs font-sans uppercase tracking-wider transition-colors cursor-pointer block mx-auto pt-1 font-medium"
-              >
-                {t('modal', 'successBtn')}
+                {L.closeBtn}
               </button>
             </div>
           </div>
-        ) : (
+        ) : step === 1 ? (
+          /* STEP 1: SELECT DIRECTION & SPECIFIC MATTER */
           <div className="space-y-3 relative z-10">
-            
-            {/* Modal Title */}
+            {/* Modal Header */}
             <div className="pr-6">
-              <h2 className="text-lg sm:text-xl font-serif font-bold text-white tracking-tight leading-snug">
-                {t('modal', 'title')}
+              <h2 className="text-base sm:text-lg font-serif font-bold text-white tracking-tight leading-snug">
+                {L.modalTitle}
               </h2>
             </div>
 
-            {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-2.5">
-              {error && (
-                <div className="p-2 rounded-lg bg-red-950/80 border border-red-500/40 text-red-200 text-xs font-serif">
-                  {error}
-                </div>
-              )}
-
-              {/* 1. Category Dropdown (Выпадающий список направлений) */}
+            <form onSubmit={handleProceedToContact} className="space-y-2.5">
+              {/* 1. Category Dropdown */}
               <div ref={catRef} className="relative">
-                <label className="text-xs font-sans font-semibold tracking-wider text-[#DFBA73] block mb-1.5 uppercase">
-                  {categoryStepLabel}
+                <label className="text-[10px] font-sans font-semibold tracking-wider text-[#DFBA73] block mb-1 uppercase">
+                  {L.catLabel}
                 </label>
                 <button
                   type="button"
@@ -383,18 +379,18 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
                     setCatDropdownOpen(!catDropdownOpen);
                     setTopicDropdownOpen(false);
                   }}
-                  className="w-full h-10 px-3.5 rounded-lg bg-[#101524] border border-white/[0.15] hover:border-white/30 focus:border-[#DFBA73] flex items-center justify-between text-left text-sm font-sans font-medium text-white transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)] cursor-pointer select-none"
+                  className="w-full h-9 px-3 rounded-md bg-[#101524] border border-white/[0.12] hover:border-white/25 focus:border-[#DFBA73] flex items-center justify-between text-left text-xs font-sans font-medium text-white transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)] cursor-pointer select-none"
                 >
-                  <div className="flex items-center gap-2.5 overflow-hidden">
+                  <div className="flex items-center gap-2 overflow-hidden">
                     {currentCategory.id === 'usa' ? (
                       <LuxuryUsaFlag size="xs" />
                     ) : (
-                      <span className="text-sm shrink-0">{currentCategory.icon}</span>
+                      <span className="text-xs shrink-0">{currentCategory.icon}</span>
                     )}
                     <span className="truncate text-white font-medium">{currentCategory.title}</span>
                   </div>
                   <ChevronDown
-                    size={15}
+                    size={13}
                     className={`text-gray-400 shrink-0 transition-transform duration-200 ${
                       catDropdownOpen ? 'rotate-180 text-[#DFBA73]' : ''
                     }`}
@@ -403,7 +399,7 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
 
                 {/* Dropdown Menu */}
                 {catDropdownOpen && (
-                  <div className="absolute z-50 left-0 right-0 mt-1 p-1.5 bg-[#0D1220] border border-white/20 rounded-lg shadow-2xl shadow-black space-y-0.5 animate-in fade-in-50 zoom-in-95 duration-150">
+                  <div className="absolute z-50 left-0 right-0 mt-1 p-1 bg-[#0D1220] border border-white/20 rounded-md shadow-2xl shadow-black space-y-0.5 animate-in fade-in-50 zoom-in-95 duration-150">
                     {categoriesList.map((cat) => {
                       const isSelected = selectedCat === cat.id;
                       return (
@@ -411,7 +407,7 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
                           key={cat.id}
                           type="button"
                           onClick={() => handleCatSelect(cat)}
-                          className={`w-full px-3 py-2 rounded-md text-sm font-sans text-left flex items-center gap-2.5 transition-all cursor-pointer ${
+                          className={`w-full px-2.5 py-1.5 rounded text-xs font-sans text-left flex items-center gap-2 transition-all cursor-pointer ${
                             isSelected
                               ? 'bg-[#DFBA73]/20 text-[#FFE8A3] border border-[#DFBA73]/40 font-semibold'
                               : 'text-gray-200 hover:bg-white/10 hover:text-white border border-transparent'
@@ -420,7 +416,7 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
                           {cat.id === 'usa' ? (
                             <LuxuryUsaFlag size="xs" />
                           ) : (
-                            <span className="text-sm">{cat.icon}</span>
+                            <span className="text-xs">{cat.icon}</span>
                           )}
                           <span className="truncate">{cat.title}</span>
                         </button>
@@ -430,10 +426,10 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
                 )}
               </div>
 
-              {/* 2. Specific Topic Dropdown (Выпадающий список задач) */}
+              {/* 2. Specific Topic Dropdown */}
               <div ref={topicRef} className="relative">
-                <label className="text-xs font-sans font-semibold tracking-wider text-[#DFBA73] block mb-1.5 uppercase">
-                  {topicStepLabel}
+                <label className="text-[10px] font-sans font-semibold tracking-wider text-[#DFBA73] block mb-1 uppercase">
+                  {L.topicLabel}
                 </label>
                 <button
                   type="button"
@@ -441,14 +437,14 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
                     setTopicDropdownOpen(!topicDropdownOpen);
                     setCatDropdownOpen(false);
                   }}
-                  className="w-full h-10 px-3.5 rounded-lg bg-[#101524] border border-white/[0.15] hover:border-white/30 focus:border-[#DFBA73] flex items-center justify-between text-left text-sm font-sans font-medium text-white transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)] cursor-pointer select-none"
+                  className="w-full h-9 px-3 rounded-md bg-[#101524] border border-white/[0.12] hover:border-white/25 focus:border-[#DFBA73] flex items-center justify-between text-left text-xs font-sans font-medium text-white transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)] cursor-pointer select-none"
                 >
-                  <div className="flex items-center gap-2.5 overflow-hidden">
-                    <span className="w-2 h-2 rounded-full bg-[#DFBA73] shrink-0 shadow-[0_0_6px_rgba(223,186,115,0.7)]" />
+                  <div className="flex items-center gap-2 overflow-hidden">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#DFBA73] shrink-0 shadow-[0_0_5px_rgba(223,186,115,0.7)]" />
                     <span className="truncate text-white font-medium">{selectedChip}</span>
                   </div>
                   <ChevronDown
-                    size={15}
+                    size={13}
                     className={`text-gray-400 shrink-0 transition-transform duration-200 ${
                       topicDropdownOpen ? 'rotate-180 text-[#DFBA73]' : ''
                     }`}
@@ -457,7 +453,7 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
 
                 {/* Dropdown Menu */}
                 {topicDropdownOpen && (
-                  <div className="absolute z-40 left-0 right-0 mt-1 p-1.5 bg-[#0D1220] border border-white/20 rounded-lg shadow-2xl shadow-black space-y-0.5 animate-in fade-in-50 zoom-in-95 duration-150 max-h-48 overflow-y-auto scrollbar-none">
+                  <div className="absolute z-40 left-0 right-0 mt-1 p-1 bg-[#0D1220] border border-white/20 rounded-md shadow-2xl shadow-black space-y-0.5 animate-in fade-in-50 zoom-in-95 duration-150 max-h-44 overflow-y-auto scrollbar-none">
                     {currentCategory.chips.map((chip) => {
                       const isSelected = selectedChip === chip;
                       return (
@@ -465,7 +461,7 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
                           key={chip}
                           type="button"
                           onClick={() => handleTopicSelect(chip)}
-                          className={`w-full px-3 py-2 rounded-md text-sm font-sans text-left transition-all cursor-pointer ${
+                          className={`w-full px-2.5 py-1.5 rounded text-xs font-sans text-left transition-all cursor-pointer ${
                             isSelected
                               ? 'bg-[#DFBA73]/20 text-[#FFE8A3] border border-[#DFBA73]/40 font-semibold'
                               : 'text-gray-200 hover:bg-white/10 hover:text-white border border-transparent'
@@ -479,83 +475,160 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
                 )}
               </div>
 
-              {/* 3. Contact Input */}
-              <div>
-                <label className="text-xs font-sans font-semibold tracking-wider text-[#DFBA73] block mb-1.5 uppercase">
-                  {t('modal', 'contactLabel')}
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={contact}
-                  onChange={(e) => setContact(e.target.value)}
-                  placeholder={t('modal', 'contactPlaceholder')}
-                  className="w-full h-10 px-3.5 rounded-lg bg-[#101524] border border-white/[0.15] focus:border-[#DFBA73] focus:bg-[#141b2e] text-white placeholder-gray-400 font-sans text-sm outline-none transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)]"
-                />
-              </div>
-
-              {/* 4. Note / Description Textarea */}
-              <div className="rounded-lg p-2.5 bg-[#101524] border border-white/[0.15] focus-within:border-white/30 transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.4)]">
-                <div className="flex items-center justify-between pb-1.5 mb-1.5 border-b border-white/10">
-                  <label className="text-xs font-sans uppercase tracking-wider text-[#DFBA73] font-semibold flex items-center gap-1.5">
+              {/* 3. Note / Description Textarea */}
+              <div className="rounded-md p-2 bg-[#101524] border border-white/[0.12] focus-within:border-white/25 transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.4)]">
+                <div className="flex items-center justify-between pb-1 mb-1 border-b border-white/10">
+                  <label className="text-[10px] font-sans uppercase tracking-wider text-[#DFBA73] font-semibold flex items-center gap-1">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#DFBA73]" />
-                    {t('modal', 'noteLabel')}
+                    {L.noteLabel}
                   </label>
-                  <span className="text-[10px] font-mono text-gray-400 uppercase tracking-widest flex items-center gap-1">
-                    <Lock size={9} /> Confidential
+                  <span className="text-[9px] font-mono text-gray-400 uppercase tracking-widest flex items-center gap-1">
+                    <Lock size={8} /> Confidential
                   </span>
                 </div>
                 <textarea
                   rows={2}
                   value={note}
                   onChange={(e) => setNote(e.target.value)}
-                  placeholder={t('modal', 'notePlaceholder')}
-                  className="w-full bg-transparent text-white placeholder-gray-400 font-sans text-sm outline-none resize-none leading-relaxed"
+                  placeholder={L.notePlaceholder}
+                  className="w-full bg-transparent text-white placeholder-gray-500 font-sans text-xs outline-none resize-none leading-relaxed"
                 />
               </div>
 
-              {/* 5. Submit Button — in Hero 'СТРАТЕГИЧЕСКАЯ КОНСУЛЬТАЦИЯ' style */}
-              <div className="pt-2">
+              {/* Step 1 Button: Continue */}
+              <div className="pt-1.5">
                 <button
                   type="submit"
-                  disabled={isSubmitting}
-                  className="w-full py-3 px-6 rounded-md text-[#080B11] font-bold text-xs tracking-wider uppercase hover:brightness-105 active:scale-[0.98] transition-all shadow-md border border-[#FFE8A3]/50 cursor-pointer flex items-center justify-center font-sans disabled:opacity-50"
+                  className="w-full py-2.5 px-4 rounded-md text-[#080B11] font-bold text-xs tracking-wider uppercase hover:brightness-105 active:scale-[0.98] transition-all shadow-md border border-[#FFE8A3]/50 cursor-pointer flex items-center justify-center font-sans"
                   style={{
                     background: 'linear-gradient(135deg, #F3E2B8 0%, #D4AF37 50%, #99742B 100%)',
                   }}
                 >
-                  <span className="font-bold">
-                    {isSubmitting ? t('modal', 'submitting') : t('modal', 'submitBtn')}
-                  </span>
+                  <span>{L.nextBtn}</span>
                 </button>
               </div>
-
-              {/* Direct Telegram Link Alternative */}
-              <div className="pt-1.5 text-center">
-                <a
-                  href="https://t.me/VILEVIN_bot"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-xs font-sans text-[#DFBA73] hover:text-[#FFE8A3] transition-colors py-0.5"
-                >
-                  <span>
-                    {currentLang === 'en'
-                      ? 'Or contact legal counsel directly in Telegram:'
-                      : currentLang === 'uk'
-                      ? 'Або напишіть юристу напряму в Telegram:'
-                      : currentLang === 'es'
-                      ? 'O escriba al jurista directamente en Telegram:'
-                      : currentLang === 'it'
-                      ? 'O scrivi direttamente al giurista su Telegram:'
-                      : currentLang === 'fr'
-                      ? 'Ou écrivez directement au juriste sur Telegram:'
-                      : 'Или напишите юристу напрямую в Telegram:'}
-                  </span>
-                  <span className="font-semibold underline underline-offset-2">@VILEVIN_bot</span>
-                </a>
-              </div>
-
             </form>
+          </div>
+        ) : (
+          /* STEP 2: CHANNEL SELECTION (TELEGRAM BOT PRIORITY OR WHATSAPP/EMAIL) */
+          <div className="space-y-3 relative z-10 animate-in fade-in duration-200">
+            {/* Back Button */}
+            <button
+              type="button"
+              onClick={() => {
+                setStep(1);
+                setError('');
+              }}
+              className="inline-flex items-center gap-1 text-[11px] font-sans text-gray-400 hover:text-white transition-colors cursor-pointer"
+            >
+              <ChevronLeft size={13} />
+              <span>{L.backBtn}</span>
+            </button>
+
+            {/* Step 2 Heading */}
+            <div>
+              <h3 className="text-xs sm:text-sm font-sans font-semibold text-white leading-snug">
+                {L.step2Title}
+              </h3>
+              <p className="text-[11px] font-sans text-gray-400 mt-0.5 leading-tight">
+                {L.step2Sub}
+              </p>
+            </div>
+
+            {/* Priority Channel: Telegram Bot Button */}
+            <div className="pt-0.5">
+              <a
+                href="https://t.me/VILEVIN_bot"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={onClose}
+                className="w-full py-2.5 px-4 rounded-md text-[#080B11] font-bold text-xs tracking-wider uppercase hover:brightness-105 active:scale-[0.98] transition-all shadow-md border border-[#FFE8A3]/50 cursor-pointer flex items-center justify-center gap-2 font-sans"
+                style={{
+                  background: 'linear-gradient(135deg, #F3E2B8 0%, #D4AF37 50%, #99742B 100%)',
+                }}
+              >
+                <span>{L.tgBtn}</span>
+              </a>
+            </div>
+
+            {/* Checkbox: "I don't have Telegram" */}
+            <div className="pt-1 border-t border-white/10">
+              <label className="flex items-center gap-2 cursor-pointer select-none group py-1">
+                <input
+                  type="checkbox"
+                  checked={noTelegram}
+                  onChange={(e) => {
+                    setNoTelegram(e.target.checked);
+                    setError('');
+                  }}
+                  className="w-3.5 h-3.5 rounded border-white/20 text-[#DFBA73] focus:ring-0 focus:ring-offset-0 bg-[#101524] cursor-pointer accent-[#DFBA73]"
+                />
+                <span className="text-[11px] font-sans text-gray-300 group-hover:text-white transition-colors">
+                  {L.noTgCheckbox}
+                </span>
+              </label>
+            </div>
+
+            {/* Revealed Direct Form for WhatsApp and Email */}
+            {noTelegram && (
+              <form onSubmit={handleSubmitDirect} className="space-y-2 pt-1 animate-in fade-in slide-in-from-top-2 duration-200">
+                {error && (
+                  <div className="p-2 rounded bg-red-950/80 border border-red-500/40 text-red-200 text-[11px] font-sans">
+                    {error}
+                  </div>
+                )}
+
+                {/* WhatsApp Row */}
+                <div>
+                  <label className="text-[10px] font-sans font-semibold tracking-wider text-[#DFBA73] block mb-1 uppercase">
+                    {L.waLabel}
+                  </label>
+                  <input
+                    type="tel"
+                    value={whatsapp}
+                    onChange={(e) => setWhatsapp(e.target.value)}
+                    placeholder={L.waPlaceholder}
+                    className="w-full h-8.5 px-3 rounded-md bg-[#101524] border border-white/[0.12] focus:border-[#DFBA73] focus:bg-[#141b2e] text-white placeholder-gray-500 font-sans text-xs outline-none transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)]"
+                  />
+                </div>
+
+                {/* Email Row */}
+                <div>
+                  <label className="text-[10px] font-sans font-semibold tracking-wider text-[#DFBA73] block mb-1 uppercase">
+                    {L.emailLabel}
+                  </label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder={L.emailPlaceholder}
+                    className="w-full h-8.5 px-3 rounded-md bg-[#101524] border border-white/[0.12] focus:border-[#DFBA73] focus:bg-[#141b2e] text-white placeholder-gray-500 font-sans text-xs outline-none transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)]"
+                  />
+                </div>
+
+                {/* Summary of chosen direction */}
+                <div className="p-1.5 rounded bg-white/[0.03] border border-white/[0.08] text-[10.5px] font-sans text-gray-300 flex items-center justify-between">
+                  <span className="text-gray-400">Тема:</span>
+                  <span className="text-[#FFE8A3] font-medium truncate max-w-[240px]">
+                    {currentCategory.icon} {currentCategory.title} · {selectedChip}
+                  </span>
+                </div>
+
+                {/* Submit direct inquiry button */}
+                <div className="pt-1">
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full py-2.5 px-4 rounded-md text-[#080B11] font-bold text-xs tracking-wider uppercase hover:brightness-105 active:scale-[0.98] transition-all shadow-md border border-[#FFE8A3]/50 cursor-pointer flex items-center justify-center font-sans disabled:opacity-50"
+                    style={{
+                      background: 'linear-gradient(135deg, #F3E2B8 0%, #D4AF37 50%, #99742B 100%)',
+                    }}
+                  >
+                    <span>{isSubmitting ? L.submitting : L.submitDirectBtn}</span>
+                  </button>
+                </div>
+              </form>
+            )}
           </div>
         )}
       </div>
