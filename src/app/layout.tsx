@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Script from 'next/script';
 import { Inter, Cormorant_Garamond } from 'next/font/google';
 import './globals.css';
 import { Header } from '@/components/layout/Header';
@@ -223,21 +222,18 @@ export default function RootLayout({
         />
         {gaId && (
           <>
-            <Script
-              strategy="afterInteractive"
+            <script
+              async
               src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
             />
-            <Script
+            <script
               id="google-analytics"
-              strategy="afterInteractive"
               dangerouslySetInnerHTML={{
                 __html: `
                   window.dataLayer = window.dataLayer || [];
                   function gtag(){dataLayer.push(arguments);}
                   gtag('js', new Date());
-                  gtag('config', '${gaId}', {
-                    page_path: window.location.pathname,
-                  });
+                  gtag('config', '${gaId}');
                 `,
               }}
             />
