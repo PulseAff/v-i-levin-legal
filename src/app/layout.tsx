@@ -59,6 +59,7 @@ export const metadata: Metadata = {
       'es': 'https://vilevin.com/?lang=es',
       'it': 'https://vilevin.com/?lang=it',
       'fr': 'https://vilevin.com/?lang=fr',
+      'tr': 'https://vilevin.com/?lang=tr',
       'x-default': 'https://vilevin.com',
     },
   },
@@ -160,6 +161,7 @@ export default function RootLayout({
           { '@type': 'Country', name: 'Switzerland' },
           { '@type': 'Country', name: 'Cyprus' },
           { '@type': 'Country', name: 'Georgia' },
+          { '@type': 'Country', name: 'Turkey' },
         ],
         contactPoint: [
           {

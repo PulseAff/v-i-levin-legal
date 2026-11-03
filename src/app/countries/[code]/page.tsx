@@ -17,9 +17,20 @@ export function generateMetadata({ params }: PageProps): Metadata {
   const country = countriesData.find((c) => c.code === params.code);
   if (!country) return { title: 'Страна не найдена' };
 
+  const title = country.seoTitle || `Юрисдикция ${country.name} | V. I. LEVIN Practice`;
+  const description = country.shortOverview;
+
   return {
-    title: `Юрисдикция ${country.name} | V. I. LEVIN Practice`,
-    description: country.shortOverview,
+    title,
+    description,
+    alternates: {
+      canonical: `https://vilevin.com/countries/${country.code}`,
+    },
+    openGraph: {
+      title,
+      description,
+      url: `https://vilevin.com/countries/${country.code}`,
+    },
   };
 }
 
@@ -42,8 +53,8 @@ export default function CountryDetailPage({ params }: PageProps) {
           <div className="flex items-center gap-3">
             <span className="text-4xl">{country.flag}</span>
             <div>
-              <h1 className="text-3xl sm:text-4xl font-serif text-white font-bold">
-                {country.name}
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-serif text-white font-bold leading-tight">
+                {country.h1Title || country.name}
               </h1>
               <p className="text-xs text-gold-400 uppercase tracking-wider font-semibold">
                 {country.region} • Столица: {country.capital}
