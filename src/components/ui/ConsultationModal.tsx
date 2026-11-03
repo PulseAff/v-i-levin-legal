@@ -280,8 +280,8 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
 
   // Localized microcopy
   const L = {
-    modalTitle: currentLang === 'en' ? 'STRATEGIC LEGAL CONSULTATION' : currentLang === 'uk' ? 'СТРАТЕГІЧНА КОНСУЛЬТАЦІЯ' : currentLang === 'es' ? 'CONSULTA ESTRATÉGICA' : currentLang === 'it' ? 'CONSULENZA STRATEGICA' : currentLang === 'fr' ? 'CONSULTATION STRATÉGIQUE' : 'СТРАТЕГИЧЕСКАЯ КОНСУЛЬТАЦИЯ',
-    modalSub: currentLang === 'en' ? 'Direct confidential review of your matter by senior international counsel.' : currentLang === 'uk' ? 'Прямий конфіденційний розгляд вашої справи провідним міжнародним юристом.' : currentLang === 'es' ? 'Revisión jurídica directa y confidencial de su caso por abogado internacional.' : currentLang === 'it' ? 'Esame riservato e strategico del Suo caso da parte del professionista titolare.' : currentLang === 'fr' ? 'Examen direct et confidentiel de votre dossier par un juriste international.' : 'Прямой конфиденциальный разбор вашей ситуации ведущим международным юристом.',
+    modalTitle: currentLang === 'en' ? 'LEGAL CONSULTATION' : currentLang === 'uk' ? 'ЮРИДИЧНА КОНСУЛЬТАЦІЯ' : currentLang === 'es' ? 'CONSULTA JURÍDICA' : currentLang === 'it' ? 'CONSULENZA LEGALE' : currentLang === 'fr' ? 'CONSULTATION JURIDIQUE' : 'ЮРИДИЧЕСКАЯ КОНСУЛЬТАЦИЯ',
+    modalSub: currentLang === 'en' ? 'Direct confidential case review by senior legal counsel.' : currentLang === 'uk' ? 'Конфіденційний розгляд вашої справи провідним юристом практики.' : currentLang === 'es' ? 'Revisión jurídica confidencial de su caso por el abogado titular.' : currentLang === 'it' ? 'Esame riservato del Suo caso da parte del legale titolare.' : currentLang === 'fr' ? 'Examen direct et confidentiel de votre dossier par l\'avocat.' : 'Конфиденциальный разбор вашей ситуации ведущим юристом практики.',
     jurLabel: currentLang === 'en' ? '1. JURISDICTION / COUNTRY:' : currentLang === 'uk' ? '1. ЮРИСДИКЦІЯ / КРАЇНА:' : currentLang === 'es' ? '1. JURISDICCIÓN / PAÍS:' : currentLang === 'it' ? '1. GIURISDIZIONE / PAESE:' : currentLang === 'fr' ? '1. JURIDICTION / PAYS :' : '1. ЮРИСДИКЦИЯ / СТРАНА:',
     catLabel: currentLang === 'en' ? '2. LEGAL PRACTICE AREA:' : currentLang === 'uk' ? '2. НАПРЯМОК ПИТАННЯ:' : currentLang === 'es' ? '2. ÁREA DEL DERECHO:' : currentLang === 'it' ? '2. AMBITO LEGALE:' : currentLang === 'fr' ? '2. DOMAINE JURIDIQUE :' : '2. НАПРАВЛЕНИЕ ВОПРОСА:',
     topicLabel: currentLang === 'en' ? '3. SPECIFIC TASK / SERVICE:' : currentLang === 'uk' ? '3. КОНКРЕТИЗАЦІЯ ЗАВДАННЯ:' : currentLang === 'es' ? '3. ASUNTO ESPECÍFICO:' : currentLang === 'it' ? '3. OGGETTO SPECIFICO:' : currentLang === 'fr' ? '3. OBJET SPÉCIFIQUE :' : '3. КОНКРЕТИЗАЦИЯ ЗАДАЧИ:',
@@ -295,8 +295,8 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
     emailPlaceholder: 'name@example.com',
     noteLabel: currentLang === 'en' ? 'BRIEF SUMMARY OF YOUR SITUATION:' : currentLang === 'uk' ? 'СУТЬ ВАШОЇ СИТУАЦІЇ / ПИТАННЯ:' : currentLang === 'es' ? 'DESCRIPCIÓN DE SU SITUACIÓN:' : currentLang === 'it' ? 'SINTESI DELLA SUA SITUAZIONE:' : currentLang === 'fr' ? 'RÉSUMÉ DE VOTRE SITUATION :' : 'ОПИШИТЕ ВАШУ СИТУАЦИЮ:',
     notePlaceholder: currentLang === 'en' ? 'Key facts, deadlines, goals or existing documents...' : currentLang === 'uk' ? 'Ключові обставини, терміни, дедлайни...' : currentLang === 'es' ? 'Hechos clave, plazos, objetivos o documentos...' : currentLang === 'it' ? 'Fatti chiave, scadenze, obiettivi o documenti...' : currentLang === 'fr' ? 'Faits principaux, délais, objectifs ou pièces...' : 'Ключевые факты, юрисдикции, имеющиеся документы или дедлайны...',
-    submitBtn: currentLang === 'en' ? 'GET STRATEGIC CONSULTATION' : currentLang === 'uk' ? 'ОТРИМАТИ СТРАТЕГІЧНУ КОНСУЛЬТАЦІЮ' : currentLang === 'es' ? 'OBTENER CONSULTA ESTRATÉGICA' : currentLang === 'it' ? 'RICHIEDI CONSULENZA STRATEGICA' : currentLang === 'fr' ? 'OBTENIR UNE CONSULTATION STRATÉGIQUE' : 'ПОЛУЧИТЬ СТРАТЕГИЧЕСКУЮ КОНСУЛЬТАЦИЮ',
-    submitting: currentLang === 'en' ? 'Sending Application...' : currentLang === 'uk' ? 'Надсилання звернення...' : currentLang === 'es' ? 'Enviando solicitud...' : currentLang === 'it' ? 'Invio in corso...' : currentLang === 'fr' ? 'Envoi en cours...' : 'Отправка обращения...',
+    submitBtn: currentLang === 'en' ? 'SEND' : currentLang === 'uk' ? 'НАДІСЛАТИ' : currentLang === 'es' ? 'ENVIAR' : currentLang === 'it' ? 'INVIA' : currentLang === 'fr' ? 'ENVOYER' : 'ОТПРАВИТЬ',
+    submitting: currentLang === 'en' ? 'Sending...' : currentLang === 'uk' ? 'Надсилання...' : currentLang === 'es' ? 'Enviando...' : currentLang === 'it' ? 'Invio...' : currentLang === 'fr' ? 'Envoi...' : 'Отправка...',
     errorMissingContact: currentLang === 'en' ? 'Please provide your Phone / WhatsApp, Telegram or Email.' : currentLang === 'uk' ? 'Будь ласка, вкажіть ваш телефон/WhatsApp, Telegram або Email.' : currentLang === 'es' ? 'Por favor proporcione su teléfono/WhatsApp, Telegram o Email.' : currentLang === 'it' ? 'Per favore indichi il Suo telefono/WhatsApp, Telegram o Email.' : currentLang === 'fr' ? 'Veuillez indiquer votre téléphone/WhatsApp, Telegram ou Email.' : 'Пожалуйста, укажите хотя бы один контакт: WhatsApp/телефон, Telegram или Email.',
     successTitle: currentLang === 'en' ? 'Inquiry Successfully Accepted' : currentLang === 'uk' ? 'Звернення успішно прийнято' : currentLang === 'es' ? 'Solicitud aceptada con éxito' : currentLang === 'it' ? 'Richiesta presa in carico' : currentLang === 'fr' ? 'Demande reçue avec succès' : 'Заявка успешно принята',
     successDesc: currentLang === 'en' ? 'Your matter details have been forwarded to legal counsel. We will contact you via WhatsApp, Telegram, or Email shortly.' : currentLang === 'uk' ? 'Деталі справи передані провідному юристу. Ми зв’яжемося з вами за вказаним контактом найближчим часом.' : currentLang === 'es' ? 'Los detalles han sido transmitidos al abogado. Nos pondremos en contacto con usted a la brevedad.' : currentLang === 'it' ? 'I dettagli sono stati inoltrati all’avvocato. La contatteremo a breve tramite i recapiti forniti.' : currentLang === 'fr' ? 'Votre dossier a été transmis à l’avocat. Nous vous contacterons rapidement selon vos coordonnées.' : 'Материалы переданы юристу практики. Мы свяжемся с вами по указанному контакту в течение рабочего дня.',
@@ -441,7 +441,7 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
       <div
-        className="relative w-full max-w-lg rounded-xl border border-white/[0.14] p-4 sm:p-5 shadow-2xl overflow-hidden max-h-[95vh] overflow-y-auto scrollbar-none"
+        className="relative w-full max-w-lg rounded-xl border border-white/[0.14] p-3.5 sm:p-4 shadow-2xl overflow-hidden max-h-[92vh] overflow-y-auto scrollbar-none"
         style={{
           background: 'linear-gradient(180deg, #0A0F1D 0%, #060912 100%)',
           boxShadow: '0 25px 60px -15px rgba(0, 0, 0, 0.95), 0 0 40px rgba(212, 175, 55, 0.1)',
@@ -489,13 +489,13 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
           <div className="space-y-3.5 relative z-10 animate-in fade-in duration-200">
             
             {/* Header: Seal + Title + Attorney Client Privilege Note */}
-            <div className="flex items-center gap-3.5 pb-2 border-b border-white/[0.1] pr-6">
+            <div className="flex items-center gap-3 pb-2 border-b border-white/[0.1] pr-6">
               <div className="relative shrink-0">
                 <div className="absolute inset-0 rounded-full bg-[#DFBA73]/25 blur-sm pointer-events-none" />
                 <img
                   src="/images/v_levin_seal.png"
                   alt="V. I. LEVIN Legal Counsel"
-                  className="relative w-12 h-12 object-contain drop-shadow-[0_2px_10px_rgba(212,175,55,0.4)] select-none"
+                  className="relative w-9 h-9 sm:w-10 sm:h-10 object-contain drop-shadow-[0_2px_8px_rgba(212,175,55,0.35)] select-none"
                 />
               </div>
               <div className="space-y-0.5">
@@ -519,114 +519,116 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
                 </div>
               )}
 
-              {/* 1. Country / Jurisdiction Dropdown */}
-              <div ref={jurRef} className="relative">
-                <label className="text-[10px] font-sans font-semibold tracking-wider text-[#DFBA73] block mb-1 uppercase flex items-center justify-between">
-                  <span>{L.jurLabel}</span>
-                  <span className="text-[9px] text-gray-400 normal-case">Международная практика</span>
-                </label>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setJurDropdownOpen(!jurDropdownOpen);
-                    setCatDropdownOpen(false);
-                    setTopicDropdownOpen(false);
-                  }}
-                  className="w-full h-8.5 px-3 rounded-md bg-[#101524] border border-white/[0.14] hover:border-white/30 focus:border-[#DFBA73] flex items-center justify-between text-left text-xs font-sans font-medium text-white transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)] cursor-pointer select-none"
-                >
-                  <div className="flex items-center gap-2 overflow-hidden">
-                    <span className="text-sm shrink-0">{currentJurisdiction.flag}</span>
-                    <span className="truncate text-white font-medium">{currentJurisdiction.title}</span>
-                  </div>
-                  <ChevronDown
-                    size={13}
-                    className={`text-gray-400 shrink-0 transition-transform duration-200 ${
-                      jurDropdownOpen ? 'rotate-180 text-[#DFBA73]' : ''
-                    }`}
-                  />
-                </button>
+              {/* 1 & 2: Compact 2-column row for Jurisdiction and Practice Area */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {/* 1. Country / Jurisdiction Dropdown */}
+                <div ref={jurRef} className="relative">
+                  <label className="text-[10px] font-sans font-semibold tracking-wider text-[#DFBA73] block mb-0.5 uppercase flex items-center justify-between">
+                    <span>{L.jurLabel}</span>
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setJurDropdownOpen(!jurDropdownOpen);
+                      setCatDropdownOpen(false);
+                      setTopicDropdownOpen(false);
+                    }}
+                    className="w-full h-8 px-2.5 rounded-md bg-[#101524] border border-white/[0.14] hover:border-white/30 focus:border-[#DFBA73] flex items-center justify-between text-left text-xs font-sans font-medium text-white transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)] cursor-pointer select-none"
+                  >
+                    <div className="flex items-center gap-1.5 overflow-hidden">
+                      <span className="text-xs shrink-0">{currentJurisdiction.flag}</span>
+                      <span className="truncate text-white text-[11.5px] font-medium">{currentJurisdiction.title}</span>
+                    </div>
+                    <ChevronDown
+                      size={12}
+                      className={`text-gray-400 shrink-0 transition-transform duration-200 ${
+                        jurDropdownOpen ? 'rotate-180 text-[#DFBA73]' : ''
+                      }`}
+                    />
+                  </button>
 
-                {jurDropdownOpen && (
-                  <div className="absolute z-50 left-0 right-0 mt-1 p-1 bg-[#0D1220] border border-white/20 rounded-md shadow-2xl shadow-black space-y-0.5 animate-in fade-in-50 zoom-in-95 duration-150 max-h-48 overflow-y-auto scrollbar-none">
-                    {jurisdictionsList.map((jur) => {
-                      const isSelected = selectedJurisdiction === jur.id;
-                      return (
-                        <button
-                          key={jur.id}
-                          type="button"
-                          onClick={() => handleJurSelect(jur)}
-                          className={`w-full px-2.5 py-1.5 rounded text-xs font-sans text-left flex items-center gap-2 transition-all cursor-pointer ${
-                            isSelected
-                              ? 'bg-[#DFBA73]/20 text-[#FFE8A3] border border-[#DFBA73]/40 font-semibold'
-                              : 'text-gray-200 hover:bg-white/10 hover:text-white border border-transparent'
-                          }`}
-                        >
-                          <span className="text-sm shrink-0">{jur.flag}</span>
-                          <span className="truncate">{jur.title}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
+                  {jurDropdownOpen && (
+                    <div className="absolute z-50 left-0 right-0 mt-1 p-1 bg-[#0D1220] border border-white/20 rounded-md shadow-2xl shadow-black space-y-0.5 animate-in fade-in-50 zoom-in-95 duration-150 max-h-48 overflow-y-auto scrollbar-none">
+                      {jurisdictionsList.map((jur) => {
+                        const isSelected = selectedJurisdiction === jur.id;
+                        return (
+                          <button
+                            key={jur.id}
+                            type="button"
+                            onClick={() => handleJurSelect(jur)}
+                            className={`w-full px-2 py-1.5 rounded text-xs font-sans text-left flex items-center gap-2 transition-all cursor-pointer ${
+                              isSelected
+                                ? 'bg-[#DFBA73]/20 text-[#FFE8A3] border border-[#DFBA73]/40 font-semibold'
+                                : 'text-gray-200 hover:bg-white/10 hover:text-white border border-transparent'
+                            }`}
+                          >
+                            <span className="text-xs shrink-0">{jur.flag}</span>
+                            <span className="truncate text-[11.5px]">{jur.title}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
 
-              {/* 2. Practice Direction Dropdown */}
-              <div ref={catRef} className="relative">
-                <label className="text-[10px] font-sans font-semibold tracking-wider text-[#DFBA73] block mb-1 uppercase">
-                  {L.catLabel}
-                </label>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setCatDropdownOpen(!catDropdownOpen);
-                    setJurDropdownOpen(false);
-                    setTopicDropdownOpen(false);
-                  }}
-                  className="w-full h-8.5 px-3 rounded-md bg-[#101524] border border-white/[0.14] hover:border-white/30 focus:border-[#DFBA73] flex items-center justify-between text-left text-xs font-sans font-medium text-white transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)] cursor-pointer select-none"
-                >
-                  <div className="flex items-center gap-2 overflow-hidden">
-                    {currentCategory.id === 'usa' ? (
-                      <LuxuryUsaFlag size="xs" />
-                    ) : (
-                      <span className="text-xs shrink-0">{currentCategory.icon}</span>
-                    )}
-                    <span className="truncate text-white font-medium">{currentCategory.title}</span>
-                  </div>
-                  <ChevronDown
-                    size={13}
-                    className={`text-gray-400 shrink-0 transition-transform duration-200 ${
-                      catDropdownOpen ? 'rotate-180 text-[#DFBA73]' : ''
-                    }`}
-                  />
-                </button>
+                {/* 2. Practice Direction Dropdown */}
+                <div ref={catRef} className="relative">
+                  <label className="text-[10px] font-sans font-semibold tracking-wider text-[#DFBA73] block mb-0.5 uppercase">
+                    {L.catLabel}
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCatDropdownOpen(!catDropdownOpen);
+                      setJurDropdownOpen(false);
+                      setTopicDropdownOpen(false);
+                    }}
+                    className="w-full h-8 px-2.5 rounded-md bg-[#101524] border border-white/[0.14] hover:border-white/30 focus:border-[#DFBA73] flex items-center justify-between text-left text-xs font-sans font-medium text-white transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)] cursor-pointer select-none"
+                  >
+                    <div className="flex items-center gap-1.5 overflow-hidden">
+                      {currentCategory.id === 'usa' ? (
+                        <LuxuryUsaFlag size="xs" />
+                      ) : (
+                        <span className="text-xs shrink-0">{currentCategory.icon}</span>
+                      )}
+                      <span className="truncate text-white text-[11.5px] font-medium">{currentCategory.title}</span>
+                    </div>
+                    <ChevronDown
+                      size={12}
+                      className={`text-gray-400 shrink-0 transition-transform duration-200 ${
+                        catDropdownOpen ? 'rotate-180 text-[#DFBA73]' : ''
+                      }`}
+                    />
+                  </button>
 
-                {catDropdownOpen && (
-                  <div className="absolute z-50 left-0 right-0 mt-1 p-1 bg-[#0D1220] border border-white/20 rounded-md shadow-2xl shadow-black space-y-0.5 animate-in fade-in-50 zoom-in-95 duration-150">
-                    {categoriesList.map((cat) => {
-                      const isSelected = selectedCat === cat.id;
-                      return (
-                        <button
-                          key={cat.id}
-                          type="button"
-                          onClick={() => handleCatSelect(cat)}
-                          className={`w-full px-2.5 py-1.5 rounded text-xs font-sans text-left flex items-center gap-2 transition-all cursor-pointer ${
-                            isSelected
-                              ? 'bg-[#DFBA73]/20 text-[#FFE8A3] border border-[#DFBA73]/40 font-semibold'
-                              : 'text-gray-200 hover:bg-white/10 hover:text-white border border-transparent'
-                          }`}
-                        >
-                          <span className="text-xs shrink-0">{cat.icon}</span>
-                          <span className="truncate">{cat.title}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
+                  {catDropdownOpen && (
+                    <div className="absolute z-50 left-0 right-0 mt-1 p-1 bg-[#0D1220] border border-white/20 rounded-md shadow-2xl shadow-black space-y-0.5 animate-in fade-in-50 zoom-in-95 duration-150">
+                      {categoriesList.map((cat) => {
+                        const isSelected = selectedCat === cat.id;
+                        return (
+                          <button
+                            key={cat.id}
+                            type="button"
+                            onClick={() => handleCatSelect(cat)}
+                            className={`w-full px-2 py-1.5 rounded text-xs font-sans text-left flex items-center gap-2 transition-all cursor-pointer ${
+                              isSelected
+                                ? 'bg-[#DFBA73]/20 text-[#FFE8A3] border border-[#DFBA73]/40 font-semibold'
+                                : 'text-gray-200 hover:bg-white/10 hover:text-white border border-transparent'
+                            }`}
+                          >
+                            <span className="text-xs shrink-0">{cat.icon}</span>
+                            <span className="truncate text-[11.5px]">{cat.title}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* 3. Specific Subcategory / Topic Dropdown */}
               <div ref={topicRef} className="relative">
-                <label className="text-[10px] font-sans font-semibold tracking-wider text-[#DFBA73] block mb-1 uppercase">
+                <label className="text-[10px] font-sans font-semibold tracking-wider text-[#DFBA73] block mb-0.5 uppercase">
                   {L.topicLabel}
                 </label>
                 <button
@@ -636,7 +638,7 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
                     setJurDropdownOpen(false);
                     setCatDropdownOpen(false);
                   }}
-                  className="w-full h-8.5 px-3 rounded-md bg-[#101524] border border-white/[0.14] hover:border-white/30 focus:border-[#DFBA73] flex items-center justify-between text-left text-xs font-sans font-medium text-white transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)] cursor-pointer select-none"
+                  className="w-full h-8 px-2.5 rounded-md bg-[#101524] border border-white/[0.14] hover:border-white/30 focus:border-[#DFBA73] flex items-center justify-between text-left text-xs font-sans font-medium text-white transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)] cursor-pointer select-none"
                 >
                   <div className="flex items-center gap-2 overflow-hidden">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#DFBA73] shrink-0 shadow-[0_0_5px_rgba(223,186,115,0.7)]" />
@@ -749,7 +751,7 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full py-2.5 px-4 rounded-md text-[#080B11] font-bold text-xs tracking-wider uppercase hover:brightness-105 active:scale-[0.98] transition-all shadow-md border border-[#FFE8A3]/50 cursor-pointer flex items-center justify-center gap-2 font-sans disabled:opacity-50"
+                  className="w-full py-2 px-4 rounded-md text-[#080B11] font-bold text-xs tracking-wider uppercase hover:brightness-105 active:scale-[0.98] transition-all shadow-md border border-[#FFE8A3]/50 cursor-pointer flex items-center justify-center gap-1.5 font-sans disabled:opacity-50"
                   style={{
                     background: 'linear-gradient(135deg, #F3E2B8 0%, #D4AF37 50%, #99742B 100%)',
                   }}

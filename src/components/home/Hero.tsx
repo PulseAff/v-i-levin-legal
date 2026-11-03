@@ -141,8 +141,8 @@ export const Hero: React.FC<HeroProps> = ({ onOpenConsultation }) => {
             <span className="text-[#FFE29A] font-semibold whitespace-nowrap">{t('hero', 'badgeLawyer')}</span>
           </div>
 
-          {/* Action Button: Gold Primary CTA */}
-          <div className="pt-2 flex flex-col sm:flex-row items-start sm:items-center gap-3">
+          {/* Action Buttons: Gold Primary CTA + Telegram Bot */}
+          <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
             <button
               onClick={handleOpen}
               className="w-full sm:w-auto px-6 py-3 rounded-md text-[#080B11] font-bold text-xs tracking-wider uppercase hover:brightness-105 active:scale-[0.98] transition-all shadow-md border border-[#FFE8A3]/50 cursor-pointer shrink-0"
@@ -152,6 +152,17 @@ export const Hero: React.FC<HeroProps> = ({ onOpenConsultation }) => {
             >
               {t('hero', 'ctaConsultation')}
             </button>
+            <a
+              href="https://t.me/VILEVIN_bot"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-md bg-[#0D1522]/90 hover:bg-[#152136] text-white border border-[#23334A] hover:border-[#2AABEE]/60 text-xs font-semibold uppercase tracking-wider transition-all shadow-md cursor-pointer group shrink-0"
+            >
+              <svg className="w-4 h-4 text-[#2AABEE] group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.121l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.832.922z"/>
+              </svg>
+              <span>Бот Telegram</span>
+            </a>
           </div>
         </div>
       </div>
