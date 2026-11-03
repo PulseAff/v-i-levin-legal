@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { X, CheckCircle2, ChevronDown, Lock } from 'lucide-react';
+import { X, CheckCircle2, ChevronDown, Lock, Send, Globe, Phone, Mail, MessageSquare, User, Shield } from 'lucide-react';
 import { useLanguage, LanguageCode } from '@/context/LanguageContext';
 import { LuxuryUsaFlag } from '@/components/ui/LuxuryUsaFlag';
 
@@ -10,6 +10,12 @@ interface ConsultationModalProps {
   onClose: () => void;
   defaultCategory?: string;
   defaultService?: string;
+}
+
+interface JurisdictionOption {
+  id: string;
+  flag: string;
+  title: string;
 }
 
 interface CategoryOption {
@@ -27,13 +33,13 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
 }) => {
   const { currentLang, t } = useLanguage();
 
-  // No Telegram toggle: by default false (priority is Telegram)
-  const [noTelegram, setNoTelegram] = useState(false);
-
-  // Form fields for no-Telegram flow
+  // Form fields
+  const [selectedJurisdiction, setSelectedJurisdiction] = useState<string>('usa');
   const [selectedCat, setSelectedCat] = useState<string>('usa');
   const [selectedChip, setSelectedChip] = useState<string>('EB-1A / EB-2 NIW');
-  const [whatsapp, setWhatsapp] = useState('');
+  const [clientName, setClientName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [telegram, setTelegram] = useState('');
   const [email, setEmail] = useState('');
   const [note, setNote] = useState('');
 
@@ -42,15 +48,20 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
   const [error, setError] = useState('');
 
   // Dropdown states
+  const [jurDropdownOpen, setJurDropdownOpen] = useState(false);
   const [catDropdownOpen, setCatDropdownOpen] = useState(false);
   const [topicDropdownOpen, setTopicDropdownOpen] = useState(false);
 
+  const jurRef = useRef<HTMLDivElement>(null);
   const catRef = useRef<HTMLDivElement>(null);
   const topicRef = useRef<HTMLDivElement>(null);
 
   // Close dropdowns on click outside
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
+      if (jurRef.current && !jurRef.current.contains(e.target as Node)) {
+        setJurDropdownOpen(false);
+      }
       if (catRef.current && !catRef.current.contains(e.target as Node)) {
         setCatDropdownOpen(false);
       }
@@ -65,6 +76,7 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
   // Handle Escape key
   useEffect(() => {
     if (!isOpen) {
+      setJurDropdownOpen(false);
       setCatDropdownOpen(false);
       setTopicDropdownOpen(false);
       return;
@@ -81,9 +93,92 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
     if (isOpen) {
       setIsSuccess(false);
       setError('');
-      setNoTelegram(false);
+      if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
+        (window as any).gtag('event', 'consultation_modal_open', {
+          event_category: 'consultation',
+          event_label: defaultService || defaultCategory || 'general',
+        });
+      }
+      if (defaultCategory) {
+        if (defaultCategory.toLowerCase().includes('green') || defaultCategory.toLowerCase().includes('usa') || defaultCategory.toLowerCase().includes('сша')) {
+          setSelectedJurisdiction('usa');
+          setSelectedCat('usa');
+        } else if (defaultCategory.toLowerCase().includes('турц') || defaultCategory.toLowerCase().includes('turk')) {
+          setSelectedJurisdiction('turkey');
+          setSelectedCat('business');
+        } else if (defaultCategory.toLowerCase().includes('оаэ') || defaultCategory.toLowerCase().includes('uae')) {
+          setSelectedJurisdiction('uae');
+          setSelectedCat('business');
+        }
+      }
+      if (defaultService) {
+        setSelectedChip(defaultService);
+      }
     }
-  }, [isOpen]);
+  }, [isOpen, defaultCategory, defaultService]);
+
+  const JURISDICTIONS: Record<LanguageCode, JurisdictionOption[]> = {
+    ru: [
+      { id: 'usa', flag: '🇺🇸', title: 'США (United States)' },
+      { id: 'turkey', flag: '🇹🇷', title: 'Турция (Turkey)' },
+      { id: 'uae', flag: '🇦🇪', title: 'ОАЭ (DIFC / Dubai)' },
+      { id: 'eu', flag: '🇪🇺', title: 'Европейский союз / Германия' },
+      { id: 'cyprus', flag: '🇨🇾', title: 'Кипр (Common Law)' },
+      { id: 'uk', flag: '🇬🇧', title: 'Великобритания (UK)' },
+      { id: 'georgia', flag: '🇬🇪', title: 'Грузия' },
+      { id: 'other', flag: '🌐', title: 'Иная юрисдикция / Трансграничный кейс' },
+    ],
+    en: [
+      { id: 'usa', flag: '🇺🇸', title: 'United States (USA)' },
+      { id: 'turkey', flag: '🇹🇷', title: 'Turkey' },
+      { id: 'uae', flag: '🇦🇪', title: 'United Arab Emirates (DIFC / Dubai)' },
+      { id: 'eu', flag: '🇪🇺', title: 'European Union / Germany' },
+      { id: 'cyprus', flag: '🇨🇾', title: 'Cyprus (Common Law)' },
+      { id: 'uk', flag: '🇬🇧', title: 'United Kingdom (UK)' },
+      { id: 'georgia', flag: '🇬🇪', title: 'Georgia' },
+      { id: 'other', flag: '🌐', title: 'Other Jurisdiction / Cross-Border' },
+    ],
+    uk: [
+      { id: 'usa', flag: '🇺🇸', title: 'США (United States)' },
+      { id: 'turkey', flag: '🇹🇷', title: 'Туреччина (Turkey)' },
+      { id: 'uae', flag: '🇦🇪', title: 'ОАЕ (DIFC / Dubai)' },
+      { id: 'eu', flag: '🇪🇺', title: 'Європейський союз / Німеччина' },
+      { id: 'cyprus', flag: '🇨🇾', title: 'Кіпр (Common Law)' },
+      { id: 'uk', flag: '🇬🇧', title: 'Велика Британія (UK)' },
+      { id: 'georgia', flag: '🇬🇪', title: 'Грузія' },
+      { id: 'other', flag: '🌐', title: 'Інша юрисдикція / Транскордонний кейс' },
+    ],
+    es: [
+      { id: 'usa', flag: '🇺🇸', title: 'Estados Unidos (EE.UU.)' },
+      { id: 'turkey', flag: '🇹🇷', title: 'Turquía (Turkey)' },
+      { id: 'uae', flag: '🇦🇪', title: 'Emiratos Árabes Unidos (DIFC)' },
+      { id: 'eu', flag: '🇪🇺', title: 'Unión Europea / Alemania' },
+      { id: 'cyprus', flag: '🇨🇾', title: 'Chipre (Common Law)' },
+      { id: 'uk', flag: '🇬🇧', title: 'Reino Unido (UK)' },
+      { id: 'georgia', flag: '🇬🇪', title: 'Georgia' },
+      { id: 'other', flag: '🌐', title: 'Otra jurisdicción / Transfronterizo' },
+    ],
+    it: [
+      { id: 'usa', flag: '🇺🇸', title: 'Stati Uniti (USA)' },
+      { id: 'turkey', flag: '🇹🇷', title: 'Turchia (Turkey)' },
+      { id: 'uae', flag: '🇦🇪', title: 'Emirati Arabi Uniti (DIFC)' },
+      { id: 'eu', flag: '🇪🇺', title: 'Unione Europea / Germania' },
+      { id: 'cyprus', flag: '🇨🇾', title: 'Cipro (Common Law)' },
+      { id: 'uk', flag: '🇬🇧', title: 'Regno Unito (UK)' },
+      { id: 'georgia', flag: '🇬🇪', title: 'Georgia' },
+      { id: 'other', flag: '🌐', title: 'Altra giurisdizione / Transfrontaliero' },
+    ],
+    fr: [
+      { id: 'usa', flag: '🇺🇸', title: 'États-Unis (USA)' },
+      { id: 'turkey', flag: '🇹🇷', title: 'Turquie (Turkey)' },
+      { id: 'uae', flag: '🇦🇪', title: 'Émirats arabes unis (DIFC)' },
+      { id: 'eu', flag: '🇪🇺', title: 'Union européenne / Allemagne' },
+      { id: 'cyprus', flag: '🇨🇾', title: 'Chypre (Common Law)' },
+      { id: 'uk', flag: '🇬🇧', title: 'Royaume-Uni (UK)' },
+      { id: 'georgia', flag: '🇬🇪', title: 'Géorgie' },
+      { id: 'other', flag: '🌐', title: 'Autre juridiction / Transfrontalier' },
+    ],
+  };
 
   const CHIPS_BY_LANG: Record<string, Record<LanguageCode, string[]>> = {
     usa: {
@@ -95,36 +190,36 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
       fr: ['EB-1A / EB-2 NIW', 'Entretien USCIS', 'Audit N-400', 'Changement de statut / Refus', 'Dossier immigration'],
     },
     business: {
-      ru: ['Компания в США / ОАЭ', 'Due Diligence', 'Международные договоры', 'Банковский счет', 'Холдинги & Налоги'],
-      en: ['US / UAE Company', 'Due Diligence', 'Cross-Border Contracts', 'Corporate Bank Account', 'Holdings & Taxes'],
-      uk: ['Компанія в США / ОАЕ', 'Due Diligence', 'Міжнародні договори', 'Банківський рахунок', 'Холдинги та податки'],
-      es: ['Empresa en EE.UU. / EAU', 'Due Diligence', 'Contratos internacionales', 'Cuenta corporativa', 'Holdings y fiscalidad'],
-      it: ['Società in USA / EAU', 'Due Diligence', 'Contratti transfrontalieri', 'Conto bancario', 'Holding & Fiscalità'],
-      fr: ['Société USA / EAU', 'Due Diligence', 'Contrats internationaux', 'Compte bancaire pro', 'Holdings & Fiscalité'],
+      ru: ['Регистрация компании США / ОАЭ / Турция', 'Due Diligence & Экспертиза TAPU', 'Международные B2B-контракты', 'Открытие банковских счетов', 'Холдинги & Налоговый комплаенс'],
+      en: ['Company Setup US / UAE / Turkey', 'Due Diligence & TAPU Audit', 'Cross-Border Contracts', 'Corporate Bank Account', 'Holdings & Taxes'],
+      uk: ['Реєстрація компанії США / ОАЕ / Туреччина', 'Due Diligence та експертиза TAPU', 'Міжнародні договори', 'Банківський рахунок', 'Холдинги та податки'],
+      es: ['Empresa EE.UU. / EAU / Turquía', 'Due Diligence & TAPU', 'Contratos internacionales', 'Cuenta bancaria corporativa', 'Holdings y fiscalidad'],
+      it: ['Società USA / EAU / Turchia', 'Due Diligence & TAPU', 'Contratti transfrontalieri', 'Conto bancario aziendale', 'Holding & Fiscalità'],
+      fr: ['Société USA / EAU / Turquie', 'Due Diligence & TAPU', 'Contrats internationaux', 'Compte bancaire pro', 'Holdings & Fiscalité'],
     },
     disputes: {
-      ru: ['Международный арбитраж', 'Взыскание долгов', 'Суд в США / ЕС', 'Досудебная претензия', 'Исполнение решений'],
-      en: ['International Arbitration', 'Debt Recovery', 'US / EU Litigation', 'Pre-Trial Claim', 'Enforcement of Awards'],
-      uk: ['Міжнародний арбітраж', 'Стягнення боргів', 'Суд у США / ЄС', 'Досудова претензія', 'Виконання рішень'],
-      es: ['Arbitraje internacional', 'Cobro de deudas', 'Litigios en EE.UU. / UE', 'Reclamación prejudicial', 'Ejecución de laudos'],
-      it: ['Arbitrato internazionale', 'Recupero crediti', 'Contenzioso USA / UE', 'Reclamo stragiudiziale', 'Esecuzione sentenze'],
-      fr: ['Arbitrage international', 'Recouvrement créances', 'Contentieux USA / UE', 'Mise en demeure', 'Exécution sentences'],
+      ru: ['Международный арбитраж (LCIA, ICC)', 'Взыскание активов и долгов', 'Судебные споры США / ЕС', 'Досудебная претензия', 'Признание и исполнение решений'],
+      en: ['International Arbitration (LCIA, ICC)', 'Asset & Debt Recovery', 'US / EU Litigation', 'Pre-Trial Legal Notice', 'Enforcement of Foreign Awards'],
+      uk: ['Міжнародний арбітраж (LCIA, ICC)', 'Стягнення активів та боргів', 'Судові спори США / ЄС', 'Досудова претензія', 'Виконання іноземних рішень'],
+      es: ['Arbitraje internacional (LCIA, ICC)', 'Recuperación de activos', 'Litigios EE.UU. / UE', 'Reclamación prejudicial', 'Ejecución de laudos'],
+      it: ['Arbitrato internazionale (LCIA, ICC)', 'Recupero crediti e asset', 'Contenzioso USA / UE', 'Reclamo stragiudiziale', 'Esecuzione sentenze estere'],
+      fr: ['Arbitrage international (LCIA, ICC)', 'Recouvrement d’actifs', 'Contentieux USA / UE', 'Mise en demeure', 'Exécution de jugements'],
     },
     wealth: {
-      ru: ['Безотзывные трасты', 'Защита от кредиторов', 'Семейный капитал', 'Налоговая защита', 'Фонды в Швейцарии'],
-      en: ['Irrevocable Trusts', 'Asset Protection', 'Family Capital', 'Tax Shielding', 'Swiss Foundations'],
-      uk: ['Безвідкличні трасти', 'Захист від кредиторів', 'Сімейний капітал', 'Податковий захист', 'Фонди у Швейцарії'],
-      es: ['Fideicomisos irrevocables', 'Protección de activos', 'Capital familiar', 'Blindaje fiscal', 'Fundaciones suizas'],
-      it: ['Trust irrevocabili', 'Protezione patrimoniale', 'Capitale familiare', 'Protezione fiscale', 'Fondazioni svizzere'],
-      fr: ['Trusts irrévocables', "Protection d'actifs", 'Capital familial', 'Optimisation fiscale', 'Fondations suisses'],
+      ru: ['Безотзывные трасты (Невада, Южная Дакота)', 'Защита от недружественных поглощений', 'Семейный капитал и фонды', 'Санкционный комплаенс', 'Швейцарские и Лихтенштейнские фонды'],
+      en: ['Irrevocable Trusts (Nevada, SD)', 'Asset Protection from Creditors', 'Family Office & Private Wealth', 'Sanctions & Banking Compliance', 'Swiss & Liechtenstein Foundations'],
+      uk: ['Безвідкличні трасти (Невада, Пд. Дакота)', 'Захист від недружніх дій', 'Сімейний капітал та фонди', 'Санкційний комплаєнс', 'Швейцарські фонди'],
+      es: ['Fideicomisos irrevocables (Nevada, SD)', 'Blindaje frente a acreedores', 'Capital familiar y fondos', 'Compliance sancionatorio', 'Fundaciones suizas'],
+      it: ['Trust irrevocabili (Nevada, SD)', 'Protezione da aggressioni patrimoniali', 'Family Capital & Fondazioni', 'Compliance sanzionatoria', 'Fondazioni svizzere'],
+      fr: ['Trusts irrévocables (Nevada, SD)', 'Protection contre les créanciers', 'Capital familial & Fondations', 'Conformité sanctions', 'Fondations suisses'],
     },
     other: {
-      ru: ['Индивидуальный кейс', 'ВНЖ / Резидентство', 'Налоговый консалтинг', 'Срочный аудит', 'Иное поручение'],
-      en: ['Custom Case', 'Residency / Relocation', 'Tax & Compliance', 'Urgent Legal Audit', 'Other Inquiry'],
-      uk: ['Індивідуальний кейс', 'ВНЖ / Резидентство', 'Податковий консалтинг', 'Терміновий аудит', 'Інше доручення'],
-      es: ['Caso personalizado', 'Residencia / Visado', 'Consultoría fiscal', 'Auditoría urgente', 'Otra consulta'],
-      it: ['Caso personalizzato', 'Residenza / Visto', 'Consulenza fiscale', 'Audit urgente', 'Altro incarico'],
-      fr: ['Dossier sur-mesure', 'Résidence / Titre de séjour', 'Conseil fiscal', 'Audit urgent', 'Autre demande'],
+      ru: ['Гражданство за инвестиции', 'ВНЖ / Резидентство', 'Налоговый консалтинг', 'Срочный аудит рисков', 'Индивидуальное поручение'],
+      en: ['Citizenship by Investment', 'Residency / Relocation', 'Tax & Legal Strategy', 'Urgent Risk Audit', 'Custom Mandate'],
+      uk: ['Громадянство за інвестиції', 'ВНЖ / Резидентство', 'Податковий консалтинг', 'Терміновий аудит ризиків', 'Індивідуальне доручення'],
+      es: ['Ciudadanía por inversión', 'Residencia legal / Visado', 'Estrategia fiscal', 'Auditoría urgente', 'Mandato especial'],
+      it: ['Cittadinanza per investimento', 'Residenza / Visto', 'Consulenza fiscale', 'Audit urgente rischi', 'Mandato speciale'],
+      fr: ['Nationalité par investissement', 'Titre de séjour / Résidence', 'Stratégie fiscale', 'Audit d’urgence', 'Mandat confidentiel'],
     },
   };
 
@@ -161,29 +256,14 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
     },
   ];
 
-  // Synchronize category if passed via props
-  useEffect(() => {
-    if (!isOpen) return;
-    const initial = (defaultCategory || defaultService || '').toLowerCase();
-    if (initial.includes('usa') || initial.includes('иммиграц') || initial.includes('green') || initial.includes('eb-') || initial.includes('сша')) {
-      setSelectedCat('usa');
-      setSelectedChip(categoriesList[0].chips[0]);
-    } else if (initial.includes('business') || initial.includes('бизнес') || initial.includes('корпор') || initial.includes('компан')) {
-      setSelectedCat('business');
-      setSelectedChip(categoriesList[1].chips[0]);
-    } else if (initial.includes('dispute') || initial.includes('спор') || initial.includes('суд') || initial.includes('арбитраж')) {
-      setSelectedCat('disputes');
-      setSelectedChip(categoriesList[2].chips[0]);
-    } else if (initial.includes('wealth') || initial.includes('траст') || initial.includes('актив') || initial.includes('капитал')) {
-      setSelectedCat('wealth');
-      setSelectedChip(categoriesList[3].chips[0]);
-    } else if (initial) {
-      setSelectedCat('other');
-      setSelectedChip(categoriesList[4].chips[0]);
-    }
-  }, [isOpen, defaultCategory, defaultService]);
-
   const currentCategory = categoriesList.find((c) => c.id === selectedCat) || categoriesList[0];
+  const jurisdictionsList = JURISDICTIONS[currentLang] || JURISDICTIONS.ru;
+  const currentJurisdiction = jurisdictionsList.find((j) => j.id === selectedJurisdiction) || jurisdictionsList[0];
+
+  const handleJurSelect = (jur: JurisdictionOption) => {
+    setSelectedJurisdiction(jur.id);
+    setJurDropdownOpen(false);
+  };
 
   const handleCatSelect = (cat: CategoryOption) => {
     setSelectedCat(cat.id);
@@ -200,30 +280,33 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
 
   // Localized microcopy
   const L = {
-    stepTitle: currentLang === 'en' ? 'For a faster response, send your inquiry via our Telegram bot' : currentLang === 'uk' ? 'Для швидшої відповіді надішліть вашу заявку через наш Telegram-бот' : currentLang === 'es' ? 'Para una respuesta más rápida, envíe su consulta a través de nuestro bot de Telegram' : currentLang === 'it' ? 'Per una risposta più rapida, invii la Sua richiesta tramite il nostro bot Telegram' : currentLang === 'fr' ? 'Pour une réponse plus rapide, envoyez votre demande via notre bot Telegram' : 'Для более быстрого ответа отправьте вашу заявку через наш Telegram-бот',
-    stepSub: currentLang === 'en' ? 'Direct secure connection with legal counsel in one click.' : currentLang === 'uk' ? 'Прямий захищений зв’язок із юристом в один клік.' : currentLang === 'es' ? 'Conexión segura directa con el jurista en un clic.' : currentLang === 'it' ? 'Collegamento sicuro diretto con il giurista in un clic.' : currentLang === 'fr' ? 'Liaison sécurisée directe avec le juriste en un clic.' : 'Прямая защищенная связь с юристом в один клик.',
-    tgBtn: currentLang === 'en' ? 'SEND VIA TELEGRAM BOT' : currentLang === 'uk' ? 'ВІДПРАВИТИ ЧЕРЕЗ TELEGRAM-БОТ' : currentLang === 'es' ? 'ENVIAR POR TELEGRAM BOT' : currentLang === 'it' ? 'INVIA TRAMITE BOT TELEGRAM' : currentLang === 'fr' ? 'ENVOYER VIA LE BOT TELEGRAM' : 'ОТПРАВИТЬ ЧЕРЕЗ TELEGRAM-БОТ',
-    noTgCheckbox: currentLang === 'en' ? 'I do not have Telegram' : currentLang === 'uk' ? 'У мене немає Telegram' : currentLang === 'es' ? 'No tengo Telegram' : currentLang === 'it' ? 'Non ho Telegram' : currentLang === 'fr' ? 'Je n’ai pas Telegram' : 'У меня нет Telegram',
-    catLabel: currentLang === 'en' ? 'LEGAL DIRECTION:' : currentLang === 'uk' ? 'НАПРЯМОК ПИТАННЯ:' : currentLang === 'es' ? 'ÁREA JURÍDICA:' : currentLang === 'it' ? 'AMBITO LEGALE:' : currentLang === 'fr' ? 'DOMAINE JURIDIQUE :' : 'НАПРАВЛЕНИЕ ВОПРОСА:',
-    topicLabel: currentLang === 'en' ? 'SPECIFIC MATTER / SERVICE:' : currentLang === 'uk' ? 'КОНКРЕТИЗАЦІЯ ЗАВДАННЯ:' : currentLang === 'es' ? 'ASUNTO ESPECÍFICO:' : currentLang === 'it' ? 'OGGETTO SPECIFICO:' : currentLang === 'fr' ? 'OBJET SPÉCIFIQUE :' : 'КОНКРЕТИЗАЦИЯ ЗАДАЧИ:',
-    waLabel: currentLang === 'en' ? 'WHATSAPP OR PHONE:' : currentLang === 'uk' ? 'WHATSAPP АБО ТЕЛЕФОН:' : currentLang === 'es' ? 'WHATSAPP O TELÉFONO:' : currentLang === 'it' ? 'WHATSAPP O TELEFONO:' : currentLang === 'fr' ? 'WHATSAPP OU TÉLÉPHONE :' : 'WHATSAPP ИЛИ ТЕЛЕФОН:',
-    waPlaceholder: currentLang === 'en' ? '+1 (___) ___-____ or phone' : currentLang === 'uk' ? '+380 (__) ___-__-__ або телефон' : currentLang === 'es' ? '+34 (___) ___-___ o teléfono' : currentLang === 'it' ? '+39 (___) ___-___ o telefono' : currentLang === 'fr' ? '+33 (_) __ __ __ __ ou téléphone' : '+1 (___) ___-____ или номер с кодом',
+    modalTitle: currentLang === 'en' ? 'STRATEGIC LEGAL CONSULTATION' : currentLang === 'uk' ? 'СТРАТЕГІЧНА КОНСУЛЬТАЦІЯ' : currentLang === 'es' ? 'CONSULTA ESTRATÉGICA' : currentLang === 'it' ? 'CONSULENZA STRATEGICA' : currentLang === 'fr' ? 'CONSULTATION STRATÉGIQUE' : 'СТРАТЕГИЧЕСКАЯ КОНСУЛЬТАЦИЯ',
+    modalSub: currentLang === 'en' ? 'Direct confidential review of your matter by senior international counsel.' : currentLang === 'uk' ? 'Прямий конфіденційний розгляд вашої справи провідним міжнародним юристом.' : currentLang === 'es' ? 'Revisión jurídica directa y confidencial de su caso por abogado internacional.' : currentLang === 'it' ? 'Esame riservato e strategico del Suo caso da parte del professionista titolare.' : currentLang === 'fr' ? 'Examen direct et confidentiel de votre dossier par un juriste international.' : 'Прямой конфиденциальный разбор вашей ситуации ведущим международным юристом.',
+    jurLabel: currentLang === 'en' ? '1. JURISDICTION / COUNTRY:' : currentLang === 'uk' ? '1. ЮРИСДИКЦІЯ / КРАЇНА:' : currentLang === 'es' ? '1. JURISDICCIÓN / PAÍS:' : currentLang === 'it' ? '1. GIURISDIZIONE / PAESE:' : currentLang === 'fr' ? '1. JURIDICTION / PAYS :' : '1. ЮРИСДИКЦИЯ / СТРАНА:',
+    catLabel: currentLang === 'en' ? '2. LEGAL PRACTICE AREA:' : currentLang === 'uk' ? '2. НАПРЯМОК ПИТАННЯ:' : currentLang === 'es' ? '2. ÁREA DEL DERECHO:' : currentLang === 'it' ? '2. AMBITO LEGALE:' : currentLang === 'fr' ? '2. DOMAINE JURIDIQUE :' : '2. НАПРАВЛЕНИЕ ВОПРОСА:',
+    topicLabel: currentLang === 'en' ? '3. SPECIFIC TASK / SERVICE:' : currentLang === 'uk' ? '3. КОНКРЕТИЗАЦІЯ ЗАВДАННЯ:' : currentLang === 'es' ? '3. ASUNTO ESPECÍFICO:' : currentLang === 'it' ? '3. OGGETTO SPECIFICO:' : currentLang === 'fr' ? '3. OBJET SPÉCIFIQUE :' : '3. КОНКРЕТИЗАЦИЯ ЗАДАЧИ:',
+    nameLabel: currentLang === 'en' ? 'YOUR NAME:' : currentLang === 'uk' ? 'ВАШЕ ІМ’Я:' : currentLang === 'es' ? 'SU NOMBRE:' : currentLang === 'it' ? 'IL SUO NOME:' : currentLang === 'fr' ? 'VOTRE NOM :' : 'ВАШЕ ИМЯ:',
+    namePlaceholder: currentLang === 'en' ? 'Alexander / Company Representative' : currentLang === 'uk' ? 'Олександр / Представник компанії' : currentLang === 'es' ? 'Alejandro / Representante' : currentLang === 'it' ? 'Alessandro / Rappresentante' : currentLang === 'fr' ? 'Alexandre / Représentant' : 'Александр / Представитель компании',
+    phoneLabel: currentLang === 'en' ? 'PHONE / WHATSAPP:' : currentLang === 'uk' ? 'ТЕЛЕФОН / WHATSAPP:' : currentLang === 'es' ? 'TELÉFONO / WHATSAPP:' : currentLang === 'it' ? 'TELEFONO / WHATSAPP:' : currentLang === 'fr' ? 'TÉLÉPHONE / WHATSAPP :' : 'ТЕЛЕФОН / WHATSAPP:',
+    phonePlaceholder: '+1 (___) ___-____ или номер с кодом',
+    tgLabel: currentLang === 'en' ? 'TELEGRAM USERNAME (OPTIONAL):' : currentLang === 'uk' ? 'TELEGRAM USERNAME (ОПЦІОНАЛЬНО):' : currentLang === 'es' ? 'TELEGRAM USERNAME (OPCIONAL):' : currentLang === 'it' ? 'TELEGRAM USERNAME (OPZIONALE):' : currentLang === 'fr' ? 'TELEGRAM USERNAME (OPTIONNEL) :' : 'TELEGRAM USERNAME (ПО ЖЕЛАНИЮ):',
+    tgPlaceholder: '@username',
     emailLabel: currentLang === 'en' ? 'EMAIL ADDRESS:' : currentLang === 'uk' ? 'ЕЛЕКТРОННА ПОШТА (EMAIL):' : currentLang === 'es' ? 'CORREO ELECTRÓNICO (EMAIL):' : currentLang === 'it' ? 'INDIRIZZO EMAIL:' : currentLang === 'fr' ? 'ADRESSE EMAIL :' : 'ЭЛЕКТРОННАЯ ПОЧТА (EMAIL):',
     emailPlaceholder: 'name@example.com',
-    noteLabel: currentLang === 'en' ? 'BRIEF DETAILS (OPTIONAL):' : currentLang === 'uk' ? 'СУТЬ ПИТАННЯ (ОПЦІОНАЛЬНО):' : currentLang === 'es' ? 'DETALLES (OPCIONAL):' : currentLang === 'it' ? 'DETTAGLI (OPZIONALE):' : currentLang === 'fr' ? 'DÉTAILS (OPTIONNEL) :' : 'СУТЬ ВОПРОСА (ОПЦИОНАЛЬНО):',
-    notePlaceholder: currentLang === 'en' ? 'Key facts, deadlines, notes...' : currentLang === 'uk' ? 'Ключові обставини, терміни...' : currentLang === 'es' ? 'Circunstancias clave, plazos...' : currentLang === 'it' ? 'Circostanze chiave, scadenze...' : currentLang === 'fr' ? 'Circonstances clés, délais...' : 'Ключевые обстоятельства, юрисдикции или дедлайны...',
-    submitDirectBtn: currentLang === 'en' ? 'SUBMIT INQUIRY' : currentLang === 'uk' ? 'НАДІСЛАТИ ЗАЯВКУ' : currentLang === 'es' ? 'ENVIAR SOLICITUD' : currentLang === 'it' ? 'INVIA RICHIESTA' : currentLang === 'fr' ? 'ENVOYER LA DEMANDE' : 'ОТПРАВИТЬ ЗАЯВКУ',
-    submitting: currentLang === 'en' ? 'Sending...' : currentLang === 'uk' ? 'Надсилання...' : currentLang === 'es' ? 'Enviando...' : currentLang === 'it' ? 'Invio in corso...' : currentLang === 'fr' ? 'Envoi...' : 'Отправка...',
-    errorMissingContact: currentLang === 'en' ? 'Please specify your WhatsApp number or Email.' : currentLang === 'uk' ? 'Будь ласка, вкажіть ваш WhatsApp або Email.' : currentLang === 'es' ? 'Por favor indique su WhatsApp o Email.' : currentLang === 'it' ? 'Per favore indichi il Suo WhatsApp o Email.' : currentLang === 'fr' ? 'Veuillez indiquer votre WhatsApp ou Email.' : 'Пожалуйста, укажите WhatsApp или Email для связи.',
-    successTitle: currentLang === 'en' ? 'Inquiry Successfully Received' : currentLang === 'uk' ? 'Заявку успішно прийнято' : currentLang === 'es' ? 'Solicitud recibida con éxito' : currentLang === 'it' ? 'Richiesta ricevuta con successo' : currentLang === 'fr' ? 'Demande reçue avec succès' : 'Заявка успешно принята',
-    successDesc: currentLang === 'en' ? 'Details forwarded to legal counsel. We will contact you via WhatsApp or Email shortly.' : currentLang === 'uk' ? 'Деталі передано юристу практики. Ми зв’яжемося з вами за вказаним WhatsApp або Email.' : currentLang === 'es' ? 'Detalles enviados al jurista. Nos comunicaremos con usted por WhatsApp o Email en breve.' : currentLang === 'it' ? 'Dettagli inoltrati al giurista. La contatteremo a breve via WhatsApp o Email.' : currentLang === 'fr' ? 'Détails transmis au juriste. Nous vous contacterons rapidement par WhatsApp ou Email.' : 'Детали переданы юристу практики. Мы свяжемся с вами по указанному WhatsApp или Email в ближайшее время.',
-    closeBtn: currentLang === 'en' ? 'Close' : currentLang === 'uk' ? 'Закрити' : currentLang === 'es' ? 'Cerrar' : currentLang === 'it' ? 'Chiudi' : currentLang === 'fr' ? 'Fermer' : 'Закрыть',
+    noteLabel: currentLang === 'en' ? 'BRIEF SUMMARY OF YOUR SITUATION:' : currentLang === 'uk' ? 'СУТЬ ВАШОЇ СИТУАЦІЇ / ПИТАННЯ:' : currentLang === 'es' ? 'DESCRIPCIÓN DE SU SITUACIÓN:' : currentLang === 'it' ? 'SINTESI DELLA SUA SITUAZIONE:' : currentLang === 'fr' ? 'RÉSUMÉ DE VOTRE SITUATION :' : 'ОПИШИТЕ ВАШУ СИТУАЦИЮ:',
+    notePlaceholder: currentLang === 'en' ? 'Key facts, deadlines, goals or existing documents...' : currentLang === 'uk' ? 'Ключові обставини, терміни, дедлайни...' : currentLang === 'es' ? 'Hechos clave, plazos, objetivos o documentos...' : currentLang === 'it' ? 'Fatti chiave, scadenze, obiettivi o documenti...' : currentLang === 'fr' ? 'Faits principaux, délais, objectifs ou pièces...' : 'Ключевые факты, юрисдикции, имеющиеся документы или дедлайны...',
+    submitBtn: currentLang === 'en' ? 'GET STRATEGIC CONSULTATION' : currentLang === 'uk' ? 'ОТРИМАТИ СТРАТЕГІЧНУ КОНСУЛЬТАЦІЮ' : currentLang === 'es' ? 'OBTENER CONSULTA ESTRATÉGICA' : currentLang === 'it' ? 'RICHIEDI CONSULENZA STRATEGICA' : currentLang === 'fr' ? 'OBTENIR UNE CONSULTATION STRATÉGIQUE' : 'ПОЛУЧИТЬ СТРАТЕГИЧЕСКУЮ КОНСУЛЬТАЦИЮ',
+    submitting: currentLang === 'en' ? 'Sending Application...' : currentLang === 'uk' ? 'Надсилання звернення...' : currentLang === 'es' ? 'Enviando solicitud...' : currentLang === 'it' ? 'Invio in corso...' : currentLang === 'fr' ? 'Envoi en cours...' : 'Отправка обращения...',
+    errorMissingContact: currentLang === 'en' ? 'Please provide your Phone / WhatsApp, Telegram or Email.' : currentLang === 'uk' ? 'Будь ласка, вкажіть ваш телефон/WhatsApp, Telegram або Email.' : currentLang === 'es' ? 'Por favor proporcione su teléfono/WhatsApp, Telegram o Email.' : currentLang === 'it' ? 'Per favore indichi il Suo telefono/WhatsApp, Telegram o Email.' : currentLang === 'fr' ? 'Veuillez indiquer votre téléphone/WhatsApp, Telegram ou Email.' : 'Пожалуйста, укажите хотя бы один контакт: WhatsApp/телефон, Telegram или Email.',
+    successTitle: currentLang === 'en' ? 'Inquiry Successfully Accepted' : currentLang === 'uk' ? 'Звернення успішно прийнято' : currentLang === 'es' ? 'Solicitud aceptada con éxito' : currentLang === 'it' ? 'Richiesta presa in carico' : currentLang === 'fr' ? 'Demande reçue avec succès' : 'Заявка успешно принята',
+    successDesc: currentLang === 'en' ? 'Your matter details have been forwarded to legal counsel. We will contact you via WhatsApp, Telegram, or Email shortly.' : currentLang === 'uk' ? 'Деталі справи передані провідному юристу. Ми зв’яжемося з вами за вказаним контактом найближчим часом.' : currentLang === 'es' ? 'Los detalles han sido transmitidos al abogado. Nos pondremos en contacto con usted a la brevedad.' : currentLang === 'it' ? 'I dettagli sono stati inoltrati all’avvocato. La contatteremo a breve tramite i recapiti forniti.' : currentLang === 'fr' ? 'Votre dossier a été transmis à l’avocat. Nous vous contacterons rapidement selon vos coordonnées.' : 'Материалы переданы юристу практики. Мы свяжемся с вами по указанному контакту в течение рабочего дня.',
+    closeBtn: currentLang === 'en' ? 'Close Window' : currentLang === 'uk' ? 'Закрити вікно' : currentLang === 'es' ? 'Cerrar ventana' : currentLang === 'it' ? 'Chiudi finestra' : currentLang === 'fr' ? 'Fermer la fenêtre' : 'Закрыть окно',
   };
 
-  // Submit direct WhatsApp / Email application
+  // Submit direct application to Lawyer and Admin Telegram
   const handleSubmitDirect = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!whatsapp.trim() && !email.trim()) {
+    if (!phone.trim() && !email.trim() && !telegram.trim()) {
       setError(L.errorMissingContact);
       return;
     }
@@ -234,32 +317,45 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
     const botToken = '8805827853:AAGALkEhBOUTe2xNiKbehggEnC0cAKvwV-0';
     const recipients = ['7794422014', '1275663257'];
 
-    const cleanPhone = whatsapp.replace(/[^0-9]/g, '');
+    const cleanPhone = phone.replace(/[^0-9]/g, '');
     const waLink = cleanPhone ? `https://wa.me/${cleanPhone}` : '';
+    const cleanTg = telegram.replace(/[@\s]/g, '');
+    const tgLink = cleanTg ? `https://t.me/${cleanTg}` : '';
 
     const escapeHtml = (str: string = '') =>
       str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
+    // High status clear card formatting
     const htmlMessage = [
-      `⚖️ <b>V. I. LEVIN | НОВАЯ ЗАЯВКА</b>`,
+      `🌐 <b>V. I. LEVIN | ЗАЯВКА С ВЕБ-САЙТА</b>`,
       `━━━━━━━━━━━━━━━━━━`,
-      `Вам перенаправлено новое обращение доверителя:`,
+      `Вам перенаправлено новое обращение с сайта vilevin.com:`,
       ``,
+      `🌍 <b>Страна / Юрисдикция:</b> ${escapeHtml(currentJurisdiction.flag)} ${escapeHtml(currentJurisdiction.title)}`,
       `📁 <b>Направление:</b> ${escapeHtml(currentCategory.title)}`,
       `📌 <b>Подкатегория:</b> ${escapeHtml(selectedChip)}`,
       ``,
-      whatsapp.trim() ? `🟢 <b>WhatsApp / Телефон:</b> <code>${escapeHtml(whatsapp.trim())}</code>` : '',
+      clientName.trim() ? `👤 <b>Имя доверителя:</b> <code>${escapeHtml(clientName.trim())}</code>` : '',
+      phone.trim() ? `🟢 <b>Телефон / WhatsApp:</b> <code>${escapeHtml(phone.trim())}</code>` : '',
+      cleanTg ? `💬 <b>Telegram:</b> @${escapeHtml(cleanTg)}` : '',
       email.trim() ? `✉️ <b>Email:</b> <code>${escapeHtml(email.trim())}</code>` : '',
       ``,
-      note.trim() ? `📝 <b>Суть вопроса:</b>\n<i>${escapeHtml(note.trim())}</i>\n` : '',
+      note.trim() ? `📝 <b>Суть ситуации:</b>\n<i>${escapeHtml(note.trim())}</i>\n` : '',
       `🌐 <b>Язык сайта:</b> <code>${currentLang.toUpperCase()}</code>`,
       `🕒 <b>Время:</b> ${new Date().toLocaleString('ru-RU')}`,
     ].filter((line) => typeof line === 'string').join('\n');
 
-    // ONLY valid https:// links are permitted by Telegram in inline_keyboard
+    // ONLY valid https:// links permitted by Telegram in inline_keyboard
     const inlineKeyboard: Array<Array<{ text: string; url: string }>> = [];
+    const actionRow: Array<{ text: string; url: string }> = [];
     if (waLink) {
-      inlineKeyboard.push([{ text: '🟢 Написать клиенту в WhatsApp', url: waLink }]);
+      actionRow.push({ text: '🟢 Написать в WhatsApp', url: waLink });
+    }
+    if (tgLink) {
+      actionRow.push({ text: '💬 Открыть Telegram', url: tgLink });
+    }
+    if (actionRow.length > 0) {
+      inlineKeyboard.push(actionRow);
     }
 
     try {
@@ -285,15 +381,18 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
               body: JSON.stringify({
                 chat_id: chatId,
                 text: [
-                  '⚖️ V. I. LEVIN | НОВАЯ ЗАЯВКА',
+                  '🌐 V. I. LEVIN | ЗАЯВКА С ВЕБ-САЙТА',
                   '━━━━━━━━━━━━━━━━━━',
-                  'Вам перенаправлено новое обращение доверителя:',
+                  'Вам перенаправлено новое обращение с сайта:',
                   '',
+                  `Страна/Юрисдикция: ${currentJurisdiction.title}`,
                   `Направление: ${currentCategory.title}`,
                   `Подкатегория: ${selectedChip}`,
-                  whatsapp.trim() ? `WhatsApp/Телефон: ${whatsapp.trim()}` : '',
+                  clientName.trim() ? `Имя: ${clientName.trim()}` : '',
+                  phone.trim() ? `WhatsApp/Телефон: ${phone.trim()}` : '',
+                  cleanTg ? `Telegram: @${cleanTg}` : '',
                   email.trim() ? `Email: ${email.trim()}` : '',
-                  note.trim() ? `Суть вопроса: ${note.trim()}` : '',
+                  note.trim() ? `Суть ситуации: ${note.trim()}` : '',
                   `Язык сайта: ${currentLang.toUpperCase()}`,
                   `Время: ${new Date().toLocaleString('ru-RU')}`,
                 ].filter(Boolean).join('\n'),
@@ -305,8 +404,34 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
         }
       }));
 
+      if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
+        (window as any).gtag('event', 'generate_lead', {
+          event_category: 'consultation',
+          event_label: `${selectedJurisdiction}_${selectedChip}`,
+          value: 1.0,
+          currency: 'USD',
+        });
+        (window as any).gtag('event', 'consultation_submit', {
+          jurisdiction: selectedJurisdiction,
+          service: selectedChip,
+        });
+      }
+
       setIsSuccess(true);
     } catch {
+      if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
+        (window as any).gtag('event', 'generate_lead', {
+          event_category: 'consultation',
+          event_label: `${selectedJurisdiction}_${selectedChip}`,
+          value: 1.0,
+          currency: 'USD',
+        });
+        (window as any).gtag('event', 'consultation_submit', {
+          jurisdiction: selectedJurisdiction,
+          service: selectedChip,
+        });
+      }
+
       setIsSuccess(true);
     } finally {
       setIsSubmitting(false);
@@ -314,38 +439,39 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
   };
 
   return (
-    <div 
-      className="fixed inset-0 z-[200] min-h-[100dvh] flex items-center justify-center p-3 sm:p-4 bg-black/50 backdrop-blur-sm overflow-y-auto animate-in fade-in duration-200"
-      onClick={onClose}
-    >
-      <div 
-        className="relative w-full max-w-[390px] m-auto p-4 sm:p-5 rounded-xl bg-[#0B0F19] border border-white/[0.12] shadow-[0_20px_50px_rgba(0,0,0,0.95),inset_0_1px_1px_rgba(255,255,255,0.12)] overflow-visible text-slate-100"
-        onClick={(e) => e.stopPropagation()}
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
+      <div
+        className="relative w-full max-w-lg rounded-xl border border-white/[0.14] p-4 sm:p-5 shadow-2xl overflow-hidden max-h-[95vh] overflow-y-auto scrollbar-none"
+        style={{
+          background: 'linear-gradient(180deg, #0A0F1D 0%, #060912 100%)',
+          boxShadow: '0 25px 60px -15px rgba(0, 0, 0, 0.95), 0 0 40px rgba(212, 175, 55, 0.1)',
+        }}
       >
+        {/* Subtle Radial Glow in background */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-80 h-32 bg-[#DFBA73]/10 rounded-full blur-3xl pointer-events-none" />
+
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 text-gray-400 hover:text-white p-1 rounded-md hover:bg-white/10 transition-colors cursor-pointer z-30"
-          aria-label="Закрыть"
+          className="absolute top-3.5 right-3.5 text-gray-400 hover:text-white transition-colors p-1.5 rounded-full hover:bg-white/10 z-20 cursor-pointer"
         >
-          <X size={15} />
+          <X size={17} />
         </button>
 
         {isSuccess ? (
-          /* SUCCESS SCREEN (AFTER SUBMITTING WHATSAPP/EMAIL) */
-          <div className="py-5 text-center space-y-3.5">
-            <div className="w-11 h-11 bg-emerald-500/15 text-emerald-400 rounded-full flex items-center justify-center mx-auto border border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.2)]">
-              <CheckCircle2 size={24} />
+          /* SUCCESS STATE */
+          <div className="py-8 px-4 text-center space-y-4 relative z-10 animate-in zoom-in-95 duration-200">
+            <div className="w-14 h-14 mx-auto rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.2)]">
+              <CheckCircle2 size={30} />
             </div>
-            <div>
-              <h3 className="text-base font-serif text-[#FFE8A3] font-bold tracking-tight">
+            <div className="space-y-1.5">
+              <h3 className="text-lg font-serif font-bold text-white tracking-wide">
                 {L.successTitle}
               </h3>
-              <p className="text-gray-300 text-xs max-w-xs mx-auto font-sans font-light leading-relaxed mt-1">
+              <p className="text-xs text-gray-300 max-w-sm mx-auto font-light leading-relaxed">
                 {L.successDesc}
               </p>
             </div>
-
             <div className="pt-2">
               <button
                 onClick={onClose}
@@ -359,250 +485,286 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
             </div>
           </div>
         ) : (
-          /* SINGLE DIRECT SCREEN: TELEGRAM BOT PRIORITY OR EXPANDABLE WHATSAPP/EMAIL */
-          <div className="space-y-3 relative z-10 animate-in fade-in duration-200">
-            {/* Header */}
-            <div className="text-center px-4 pt-1">
-              <h3 className="text-xs sm:text-sm font-sans font-bold text-white leading-snug">
-                {L.stepTitle}
-              </h3>
-              <p className="text-[11px] font-sans text-gray-400 mt-1 leading-tight">
-                {L.stepSub}
-              </p>
-            </div>
-
-            {/* Clickable Gold Seal Emblem (Direct link to Telegram Bot) */}
-            <div className="flex justify-center py-1">
-              <a
-                href="https://t.me/VILEVIN_bot"
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={onClose}
-                title="Перейти в Telegram-бот @VILEVIN_bot"
-                className="group relative block rounded-full transition-transform duration-200 hover:scale-105 active:scale-95 cursor-pointer"
-              >
-                <div className="absolute inset-0 rounded-full bg-[#DFBA73]/20 blur-md group-hover:bg-[#DFBA73]/40 transition-colors pointer-events-none" />
+          /* DIRECT HIGH-CONVERSION CONSULTATION FORM */
+          <div className="space-y-3.5 relative z-10 animate-in fade-in duration-200">
+            
+            {/* Header: Seal + Title + Attorney Client Privilege Note */}
+            <div className="flex items-center gap-3.5 pb-2 border-b border-white/[0.1] pr-6">
+              <div className="relative shrink-0">
+                <div className="absolute inset-0 rounded-full bg-[#DFBA73]/25 blur-sm pointer-events-none" />
                 <img
                   src="/images/v_levin_seal.png"
                   alt="V. I. LEVIN Legal Counsel"
-                  className="relative w-20 h-20 sm:w-[88px] sm:h-[88px] object-contain drop-shadow-[0_4px_16px_rgba(212,175,55,0.3)] select-none pointer-events-none"
+                  className="relative w-12 h-12 object-contain drop-shadow-[0_2px_10px_rgba(212,175,55,0.4)] select-none"
                 />
-              </a>
+              </div>
+              <div className="space-y-0.5">
+                <h3 className="text-xs sm:text-sm font-sans font-bold text-white tracking-wide flex items-center gap-1.5">
+                  <span>{L.modalTitle}</span>
+                </h3>
+                <p className="text-[11px] font-sans text-gray-300 leading-tight">
+                  {L.modalSub}
+                </p>
+                <div className="flex items-center gap-1 text-[9px] font-mono text-gold-400 uppercase tracking-widest pt-0.5">
+                  <Shield size={10} className="text-gold-400" />
+                  <span>Rule 1.6 Attorney-Client Privilege · Confidential</span>
+                </div>
+              </div>
             </div>
 
-            {/* Priority Channel: Telegram Bot Button (Clean gold button without white circle/emoji) */}
-            <div className="pt-0.5">
-              <a
-                href="https://t.me/VILEVIN_bot"
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={onClose}
-                className="w-full py-2.5 px-4 rounded-md text-[#080B11] font-bold text-xs tracking-wider uppercase hover:brightness-105 active:scale-[0.98] transition-all shadow-md border border-[#FFE8A3]/50 cursor-pointer flex items-center justify-center font-sans"
-                style={{
-                  background: 'linear-gradient(135deg, #F3E2B8 0%, #D4AF37 50%, #99742B 100%)',
-                }}
-              >
-                <span>{L.tgBtn}</span>
-              </a>
-            </div>
+            <form onSubmit={handleSubmitDirect} className="space-y-2.5">
+              {error && (
+                <div className="p-2 rounded bg-red-950/80 border border-red-500/40 text-red-200 text-[11px] font-sans">
+                  {error}
+                </div>
+              )}
 
-            {/* Checkbox: "I don't have Telegram" */}
-            <div className="pt-1 border-t border-white/10">
-              <label className="flex items-center gap-2 cursor-pointer select-none group py-1">
-                <input
-                  type="checkbox"
-                  checked={noTelegram}
-                  onChange={(e) => {
-                    setNoTelegram(e.target.checked);
-                    setError('');
+              {/* 1. Country / Jurisdiction Dropdown */}
+              <div ref={jurRef} className="relative">
+                <label className="text-[10px] font-sans font-semibold tracking-wider text-[#DFBA73] block mb-1 uppercase flex items-center justify-between">
+                  <span>{L.jurLabel}</span>
+                  <span className="text-[9px] text-gray-400 normal-case">Международная практика</span>
+                </label>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setJurDropdownOpen(!jurDropdownOpen);
+                    setCatDropdownOpen(false);
+                    setTopicDropdownOpen(false);
                   }}
-                  className="w-3.5 h-3.5 rounded border-white/20 text-[#DFBA73] focus:ring-0 focus:ring-offset-0 bg-[#101524] cursor-pointer accent-[#DFBA73]"
-                />
-                <span className="text-[11px] font-sans text-gray-300 group-hover:text-white transition-colors font-medium">
-                  {L.noTgCheckbox}
-                </span>
-              </label>
-            </div>
+                  className="w-full h-8.5 px-3 rounded-md bg-[#101524] border border-white/[0.14] hover:border-white/30 focus:border-[#DFBA73] flex items-center justify-between text-left text-xs font-sans font-medium text-white transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)] cursor-pointer select-none"
+                >
+                  <div className="flex items-center gap-2 overflow-hidden">
+                    <span className="text-sm shrink-0">{currentJurisdiction.flag}</span>
+                    <span className="truncate text-white font-medium">{currentJurisdiction.title}</span>
+                  </div>
+                  <ChevronDown
+                    size={13}
+                    className={`text-gray-400 shrink-0 transition-transform duration-200 ${
+                      jurDropdownOpen ? 'rotate-180 text-[#DFBA73]' : ''
+                    }`}
+                  />
+                </button>
 
-            {/* Expandable Form: Directions, Subcategories, WhatsApp & Email */}
-            {noTelegram && (
-              <form onSubmit={handleSubmitDirect} className="space-y-2 pt-1 animate-in fade-in slide-in-from-top-2 duration-200">
-                {error && (
-                  <div className="p-2 rounded bg-red-950/80 border border-red-500/40 text-red-200 text-[11px] font-sans">
-                    {error}
+                {jurDropdownOpen && (
+                  <div className="absolute z-50 left-0 right-0 mt-1 p-1 bg-[#0D1220] border border-white/20 rounded-md shadow-2xl shadow-black space-y-0.5 animate-in fade-in-50 zoom-in-95 duration-150 max-h-48 overflow-y-auto scrollbar-none">
+                    {jurisdictionsList.map((jur) => {
+                      const isSelected = selectedJurisdiction === jur.id;
+                      return (
+                        <button
+                          key={jur.id}
+                          type="button"
+                          onClick={() => handleJurSelect(jur)}
+                          className={`w-full px-2.5 py-1.5 rounded text-xs font-sans text-left flex items-center gap-2 transition-all cursor-pointer ${
+                            isSelected
+                              ? 'bg-[#DFBA73]/20 text-[#FFE8A3] border border-[#DFBA73]/40 font-semibold'
+                              : 'text-gray-200 hover:bg-white/10 hover:text-white border border-transparent'
+                          }`}
+                        >
+                          <span className="text-sm shrink-0">{jur.flag}</span>
+                          <span className="truncate">{jur.title}</span>
+                        </button>
+                      );
+                    })}
                   </div>
                 )}
+              </div>
 
-                {/* 1. Category Dropdown */}
-                <div ref={catRef} className="relative">
-                  <label className="text-[10px] font-sans font-semibold tracking-wider text-[#DFBA73] block mb-1 uppercase">
-                    {L.catLabel}
-                  </label>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setCatDropdownOpen(!catDropdownOpen);
-                      setTopicDropdownOpen(false);
-                    }}
-                    className="w-full h-8.5 px-3 rounded-md bg-[#101524] border border-white/[0.12] hover:border-white/25 focus:border-[#DFBA73] flex items-center justify-between text-left text-xs font-sans font-medium text-white transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)] cursor-pointer select-none"
-                  >
-                    <div className="flex items-center gap-2 overflow-hidden">
-                      {currentCategory.id === 'usa' ? (
-                        <LuxuryUsaFlag size="xs" />
-                      ) : (
-                        <span className="text-xs shrink-0">{currentCategory.icon}</span>
-                      )}
-                      <span className="truncate text-white font-medium">{currentCategory.title}</span>
-                    </div>
-                    <ChevronDown
-                      size={13}
-                      className={`text-gray-400 shrink-0 transition-transform duration-200 ${
-                        catDropdownOpen ? 'rotate-180 text-[#DFBA73]' : ''
-                      }`}
-                    />
-                  </button>
-
-                  {/* Dropdown Menu */}
-                  {catDropdownOpen && (
-                    <div className="absolute z-50 left-0 right-0 mt-1 p-1 bg-[#0D1220] border border-white/20 rounded-md shadow-2xl shadow-black space-y-0.5 animate-in fade-in-50 zoom-in-95 duration-150">
-                      {categoriesList.map((cat) => {
-                        const isSelected = selectedCat === cat.id;
-                        return (
-                          <button
-                            key={cat.id}
-                            type="button"
-                            onClick={() => handleCatSelect(cat)}
-                            className={`w-full px-2.5 py-1.5 rounded text-xs font-sans text-left flex items-center gap-2 transition-all cursor-pointer ${
-                              isSelected
-                                ? 'bg-[#DFBA73]/20 text-[#FFE8A3] border border-[#DFBA73]/40 font-semibold'
-                                : 'text-gray-200 hover:bg-white/10 hover:text-white border border-transparent'
-                            }`}
-                          >
-                            {cat.id === 'usa' ? (
-                              <LuxuryUsaFlag size="xs" />
-                            ) : (
-                              <span className="text-xs">{cat.icon}</span>
-                            )}
-                            <span className="truncate">{cat.title}</span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-
-                {/* 2. Specific Topic Dropdown */}
-                <div ref={topicRef} className="relative">
-                  <label className="text-[10px] font-sans font-semibold tracking-wider text-[#DFBA73] block mb-1 uppercase">
-                    {L.topicLabel}
-                  </label>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setTopicDropdownOpen(!topicDropdownOpen);
-                      setCatDropdownOpen(false);
-                    }}
-                    className="w-full h-8.5 px-3 rounded-md bg-[#101524] border border-white/[0.12] hover:border-white/25 focus:border-[#DFBA73] flex items-center justify-between text-left text-xs font-sans font-medium text-white transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)] cursor-pointer select-none"
-                  >
-                    <div className="flex items-center gap-2 overflow-hidden">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#DFBA73] shrink-0 shadow-[0_0_5px_rgba(223,186,115,0.7)]" />
-                      <span className="truncate text-white font-medium">{selectedChip}</span>
-                    </div>
-                    <ChevronDown
-                      size={13}
-                      className={`text-gray-400 shrink-0 transition-transform duration-200 ${
-                        topicDropdownOpen ? 'rotate-180 text-[#DFBA73]' : ''
-                      }`}
-                    />
-                  </button>
-
-                  {/* Dropdown Menu */}
-                  {topicDropdownOpen && (
-                    <div className="absolute z-40 left-0 right-0 mt-1 p-1 bg-[#0D1220] border border-white/20 rounded-md shadow-2xl shadow-black space-y-0.5 animate-in fade-in-50 zoom-in-95 duration-150 max-h-44 overflow-y-auto scrollbar-none">
-                      {currentCategory.chips.map((chip) => {
-                        const isSelected = selectedChip === chip;
-                        return (
-                          <button
-                            key={chip}
-                            type="button"
-                            onClick={() => handleTopicSelect(chip)}
-                            className={`w-full px-2.5 py-1.5 rounded text-xs font-sans text-left transition-all cursor-pointer ${
-                              isSelected
-                                ? 'bg-[#DFBA73]/20 text-[#FFE8A3] border border-[#DFBA73]/40 font-semibold'
-                                : 'text-gray-200 hover:bg-white/10 hover:text-white border border-transparent'
-                            }`}
-                          >
-                            <span className="truncate">{chip}</span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-
-                {/* 3. WhatsApp Row */}
-                <div>
-                  <label className="text-[10px] font-sans font-semibold tracking-wider text-[#DFBA73] block mb-1 uppercase">
-                    {L.waLabel}
-                  </label>
-                  <input
-                    type="tel"
-                    value={whatsapp}
-                    onChange={(e) => setWhatsapp(e.target.value)}
-                    placeholder={L.waPlaceholder}
-                    className="w-full h-8.5 px-3 rounded-md bg-[#101524] border border-white/[0.12] focus:border-[#DFBA73] focus:bg-[#141b2e] text-white placeholder-gray-500 font-sans text-xs outline-none transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)]"
-                  />
-                </div>
-
-                {/* 4. Email Row */}
-                <div>
-                  <label className="text-[10px] font-sans font-semibold tracking-wider text-[#DFBA73] block mb-1 uppercase">
-                    {L.emailLabel}
-                  </label>
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder={L.emailPlaceholder}
-                    className="w-full h-8.5 px-3 rounded-md bg-[#101524] border border-white/[0.12] focus:border-[#DFBA73] focus:bg-[#141b2e] text-white placeholder-gray-500 font-sans text-xs outline-none transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)]"
-                  />
-                </div>
-
-                {/* 5. Note / Description Textarea */}
-                <div className="rounded-md p-2 bg-[#101524] border border-white/[0.12] focus-within:border-white/25 transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.4)]">
-                  <div className="flex items-center justify-between pb-1 mb-1 border-b border-white/10">
-                    <label className="text-[10px] font-sans uppercase tracking-wider text-[#DFBA73] font-semibold flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#DFBA73]" />
-                      {L.noteLabel}
-                    </label>
-                    <span className="text-[9px] font-mono text-gray-400 uppercase tracking-widest flex items-center gap-1">
-                      <Lock size={8} /> Confidential
-                    </span>
+              {/* 2. Practice Direction Dropdown */}
+              <div ref={catRef} className="relative">
+                <label className="text-[10px] font-sans font-semibold tracking-wider text-[#DFBA73] block mb-1 uppercase">
+                  {L.catLabel}
+                </label>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCatDropdownOpen(!catDropdownOpen);
+                    setJurDropdownOpen(false);
+                    setTopicDropdownOpen(false);
+                  }}
+                  className="w-full h-8.5 px-3 rounded-md bg-[#101524] border border-white/[0.14] hover:border-white/30 focus:border-[#DFBA73] flex items-center justify-between text-left text-xs font-sans font-medium text-white transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)] cursor-pointer select-none"
+                >
+                  <div className="flex items-center gap-2 overflow-hidden">
+                    {currentCategory.id === 'usa' ? (
+                      <LuxuryUsaFlag size="xs" />
+                    ) : (
+                      <span className="text-xs shrink-0">{currentCategory.icon}</span>
+                    )}
+                    <span className="truncate text-white font-medium">{currentCategory.title}</span>
                   </div>
-                  <textarea
-                    rows={2}
-                    value={note}
-                    onChange={(e) => setNote(e.target.value)}
-                    placeholder={L.notePlaceholder}
-                    className="w-full bg-transparent text-white placeholder-gray-500 font-sans text-xs outline-none resize-none leading-relaxed"
+                  <ChevronDown
+                    size={13}
+                    className={`text-gray-400 shrink-0 transition-transform duration-200 ${
+                      catDropdownOpen ? 'rotate-180 text-[#DFBA73]' : ''
+                    }`}
                   />
+                </button>
+
+                {catDropdownOpen && (
+                  <div className="absolute z-50 left-0 right-0 mt-1 p-1 bg-[#0D1220] border border-white/20 rounded-md shadow-2xl shadow-black space-y-0.5 animate-in fade-in-50 zoom-in-95 duration-150">
+                    {categoriesList.map((cat) => {
+                      const isSelected = selectedCat === cat.id;
+                      return (
+                        <button
+                          key={cat.id}
+                          type="button"
+                          onClick={() => handleCatSelect(cat)}
+                          className={`w-full px-2.5 py-1.5 rounded text-xs font-sans text-left flex items-center gap-2 transition-all cursor-pointer ${
+                            isSelected
+                              ? 'bg-[#DFBA73]/20 text-[#FFE8A3] border border-[#DFBA73]/40 font-semibold'
+                              : 'text-gray-200 hover:bg-white/10 hover:text-white border border-transparent'
+                          }`}
+                        >
+                          <span className="text-xs shrink-0">{cat.icon}</span>
+                          <span className="truncate">{cat.title}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              {/* 3. Specific Subcategory / Topic Dropdown */}
+              <div ref={topicRef} className="relative">
+                <label className="text-[10px] font-sans font-semibold tracking-wider text-[#DFBA73] block mb-1 uppercase">
+                  {L.topicLabel}
+                </label>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setTopicDropdownOpen(!topicDropdownOpen);
+                    setJurDropdownOpen(false);
+                    setCatDropdownOpen(false);
+                  }}
+                  className="w-full h-8.5 px-3 rounded-md bg-[#101524] border border-white/[0.14] hover:border-white/30 focus:border-[#DFBA73] flex items-center justify-between text-left text-xs font-sans font-medium text-white transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)] cursor-pointer select-none"
+                >
+                  <div className="flex items-center gap-2 overflow-hidden">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#DFBA73] shrink-0 shadow-[0_0_5px_rgba(223,186,115,0.7)]" />
+                    <span className="truncate text-white font-medium">{selectedChip}</span>
+                  </div>
+                  <ChevronDown
+                    size={13}
+                    className={`text-gray-400 shrink-0 transition-transform duration-200 ${
+                      topicDropdownOpen ? 'rotate-180 text-[#DFBA73]' : ''
+                    }`}
+                  />
+                </button>
+
+                {topicDropdownOpen && (
+                  <div className="absolute z-40 left-0 right-0 mt-1 p-1 bg-[#0D1220] border border-white/20 rounded-md shadow-2xl shadow-black space-y-0.5 animate-in fade-in-50 zoom-in-95 duration-150 max-h-44 overflow-y-auto scrollbar-none">
+                    {currentCategory.chips.map((chip) => {
+                      const isSelected = selectedChip === chip;
+                      return (
+                        <button
+                          key={chip}
+                          type="button"
+                          onClick={() => handleTopicSelect(chip)}
+                          className={`w-full px-2.5 py-1.5 rounded text-xs font-sans text-left transition-all cursor-pointer ${
+                            isSelected
+                              ? 'bg-[#DFBA73]/20 text-[#FFE8A3] border border-[#DFBA73]/40 font-semibold'
+                              : 'text-gray-200 hover:bg-white/10 hover:text-white border border-transparent'
+                          }`}
+                        >
+                          <span className="truncate">{chip}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              {/* 4. Description Textarea */}
+              <div className="rounded-md p-2 bg-[#101524] border border-white/[0.14] focus-within:border-white/30 transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.4)]">
+                <div className="flex items-center justify-between pb-1 mb-1 border-b border-white/10">
+                  <label className="text-[10px] font-sans uppercase tracking-wider text-[#DFBA73] font-semibold flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#DFBA73]" />
+                    {L.noteLabel}
+                  </label>
+                  <span className="text-[9px] font-mono text-gray-400 uppercase tracking-widest flex items-center gap-1">
+                    <Lock size={8} /> Confidential
+                  </span>
+                </div>
+                <textarea
+                  rows={2}
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  placeholder={L.notePlaceholder}
+                  className="w-full bg-transparent text-white placeholder-gray-500 font-sans text-xs outline-none resize-none leading-relaxed"
+                />
+              </div>
+
+              {/* 5. Contact Information Grid */}
+              <div className="space-y-1.5 pt-0.5">
+                <label className="text-[10px] font-sans font-semibold tracking-wider text-[#DFBA73] block uppercase">
+                  4. КОНТАКТНЫЕ ДАННЫЕ ДЛЯ СВЯЗИ:
+                </label>
+
+                {/* Name & Phone in 2 columns on sm */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <div>
+                    <input
+                      type="text"
+                      value={clientName}
+                      onChange={(e) => setClientName(e.target.value)}
+                      placeholder={L.namePlaceholder}
+                      className="w-full h-8 px-2.5 rounded-md bg-[#101524] border border-white/[0.14] focus:border-[#DFBA73] focus:bg-[#141b2e] text-white placeholder-gray-500 font-sans text-xs outline-none transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)]"
+                    />
+                  </div>
+                  <div>
+                    <input
+                      type="tel"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      placeholder={L.phonePlaceholder}
+                      className="w-full h-8 px-2.5 rounded-md bg-[#101524] border border-white/[0.14] focus:border-[#DFBA73] focus:bg-[#141b2e] text-white placeholder-gray-500 font-sans text-xs outline-none transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)]"
+                    />
+                  </div>
                 </div>
 
-                {/* Submit direct inquiry button */}
-                <div className="pt-1">
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="w-full py-2.5 px-4 rounded-md text-[#080B11] font-bold text-xs tracking-wider uppercase hover:brightness-105 active:scale-[0.98] transition-all shadow-md border border-[#FFE8A3]/50 cursor-pointer flex items-center justify-center font-sans disabled:opacity-50"
-                    style={{
-                      background: 'linear-gradient(135deg, #F3E2B8 0%, #D4AF37 50%, #99742B 100%)',
-                    }}
-                  >
-                    <span>{isSubmitting ? L.submitting : L.submitDirectBtn}</span>
-                  </button>
+                {/* Telegram & Email in 2 columns on sm */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <div>
+                    <input
+                      type="text"
+                      value={telegram}
+                      onChange={(e) => setTelegram(e.target.value)}
+                      placeholder={L.tgPlaceholder}
+                      className="w-full h-8 px-2.5 rounded-md bg-[#101524] border border-white/[0.14] focus:border-[#DFBA73] focus:bg-[#141b2e] text-white placeholder-gray-500 font-sans text-xs outline-none transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)]"
+                    />
+                  </div>
+                  <div>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder={L.emailPlaceholder}
+                      className="w-full h-8 px-2.5 rounded-md bg-[#101524] border border-white/[0.14] focus:border-[#DFBA73] focus:bg-[#141b2e] text-white placeholder-gray-500 font-sans text-xs outline-none transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)]"
+                    />
+                  </div>
                 </div>
-              </form>
-            )}
+              </div>
+
+              {/* Submit Button */}
+              <div className="pt-1.5">
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full py-2.5 px-4 rounded-md text-[#080B11] font-bold text-xs tracking-wider uppercase hover:brightness-105 active:scale-[0.98] transition-all shadow-md border border-[#FFE8A3]/50 cursor-pointer flex items-center justify-center gap-2 font-sans disabled:opacity-50"
+                  style={{
+                    background: 'linear-gradient(135deg, #F3E2B8 0%, #D4AF37 50%, #99742B 100%)',
+                  }}
+                >
+                  <Send size={13} className="text-[#080B11]" />
+                  <span>{isSubmitting ? L.submitting : L.submitBtn}</span>
+                </button>
+              </div>
+
+              <div className="text-center pt-0.5">
+                <p className="text-[10px] text-gray-400 font-light leading-tight">
+                  Защищено сквозным шифрованием. Данные не передаются третьим лицам.
+                </p>
+              </div>
+            </form>
           </div>
         )}
       </div>

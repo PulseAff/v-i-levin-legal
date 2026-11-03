@@ -347,9 +347,9 @@ async function notifyAdminLead(lead) {
   const leadNum = String(lead.id || '').replace(/^LEAD-?/i, '');
 
   const adminMsg = [
-    `⚖️ <b>V. I. LEVIN | НОВАЯ ЗАЯВКА</b>`,
+    `🤖 <b>V. I. LEVIN | ЗАЯВКА ИЗ TELEGRAM-БОТА</b>`,
     `━━━━━━━━━━━━━━━━━━`,
-    `Новое обращение доверителя:`,
+    `Новое обращение доверителя через Telegram-бот:`,
     ``,
     `🆔 <b>ID Заявки:</b> <code>${escapeHtml(lead.id)}</code>`,
     `📅 <b>Время:</b> ${new Date(lead.createdAt).toLocaleString('ru-RU')}`,
@@ -398,7 +398,7 @@ async function forwardLeadToLawyer(leadId) {
   saveLeadsToDisk();
 
   const lawyerMsg = [
-    `⚖️ <b>V. I. LEVIN | НОВАЯ ЗАЯВКА</b>`,
+    `🤖 <b>V. I. LEVIN | ЗАЯВКА ИЗ TELEGRAM-БОТА</b>`,
     `━━━━━━━━━━━━━━━━━━`,
     `Вам перенаправлено новое обращение доверителя:`,
     ``,

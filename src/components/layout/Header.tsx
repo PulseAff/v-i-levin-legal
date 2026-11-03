@@ -556,19 +556,7 @@ export const Header: React.FC = () => {
               })}
             </div>
 
-            {/* Direct Telegram link */}
-            <div className="pt-2">
-              <a
-                href="https://t.me/VILEVIN_bot"
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center justify-between p-3 rounded-md bg-[#0D1522] border border-gold-500/20 text-gray-200 text-xs hover:border-gold-500/40 transition-colors"
-              >
-                <span className="text-gray-300">Telegram Bot</span>
-                <span className="text-gold-400 font-mono font-bold">@VILEVIN_bot</span>
-              </a>
-            </div>
+
           </div>
 
           {/* Drawer Footer Actions */}

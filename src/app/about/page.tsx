@@ -3,9 +3,11 @@
 import React from 'react';
 import { Shield, Lock, Scale, ArrowRight } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
+import { useConsultation } from '@/context/ConsultationContext';
 
 export default function AboutPage() {
   const { currentLang } = useLanguage();
+  const { openConsultation } = useConsultation();
 
   const labels: Record<string, {
     badge: string;
@@ -36,8 +38,8 @@ export default function AboutPage() {
       p3Title: 'Правовая стратегия и доказательная база',
       p3Desc: 'Каждый кейс оценивается на основе прецедентных норм и глубокого анализа американского и международного законодательства.',
       cardTitle: 'Свяжитесь с практикой',
-      cardDesc: 'Опишите суть вашей ситуации в конфиденциальном Telegram-боте. Первичная классификация занимает несколько минут, после чего специалист подтвердит возможность работы.',
-      cardBtn: 'Перейти в Telegram-бот',
+      cardDesc: 'Опишите суть вашей ситуации. Первичный правовой анализ занимает 24–48 часов, после чего специалист подтвердит возможность работы.',
+      cardBtn: 'Получить консультацию',
     },
     en: {
       badge: 'Practice Manifesto',
@@ -52,8 +54,8 @@ export default function AboutPage() {
       p3Title: 'Evidence-Based Legal Strategy',
       p3Desc: 'Every case is architected upon established judicial precedents and comprehensive statutory analysis under US and international legal regimes.',
       cardTitle: 'Contact the Practice',
-      cardDesc: 'Outline your situation via our confidential Telegram bot. Initial triage takes only a few minutes, following which our counsel will confirm engagement viability.',
-      cardBtn: 'Proceed to Telegram Bot',
+      cardDesc: 'Outline the details of your situation. Preliminary legal assessment takes 24–48 hours, after which counsel will confirm engagement viability.',
+      cardBtn: 'Get Consultation',
     },
     uk: {
       badge: 'Маніфест практики',
@@ -68,8 +70,8 @@ export default function AboutPage() {
       p3Title: 'Правова стратегія та доказова база',
       p3Desc: 'Кожна справа оцінюється на основі прецедентних норм та глибокого аналізу американського і міжнародного законодавства.',
       cardTitle: "Зв'яжіться з практикою",
-      cardDesc: 'Опишіть суть вашої ситуації в конфіденційному Telegram-боті. Первинна класифікація триває кілька хвилин, після чого юрист підтвердить можливість роботи.',
-      cardBtn: 'Перейти в Telegram-бот',
+      cardDesc: 'Опишіть суть вашої ситуації. Первинний правовий аналіз триває 24–48 годин, після чого юрист підтвердить можливість роботи.',
+      cardBtn: 'Отримати консультацію',
     },
     es: {
       badge: 'Manifiesto de la práctica',
@@ -117,7 +119,7 @@ export default function AboutPage() {
       p3Desc: 'Chaque dossier s’appuie sur les précédents jurisprudentiels pertinents et une analyse rigoureuse du droit américain et international.',
       cardTitle: 'Contacter le cabinet',
       cardDesc: 'Exposez les grandes lignes de votre situation via notre bot Telegram confidentiel. L’analyse préliminaire est traitée rapidement afin de confirmer l’intervention.',
-      cardBtn: 'Accéder au bot Telegram',
+      cardBtn: 'Obtenir une consultation',
     },
   };
 
@@ -178,15 +180,13 @@ export default function AboutPage() {
             {l.cardDesc}
           </p>
           <div className="pt-2">
-            <a
-              href="https://t.me/VILEVIN_bot"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-md bg-[#DFBA73] hover:bg-[#cfab5b] text-[#080B11] text-xs font-bold uppercase tracking-wider border border-[#FFE8A3]/40 shadow-md hover:brightness-105 active:scale-[0.98] transition-all"
+            <button
+              onClick={() => openConsultation('Консультация и правовой анализ')}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-md bg-[#DFBA73] hover:bg-[#cfab5b] text-[#080B11] text-xs font-bold uppercase tracking-wider border border-[#FFE8A3]/40 shadow-md hover:brightness-105 active:scale-[0.98] transition-all cursor-pointer"
             >
               <span>{l.cardBtn}</span>
               <ArrowRight size={15} />
-            </a>
+            </button>
           </div>
         </div>
       </div>

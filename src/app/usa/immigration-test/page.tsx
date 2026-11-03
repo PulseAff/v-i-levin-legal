@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { CheckCircle2, ArrowRight, MessageSquare, RefreshCw, Award } from 'lucide-react';
+import { CheckCircle2, ArrowRight, MessageSquare, RefreshCw, Award, Send } from 'lucide-react';
+import { useConsultation } from '@/context/ConsultationContext';
 
 interface Question {
   id: number;
@@ -64,6 +65,7 @@ const questions: Question[] = [
 ];
 
 export default function ImmigrationTestPage() {
+  const { openConsultation } = useConsultation();
   const [answers, setAnswers] = useState<Record<number, boolean>>({});
   const [isCompleted, setIsCompleted] = useState(false);
 
@@ -188,15 +190,14 @@ export default function ImmigrationTestPage() {
             </p>
 
             <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
-              <a
-                href={`https://t.me/VILEVIN_bot?start=test_score_${score}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full sm:w-auto px-6 py-2.5 bg-[#DFBA73] hover:bg-[#cfab5b] text-[#080B11] text-xs font-bold tracking-wider uppercase rounded-md hover:brightness-105 active:scale-[0.98] transition-all border border-[#FFE8A3]/40 shadow-md flex items-center justify-center gap-2 cursor-pointer"
+              <button
+                type="button"
+                onClick={() => openConsultation(`Тест EB-1A / NIW: ${score} из 10 критериев`)}
+                className="w-full sm:w-auto px-6 py-2.5 bg-gradient-to-r from-[#F3E2B8] via-[#D4AF37] to-[#A0782A] text-black text-xs font-bold tracking-wider uppercase rounded-md hover:brightness-110 active:scale-[0.98] transition-all border border-[#FFE8A3] shadow-md flex items-center justify-center gap-2 cursor-pointer"
               >
-                <MessageSquare size={16} />
-                <span>Отправить результат юристу в Telegram</span>
-              </a>
+                <Send size={15} />
+                <span>Получить консультацию по результатам</span>
+              </button>
 
               <button
                 type="button"

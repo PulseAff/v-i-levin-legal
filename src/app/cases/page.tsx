@@ -5,10 +5,12 @@ import Link from 'next/link';
 import { casesData } from '@/data/casesData';
 import { ArrowRight, MessageSquare, Shield } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
+import { useConsultation } from '@/context/ConsultationContext';
 
 export default function CasesPage() {
   const [filter, setFilter] = useState<'all' | 'immigration' | 'corporate' | 'litigation' | 'private'>('all');
   const { currentLang } = useLanguage();
+  const { openConsultation } = useConsultation();
 
   const labels: Record<string, {
     badge: string;
@@ -44,7 +46,7 @@ export default function CasesPage() {
       resultLabel: 'Достигнутый результат:',
       riskLabel: 'Предотвращен риск:',
       similarSituation: 'У вас похожая ситуация?',
-      reviewBtn: 'Разобрать ситуацию по аналогии с',
+      reviewBtn: 'Получить консультацию по',
     },
     en: {
       badge: 'Actual Practice',
@@ -86,7 +88,7 @@ export default function CasesPage() {
       resultLabel: 'Досягнутий результат:',
       riskLabel: 'Запобігли ризику:',
       similarSituation: 'У вас схожа ситуація?',
-      reviewBtn: 'Розібрати ситуацію за аналогією з',
+      reviewBtn: 'Отримати консультацію за',
     },
     es: {
       badge: 'Práctica real',
@@ -272,14 +274,13 @@ export default function CasesPage() {
 
               <div className="pt-2 flex items-center justify-between">
                 <span className="text-[11px] text-gray-500">{l.similarSituation}</span>
-                <a
-                  href={`https://t.me/VILEVIN_bot?start=${c.id}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-gold-400 hover:text-gold-300 transition-colors"
+                <button
+                  type="button"
+                  onClick={() => openConsultation(`Разбор ситуации по кейсу ${c.caseNumber}`)}
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-gold-400 hover:text-gold-300 transition-colors cursor-pointer"
                 >
                   <MessageSquare size={14} /> {l.reviewBtn} {c.caseNumber}
-                </a>
+                </button>
               </div>
             </div>
           ))}

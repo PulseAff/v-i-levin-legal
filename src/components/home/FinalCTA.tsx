@@ -26,42 +26,42 @@ export const FinalCTA: React.FC<FinalCTAProps> = ({ onOpenConsultation }) => {
       badge: 'Начните с конфиденциального разбора',
       title: 'Опишите ситуацию. Мы определим, есть ли правовое решение.',
       desc: 'Каждое обращение изучается ведущим специалистом практики. Мы оценим риски, определим применимые правовые механизмы и предложим рациональный план действий.',
-      btnReview: 'Разобрать мою ситуацию',
+      btnReview: 'Получить консультацию',
       btnBot: 'Запустить защищенный Telegram-бот',
     },
     en: {
       badge: 'Begin with a confidential assessment',
       title: 'Describe your situation. We will determine if a viable legal remedy exists.',
       desc: 'Every matter is directly appraised by our senior counsel. We evaluate jurisdictional risks, procedural avenues, and deliver an actionable strategic roadmap.',
-      btnReview: 'Review My Case',
+      btnReview: 'Get Consultation',
       btnBot: 'Launch Secure Telegram Bot',
     },
     uk: {
       badge: 'Почніть із конфіденційного аудиту',
       title: 'Опишіть ситуацію. Ми визначимо наявність ефективного правового рішення.',
       desc: 'Кожне звернення вивчається провідним юристом практики. Ми оцінимо ризики, визначимо норми права та сформуємо чіткий план дій.',
-      btnReview: 'Розібрати мою ситуацію',
+      btnReview: 'Отримати консультацію',
       btnBot: 'Запустити захищений Telegram-бот',
     },
     es: {
       badge: 'Comience con una auditoría confidencial',
       title: 'Describa su situación. Determinaremos la viabilidad jurídica de su caso.',
       desc: 'Cada consulta es evaluada personalmente por el titular del despacho. Analizamos riesgos jurisdiccionales y trazamos un plan de acción concreto.',
-      btnReview: 'Analizar mi caso',
+      btnReview: 'Obtener consulta',
       btnBot: 'Iniciar bot de Telegram seguro',
     },
     it: {
       badge: 'Inizi con un’analisi riservata',
       title: 'Descriva la Sua situazione. Valuteremo la sussistenza di un rimedio legale.',
       desc: 'Ogni fascicolo è esaminato direttamente dal professionista titolare. Identifichiamo i profili di rischio e formuliamo una strategia su misura.',
-      btnReview: 'Esamina il mio caso',
+      btnReview: 'Richiedi consulenza',
       btnBot: 'Avvia bot protetto Telegram',
     },
     fr: {
       badge: 'Commencez par une analyse confidentielle',
       title: 'Décrivez votre situation. Nous déterminerons si une voie de droit existe.',
       desc: 'Chaque dossier est directement analysé par l’associé gérant. Nous apprécions les risques et définissons un plan d’action pragmatique.',
-      btnReview: 'Étudier ma situation',
+      btnReview: 'Obtenir une consultation',
       btnBot: 'Lancer le bot Telegram sécurisé',
     },
   };
@@ -86,21 +86,11 @@ export const FinalCTA: React.FC<FinalCTAProps> = ({ onOpenConsultation }) => {
         <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
           <button
             onClick={handleOpen}
-            className="w-full sm:w-auto px-6 py-2.5 bg-[#DFBA73] hover:bg-[#cfab5b] text-[#080B11] text-xs font-bold tracking-wider uppercase rounded-md hover:brightness-105 active:scale-[0.98] transition-all shadow-md border border-[#FFE8A3]/40 flex items-center justify-center gap-2 cursor-pointer"
+            className="w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-[#F3E2B8] via-[#D4AF37] to-[#A0782A] text-black font-bold text-xs uppercase tracking-wider rounded-md hover:brightness-110 active:scale-[0.98] transition-all shadow-[0_4px_20px_rgba(212,175,55,0.35)] border border-[#FFE8A3] flex items-center justify-center gap-2 cursor-pointer"
           >
             <span>{l.btnReview}</span>
             <ArrowRight size={15} />
           </button>
-
-          <a
-            href="https://t.me/VILEVIN_bot"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-full sm:w-auto px-5 py-2.5 bg-[#0F1624] hover:bg-[#162133] text-gold-300 border border-gold-500/30 text-xs font-semibold tracking-wide rounded-md transition-all flex items-center justify-center gap-2 shadow"
-          >
-            <MessageSquare size={15} className="text-gold-400" />
-            <span>{l.btnBot}</span>
-          </a>
         </div>
       </div>
     </section>

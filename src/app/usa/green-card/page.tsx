@@ -5,9 +5,11 @@ import Link from 'next/link';
 import { Compass, ShieldCheck, CheckCircle2, AlertTriangle, ArrowRight, MessageSquare, Award, Clock } from 'lucide-react';
 import { LuxuryUsaFlag } from '@/components/ui/LuxuryUsaFlag';
 import { useLanguage } from '@/context/LanguageContext';
+import { useConsultation } from '@/context/ConsultationContext';
 
 export default function GreenCardPage() {
   const { currentLang } = useLanguage();
+  const { openConsultation } = useConsultation();
 
   const labels: Record<string, {
     home: string;
@@ -338,14 +340,13 @@ export default function GreenCardPage() {
           </p>
 
           <div className="pt-4 flex flex-wrap gap-4">
-            <a
-              href="https://t.me/VILEVIN_bot?start=usa_greencard"
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              type="button"
+              onClick={() => openConsultation('Иммиграция и Green Card США')}
               className="px-5 py-2.5 bg-[#DFBA73] hover:bg-[#cfab5b] text-[#080B11] text-xs font-bold tracking-wider uppercase rounded-md hover:brightness-105 active:scale-[0.98] transition-all flex items-center gap-2 border border-[#FFE8A3]/40 shadow-md cursor-pointer"
             >
               <MessageSquare size={16} /> {l.btnTg}
-            </a>
+            </button>
             <Link
               href="/usa/immigration-test"
               className="px-5 py-2.5 bg-[#0B111E]/90 hover:bg-[#121B2C] text-gold-300 border border-gold-500/30 text-xs font-semibold tracking-wider uppercase rounded-md transition-colors flex items-center gap-2 backdrop-blur-md"

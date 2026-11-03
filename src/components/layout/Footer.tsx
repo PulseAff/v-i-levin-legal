@@ -5,9 +5,11 @@ import Link from 'next/link';
 import { Logo } from '../ui/Logo';
 import { ShieldCheck, MessageSquare, ArrowUpRight } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
+import { useConsultation } from '@/context/ConsultationContext';
 
 export const Footer: React.FC = () => {
   const { t } = useLanguage();
+  const { openConsultation } = useConsultation();
 
   return (
     <footer className="bg-navy-950 border-t border-surface-border pt-16 pb-12 text-gray-400 text-xs">
@@ -20,19 +22,18 @@ export const Footer: React.FC = () => {
               {t('footer', 'manifesto')}
             </p>
             <div className="flex items-center gap-3 pt-2">
-              <a
-                href="https://t.me/VILEVIN_bot"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-3.5 py-2 bg-navy-850 hover:bg-navy-800 text-gold-400 border border-gold-500/30 rounded-md text-xs transition-colors"
+              <button
+                type="button"
+                onClick={() => openConsultation()}
+                className="inline-flex items-center gap-2 px-3.5 py-2 bg-[#DFBA73] hover:bg-[#cfab5b] text-[#080B11] font-bold text-xs uppercase tracking-wider rounded-md border border-[#FFE8A3]/40 shadow-sm transition-all cursor-pointer"
               >
-                <MessageSquare size={14} /> Telegram: @VILEVIN_bot
-              </a>
+                <MessageSquare size={14} /> {t('nav', 'bookConsultation')}
+              </button>
               <a
                 href="https://threads.net/@v.i.levin"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3 py-2 text-gray-400 hover:text-white transition-colors"
+                className="inline-flex items-center gap-1.5 px-3 py-2 text-gray-400 hover:text-white transition-colors text-xs"
               >
                 Threads <ArrowUpRight size={13} />
               </a>

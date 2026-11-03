@@ -13,8 +13,8 @@ export const ContactsSection: React.FC = () => {
     ru: {
       title: 'Контакты и прием обращений',
       desc: 'Все обращения доверителей рассматриваются в строгом соответствии со стандартами конфиденциальности. Заполните форму для проведения правового анализа вашей ситуации.',
-      btnForm: 'Записаться на консультацию',
-      botNote: 'Для экспресс-квалификации вашего дела доступен официальный бот-ассистент',
+      btnForm: 'Получить консультацию',
+      botNote: 'Специалист свяжется с вами в течение рабочего дня.',
       botLink: '@VILEVIN_bot',
       feature1: 'Индивидуальный правовой аудит ситуации экспертом практики',
       feature2: 'Конфиденциальность и защита переданных сведений (Rule 1.6 Attorney-Client Privilege)',
@@ -23,8 +23,8 @@ export const ContactsSection: React.FC = () => {
     en: {
       title: 'Contacts & Client Intake',
       desc: 'All inquiries are reviewed in strict compliance with attorney-client privilege. Complete the form to initiate an in-depth legal analysis of your situation.',
-      btnForm: 'Request Legal Consultation',
-      botNote: 'For automated preliminary case triage, our official bot is available',
+      btnForm: 'Get Consultation',
+      botNote: 'Legal counsel will contact you within one business day.',
       botLink: '@VILEVIN_bot',
       feature1: 'Direct senior risk evaluation and case roadmap',
       feature2: 'Strict Attorney-Client Privilege & confidentiality (Rule 1.6)',
@@ -33,8 +33,8 @@ export const ContactsSection: React.FC = () => {
     uk: {
       title: 'Контакти та прийом звернень',
       desc: 'Усі звернення розглядаються з дотриманням повної конфіденційності. Заповніть форму для правового аудиту вашої справи.',
-      btnForm: 'Записатися на консультацію',
-      botNote: 'Для експрес-кваліфікації доступний офіційний бот-асистент',
+      btnForm: 'Отримати консультацію',
+      botNote: 'Юрист зв’яжеться з вами протягом робочого дня.',
       botLink: '@VILEVIN_bot',
       feature1: 'Персональний правовий аудит ситуації провідним юристом',
       feature2: 'Повна конфіденційність та захист даних (Rule 1.6 Attorney-Client Privilege)',
@@ -43,8 +43,8 @@ export const ContactsSection: React.FC = () => {
     es: {
       title: 'Contacto y recepción de casos',
       desc: 'Todas las consultas se tramitan bajo estricto secreto profesional. Complete el formulario para iniciar la auditoría legal de su caso.',
-      btnForm: 'Solicitar consulta legal',
-      botNote: 'Para cualificación previa automatizada, está disponible el bot oficial',
+      btnForm: 'Obtener consulta',
+      botNote: 'Un abogado se pondrá en contacto con usted en un plazo laboral.',
       botLink: '@VILEVIN_bot',
       feature1: 'Evaluación jurídica personalizada por abogado',
       feature2: 'Secreto profesional y confidencialidad absoluta (Rule 1.6)',
@@ -53,8 +53,8 @@ export const ContactsSection: React.FC = () => {
     it: {
       title: 'Contatti e ricezione incarichi',
       desc: 'Tutte le richieste sono gestite nel rispetto del segreto professionale. Compili il modulo per una valutazione legale riservata del caso.',
-      btnForm: 'Richiedi consulenza legale',
-      botNote: 'Per una pre-qualificazione immediata è disponibile il bot ufficiale',
+      btnForm: 'Richiedi consulenza',
+      botNote: 'Un legale La contatterà entro la giornata lavorativa.',
       botLink: '@VILEVIN_bot',
       feature1: 'Analisi strategica del caso da parte dell’avvocato',
       feature2: 'Segreto professionale e massima tutela dei dati (Rule 1.6)',
@@ -63,8 +63,8 @@ export const ContactsSection: React.FC = () => {
     fr: {
       title: 'Contacts & Réception des dossiers',
       desc: 'Toutes les demandes sont traitées sous le sceau du secret professionnel. Remplissez le formulaire pour obtenir une analyse juridique approfondie.',
-      btnForm: 'Demander une consultation',
-      botNote: 'Pour une qualification préliminaire de votre dossier, le bot officiel est disponible',
+      btnForm: 'Obtenir une consultation',
+      botNote: 'Un juriste vous contactera au cours de la journée ouvrée.',
       botLink: '@VILEVIN_bot',
       feature1: 'Audit juridique direct et feuille de route par l’avocat',
       feature2: 'Secret professionnel et confidentialité absolue (Rule 1.6)',
@@ -99,15 +99,7 @@ export const ContactsSection: React.FC = () => {
               </button>
             </div>
             <p className="text-[11px] text-gray-400 font-light pt-1">
-              {c.botNote}{' '}
-              <a
-                href="https://t.me/VILEVIN_bot"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gold-400 hover:text-gold-300 font-mono underline underline-offset-2"
-              >
-                {c.botLink}
-              </a>
+              {c.botNote}
             </p>
           </div>
 

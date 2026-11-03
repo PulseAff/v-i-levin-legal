@@ -3,7 +3,15 @@
 import React from 'react';
 import { Send, ArrowUpRight, MessageSquareQuote } from 'lucide-react';
 
-export const ThreadsSection: React.FC = () => {
+import { useConsultation } from '@/context/ConsultationContext';
+
+interface ThreadsSectionProps {
+  onOpenConsultation?: () => void;
+}
+
+export const ThreadsSection: React.FC<ThreadsSectionProps> = ({ onOpenConsultation: propOpen }) => {
+  const { openConsultation: ctxOpen } = useConsultation();
+  const onOpenConsultation = propOpen || (() => ctxOpen('Экспертный аудит'));
   return (
     <section className="py-16 bg-[#05080E] border-b border-[#1A2230]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -59,14 +67,13 @@ export const ThreadsSection: React.FC = () => {
               </div>
 
               <div className="pt-2 border-t border-[#182438] flex items-center justify-between">
-                <a
-                  href="https://t.me/VILEVIN_bot"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs text-gold-400 hover:text-white font-medium inline-flex items-center gap-1.5"
+                <button
+                  type="button"
+                  onClick={onOpenConsultation}
+                  className="text-xs text-gold-400 hover:text-white font-medium inline-flex items-center gap-1.5 cursor-pointer bg-transparent border-none p-0"
                 >
-                  <Send size={12} /> Консультация в Telegram ↓
-                </a>
+                  <Send size={12} /> Получить консультацию →
+                </button>
                 <span className="text-[10px] font-mono text-gray-500">Threads Verified</span>
               </div>
 

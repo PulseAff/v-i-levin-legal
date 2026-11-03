@@ -4,6 +4,7 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import { articlesData } from '@/data/articlesData';
 import { Clock, Calendar, ArrowUpRight, MessageSquare, Shield } from 'lucide-react';
+import { ConsultationButton } from '@/components/ui/ConsultationButton';
 
 interface PageProps {
   params: { slug: string };
@@ -98,14 +99,9 @@ export default function ArticleDetailPage({ params }: PageProps) {
             Каждая юридическая ситуация уникальна. Запишитесь на индивидуальный разбор с ведущим специалистом.
           </p>
           <div className="pt-2">
-            <a
-              href={`https://t.me/VILEVIN_bot?start=art_${article.slug}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#DFBA73] hover:bg-[#cfab5b] text-[#080B11] text-xs font-bold uppercase tracking-wider rounded-md border border-[#FFE8A3]/40 shadow-md hover:brightness-105 active:scale-[0.98] transition-all cursor-pointer"
-            >
-              <MessageSquare size={15} /> Разобрать ситуацию в Telegram
-            </a>
+            <ConsultationButton serviceCategory={`Статья: ${article.title}`}>
+              Получить консультацию
+            </ConsultationButton>
           </div>
         </div>
       </div>

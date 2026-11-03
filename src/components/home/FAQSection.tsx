@@ -34,7 +34,7 @@ export const FAQSection: React.FC = () => {
     en: [
       {
         q: 'How does the initial consultation and legal risk assessment work?',
-        a: 'Cooperation begins with submitting an inquiry on our website or via our secure Telegram bot (@VILEVIN_bot). We conduct a preliminary legal review of your circumstances, evidentiary files, and risks. Under our private practice standards, all disclosures are strictly protected by Attorney-Client Privilege. You receive an honest merit appraisal and a step-by-step roadmap.',
+        a: 'Cooperation begins with submitting an inquiry via our secured consultation form on the website. We conduct a preliminary legal review of your circumstances, evidentiary files, and risks. Under our private practice standards, all disclosures are strictly protected by Attorney-Client Privilege. You receive an honest merit appraisal and a step-by-step roadmap.',
       },
       {
         q: 'Do you offer a 100% guarantee for Green Card or visa approvals?',
@@ -78,7 +78,7 @@ export const FAQSection: React.FC = () => {
     es: [
       {
         q: '¿Cómo se realiza la consulta inicial y la auditoría jurídica?',
-        a: 'La colaboración comienza enviando una solicitud en la web o a través de nuestro bot de Telegram seguro (@VILEVIN_bot). Realizamos una evaluación preliminar de sus documentos y riesgos bajo estricto secreto profesional (Attorney-Client Privilege).',
+        a: 'La colaboración comienza enviando una solicitud a través de nuestro formulario seguro de consulta en la web. Realizamos una evaluación preliminar de sus documentos y riesgos bajo estricto secreto profesional (Attorney-Client Privilege).',
       },
       {
         q: '¿Ofrecen una garantía del 100% para Green Card o visados?',
@@ -100,7 +100,7 @@ export const FAQSection: React.FC = () => {
     it: [
       {
         q: 'Come si svolge la consulenza preliminare e l’analisi legale del caso?',
-        a: 'Il mandato inizia con la compilazione della richiesta online o tramite il bot protetto Telegram (@VILEVIN_bot). Effettuiamo un esame accurato dei documenti e dei rischi legali coperto da segreto professionale (Attorney-Client Privilege).',
+        a: 'Il mandato inizia con la compilazione del modulo di consulenza protetto sul nostro sito. Effettuiamo un esame accurato dei documenti e dei rischi legali coperto da segreto professionale (Attorney-Client Privilege).',
       },
       {
         q: 'Fornite una garanzia del 100% per il rilascio della Green Card?',
@@ -122,7 +122,7 @@ export const FAQSection: React.FC = () => {
     fr: [
       {
         q: 'Comment se déroule la consultation initiale et l’audit juridique ?',
-        a: 'L’analyse débute par l’envoi de votre demande en ligne ou via notre bot Telegram sécurisé (@VILEVIN_bot). Nous procédons à un examen préalable rigoureux de votre dossier, couvert par le secret professionnel (Attorney-Client Privilege).',
+        a: 'L’analyse débute par l’envoi de votre demande via le formulaire sécurisé de consultation sur le site. Nous procédons à un examen préalable rigoureux de votre dossier, couvert par le secret professionnel (Attorney-Client Privilege).',
       },
       {
         q: 'Garantissez-vous à 100% l’obtention de la Green Card ou du visa ?',

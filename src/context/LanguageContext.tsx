@@ -29,7 +29,7 @@ export const TRANSLATIONS: Record<LanguageCode, any> = {
       about: 'О практике',
       faq: 'Частые вопросы',
       contacts: 'Контакты',
-      bookConsultation: 'Консультация',
+      bookConsultation: 'Получить консультацию',
       langTitle: 'Язык / Language',
     },
     headerDropdown: {
@@ -58,7 +58,7 @@ export const TRANSLATIONS: Record<LanguageCode, any> = {
       badgeNy: '15 лет в Нью-Йорке',
       badgeCitizen: 'Гражданин США',
       badgeLawyer: 'Адвокат',
-      ctaConsultation: 'Стратегическая консультация',
+      ctaConsultation: 'Получить консультацию',
       ctaUsa: 'Практика США & Green Card',
     },
     services: {
@@ -131,7 +131,7 @@ export const TRANSLATIONS: Record<LanguageCode, any> = {
       s6Desc: 'Моделирование реального собеседования в формате стресс-теста с разбором ошибок.',
       s7Title: 'Финальная готовность',
       s7Desc: 'Пакет документов, стратегия поведения и чек-лист для дня присяги.',
-      ctaAudit: 'Начать персональный аудит',
+      ctaAudit: 'Получить консультацию',
       ctaTest: 'Открыть интерактивный Civics Test',
     },
     about: {
@@ -242,7 +242,7 @@ export const TRANSLATIONS: Record<LanguageCode, any> = {
       about: 'About Practice',
       faq: 'FAQ',
       contacts: 'Contacts',
-      bookConsultation: 'Consultation',
+      bookConsultation: 'Get Consultation',
       langTitle: 'Language',
     },
     headerDropdown: {
@@ -271,7 +271,7 @@ export const TRANSLATIONS: Record<LanguageCode, any> = {
       badgeNy: '15 Years in New York',
       badgeCitizen: 'U.S. Citizen',
       badgeLawyer: 'Attorney',
-      ctaConsultation: 'Strategic Consultation',
+      ctaConsultation: 'Get Consultation',
       ctaUsa: 'USA Practice & Green Card',
     },
     services: {
@@ -344,7 +344,7 @@ export const TRANSLATIONS: Record<LanguageCode, any> = {
       s6Desc: 'Realistic stress-test interview simulation with immediate correction of errors.',
       s7Title: 'Final Readiness',
       s7Desc: 'Complete evidentiary docket, behavioral guidance, and oath ceremony checklist.',
-      ctaAudit: 'Start Personal Audit',
+      ctaAudit: 'Get Consultation',
       ctaTest: 'Open Interactive Civics Test',
     },
     about: {
@@ -455,7 +455,7 @@ export const TRANSLATIONS: Record<LanguageCode, any> = {
       about: 'Про практику',
       faq: 'Часті питання',
       contacts: 'Контакти',
-      bookConsultation: 'Консультація',
+      bookConsultation: 'Отримати консультацію',
       langTitle: 'Мова / Language',
     },
     headerDropdown: {
@@ -484,7 +484,7 @@ export const TRANSLATIONS: Record<LanguageCode, any> = {
       badgeNy: '15 років у Нью-Йорку',
       badgeCitizen: 'Громадянин США',
       badgeLawyer: 'Адвокат',
-      ctaConsultation: 'Стратегічна консультація',
+      ctaConsultation: 'Отримати консультацію',
       ctaUsa: 'Практика США & Green Card',
     },
     services: {
@@ -557,7 +557,7 @@ export const TRANSLATIONS: Record<LanguageCode, any> = {
       s6Desc: 'Моделювання реальної співбесіди у форматі стрес-тесту з розбором помилок.',
       s7Title: 'Фінальна готовність',
       s7Desc: 'Пакет документів, стратегія поведінки та чек-лист для дня присяги.',
-      ctaAudit: 'Розпочати персональний аудит',
+      ctaAudit: 'Отримати консультацію',
       ctaTest: 'Відкрити інтерактивний Civics Test',
     },
     about: {
@@ -668,7 +668,7 @@ export const TRANSLATIONS: Record<LanguageCode, any> = {
       about: 'Sobre el bufete',
       faq: 'Preguntas',
       contacts: 'Contactos',
-      bookConsultation: 'Consulta',
+      bookConsultation: 'Obtener consulta',
       langTitle: 'Idioma / Language',
     },
     headerDropdown: {
@@ -697,7 +697,7 @@ export const TRANSLATIONS: Record<LanguageCode, any> = {
       badgeNy: '15 años en Nueva York',
       badgeCitizen: 'Ciudadano de EE.UU.',
       badgeLawyer: 'Abogado',
-      ctaConsultation: 'Consulta estratégica',
+      ctaConsultation: 'Obtener consulta',
       ctaUsa: 'Práctica EE.UU. & Green Card',
     },
     services: {
@@ -764,7 +764,7 @@ export const TRANSLATIONS: Record<LanguageCode, any> = {
       s6Desc: 'Ensayo real en formato de estrés con análisis correctivo inmediato.',
       s7Title: 'Preparación final',
       s7Desc: 'Expediente probatorio completo, protocolo de conducta y guía para el día del juramento.',
-      ctaAudit: 'Iniciar auditoría personal',
+      ctaAudit: 'Obtener consulta',
       ctaTest: 'Abrir Civics Test interactivo',
     },
     about: {
@@ -875,7 +875,7 @@ export const TRANSLATIONS: Record<LanguageCode, any> = {
       about: 'Chi siamo',
       faq: 'FAQ',
       contacts: 'Contatti',
-      bookConsultation: 'Consulenza',
+      bookConsultation: 'Richiedi consulenza',
       langTitle: 'Lingua / Language',
     },
     headerDropdown: {
@@ -904,7 +904,7 @@ export const TRANSLATIONS: Record<LanguageCode, any> = {
       badgeNy: '15 anni a New York',
       badgeCitizen: 'Cittadino USA',
       badgeLawyer: 'Avvocato',
-      ctaConsultation: 'Consulenza strategica',
+      ctaConsultation: 'Richiedi consulenza',
       ctaUsa: 'Pratica USA & Green Card',
     },
     services: {
@@ -977,7 +977,7 @@ export const TRANSLATIONS: Record<LanguageCode, any> = {
       s6Desc: 'Sessione di simulazione ad alta intensità con correzione puntuale degli errori.',
       s7Title: 'Convalida finale',
       s7Desc: 'Fascicolo probatorio definitivo, guida comportamentale e checklist per il giuramento.',
-      ctaAudit: 'Avvia audit personale',
+      ctaAudit: 'Richiedi consulenza',
       ctaTest: 'Apri Civics Test interattivo',
     },
     about: {
@@ -1088,7 +1088,7 @@ export const TRANSLATIONS: Record<LanguageCode, any> = {
       about: 'À propos',
       faq: 'FAQ',
       contacts: 'Contacts',
-      bookConsultation: 'Consultation',
+      bookConsultation: 'Get Consultation',
       langTitle: 'Langue / Language',
     },
     headerDropdown: {
@@ -1190,7 +1190,7 @@ export const TRANSLATIONS: Record<LanguageCode, any> = {
       s6Desc: 'Mise en situation réelle à fort niveau d’exigence avec débriefing correctif immédiat.',
       s7Title: 'Validation finale',
       s7Desc: 'Dossier probatoire complet, protocole de conduite et feuille de route pour le jour du serment.',
-      ctaAudit: 'Démarrer l’audit individuel',
+      ctaAudit: 'Obtenir une consultation',
       ctaTest: 'Ouvrir le Civics Test interactif',
     },
     about: {

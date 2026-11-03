@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { servicesData } from '@/data/servicesData';
 import { casesData } from '@/data/casesData';
 import { ShieldCheck, CheckCircle2, AlertTriangle, Clock, DollarSign, ArrowRight, MessageSquare } from 'lucide-react';
+import { ConsultationButton } from '@/components/ui/ConsultationButton';
 
 interface PageProps {
   params: { slug: string };
@@ -61,14 +62,9 @@ export default function ServiceDetailPage({ params }: PageProps) {
           </p>
 
           <div className="pt-4 flex flex-wrap gap-4">
-            <a
-              href={`https://t.me/VILEVIN_bot?start=${service.slug}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-5 py-2.5 bg-[#DFBA73] hover:bg-[#cfab5b] text-[#080B11] text-xs font-bold tracking-wider uppercase rounded-md hover:brightness-105 active:scale-[0.98] transition-all flex items-center gap-2 border border-[#FFE8A3]/40 shadow-md cursor-pointer"
-            >
-              <MessageSquare size={16} /> Разобрать мою ситуацию
-            </a>
+            <ConsultationButton serviceCategory={service.title}>
+              Получить консультацию
+            </ConsultationButton>
           </div>
         </div>
 
@@ -215,15 +211,9 @@ export default function ServiceDetailPage({ params }: PageProps) {
             Опишите обстоятельства ситуации. Мы проведем предварительный анализ и сообщим, сможем ли помочь в решении задачи.
           </p>
           <div className="pt-2">
-            <a
-              href={`https://t.me/VILEVIN_bot?start=${service.slug}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-2.5 bg-[#DFBA73] hover:bg-[#cfab5b] text-[#080B11] text-xs font-bold tracking-wider uppercase rounded-md hover:brightness-105 active:scale-[0.98] transition-all border border-[#FFE8A3]/40 shadow-md cursor-pointer"
-            >
-              <span>Начать разбор в Telegram-боте</span>
-              <ArrowRight size={15} />
-            </a>
+            <ConsultationButton serviceCategory={service.title}>
+              Получить консультацию
+            </ConsultationButton>
           </div>
         </div>
       </div>

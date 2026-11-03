@@ -4,6 +4,7 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import { countriesData } from '@/data/countriesData';
 import { Shield, CheckCircle2, ArrowRight, MessageSquare, ChevronDown } from 'lucide-react';
+import { ConsultationButton } from '@/components/ui/ConsultationButton';
 
 interface PageProps {
   params: { code: string };
@@ -129,14 +130,9 @@ export default function CountryDetailPage({ params }: PageProps) {
             Опишите обстоятельства задачи. Мы оценим трансграничные коллизии и поможем найти оптимальное решение.
           </p>
           <div className="pt-2">
-            <a
-              href={`https://t.me/VILEVIN_bot?start=country_${country.code}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#DFBA73] hover:bg-[#cfab5b] text-[#080B11] text-xs font-bold uppercase tracking-wider rounded-md border border-[#FFE8A3]/40 shadow-md hover:brightness-105 active:scale-[0.98] transition-all cursor-pointer"
-            >
-              <MessageSquare size={15} /> Написать в Telegram
-            </a>
+            <ConsultationButton serviceCategory={`Юрисдикция: ${country.name}`}>
+              Получить консультацию
+            </ConsultationButton>
           </div>
         </div>
       </div>

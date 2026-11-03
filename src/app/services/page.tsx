@@ -85,7 +85,7 @@ const PAGE_DICT: Record<LanguageCode, any> = {
     ctaBadge: 'ПЕРСОНАЛЬНЫЙ РАЗБОР ОБСТОЯТЕЛЬСТВ',
     ctaTitle: 'Не уверены, какое направление подходит под вашу ситуацию?',
     ctaDesc: 'Опишите ключевые факты дела на первичной конфиденциальной сессии. Мы подготовим правовую оценку рисков и пошаговый маршрут действий.',
-    ctaBtn: 'Записаться на консультацию',
+    ctaBtn: 'Получить консультацию',
     disclaimer: 'Attorney-Client Privilege · Rule 1.6 · Ответ в течение 24 часов',
     timelines: {
       immigration: '4–18 мес.',
@@ -138,7 +138,7 @@ const PAGE_DICT: Record<LanguageCode, any> = {
     ctaBadge: 'CONFIDENTIAL CASE TRIAGE',
     ctaTitle: 'Uncertain which legal avenue best fits your scenario?',
     ctaDesc: 'Disclose key facts during a confidential intake session. We will formulate an authoritative risk analysis and tactical execution roadmap.',
-    ctaBtn: 'Request Strategic Consultation',
+    ctaBtn: 'Get Consultation',
     disclaimer: 'Attorney-Client Privilege · Rule 1.6 · Attorney response within 24 hours',
     timelines: {
       immigration: '4–18 mos.',
@@ -191,7 +191,7 @@ const PAGE_DICT: Record<LanguageCode, any> = {
     ctaBadge: 'ПЕРСОНАЛЬНИЙ АНАЛІЗ ОБСТАВИН',
     ctaTitle: 'Не впевнені, який напрямок обрати під вашу ситуацію?',
     ctaDesc: 'Опишіть ключові обставини справи на конфіденційній сесії. Ми підготуємо правову оцінку ризиків та покроковий маршрут дій.',
-    ctaBtn: 'Записатися на консультацію',
+    ctaBtn: 'Отримати консультацію',
     disclaimer: 'Attorney-Client Privilege · Rule 1.6 · Відповідь протягом 24 годин',
     timelines: {
       immigration: '4–18 міс.',
@@ -244,7 +244,7 @@ const PAGE_DICT: Record<LanguageCode, any> = {
     ctaBadge: 'EVALUACIÓN CONFIDENCIAL',
     ctaTitle: '¿Tiene dudas sobre qué vía corresponde a su situación?',
     ctaDesc: 'Exponga los hechos clave durante una consulta estratégica inicial. Recibirá una valoración objetiva y un plan procesal claro.',
-    ctaBtn: 'Solicitar consulta legal',
+    ctaBtn: 'Obtener consulta',
     disclaimer: 'Secreto profesional · Rule 1.6 · Respuesta de abogado en 24 horas',
     timelines: {
       immigration: '4–18 meses',
@@ -297,7 +297,7 @@ const PAGE_DICT: Record<LanguageCode, any> = {
     ctaBadge: 'ANALISI PRELIMINARE RISERVATA',
     ctaTitle: 'Dubbi sulla procedura più idonea al vostro caso?',
     ctaDesc: 'Descrivete i punti cardine durante un colloquio iniziale riservato. Forniremo un quadro analitico dei rischi e una strategia d’azione.',
-    ctaBtn: 'Richiedi consulenza strategica',
+    ctaBtn: 'Richiedi consulenza',
     disclaimer: 'Segreto professionale · Rule 1.6 · Riscontro dell’avvocato entro 24 ore',
     timelines: {
       immigration: '4–18 mesi',
@@ -350,7 +350,7 @@ const PAGE_DICT: Record<LanguageCode, any> = {
     ctaBadge: 'AUDIT DE SITUATION CONFIDENTIEL',
     ctaTitle: 'Vous hésitez sur la démarche adaptée à votre situation ?',
     ctaDesc: 'Présentez les faits lors d\'une séance d\'évaluation confidentielle. Nous établirons un audit des risques et une stratégie claire.',
-    ctaBtn: 'Demander une consultation',
+    ctaBtn: 'Obtenir une consultation',
     disclaimer: 'Secret professionnel · Rule 1.6 · Réponse d\'un avocat sous 24 heures',
     timelines: {
       immigration: '4–18 mois',

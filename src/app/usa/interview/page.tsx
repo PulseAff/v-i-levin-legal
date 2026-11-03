@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { Metadata } from 'next';
 import { CheckCircle2, AlertTriangle, ShieldCheck, ArrowRight, MessageSquare } from 'lucide-react';
+import { ConsultationButton } from '@/components/ui/ConsultationButton';
 
 export const metadata: Metadata = {
   title: 'Подготовка к иммиграционному интервью в консульстве США | V. I. LEVIN',
@@ -99,14 +100,9 @@ export default function InterviewPrepPage() {
             Мы проведем 60-минутный тренировочный опрос на английском или русском языке, выявим уязвимые места и научим давать юридически точные ответы.
           </p>
           <div className="pt-2">
-            <a
-              href="https://t.me/VILEVIN_bot?start=usa_interview"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#DFBA73] hover:bg-[#cfab5b] text-[#080B11] text-xs font-bold uppercase tracking-wider rounded-md border border-[#FFE8A3]/40 shadow-md hover:brightness-105 active:scale-[0.98] transition-all cursor-pointer"
-            >
-              <MessageSquare size={15} /> Записаться на симуляцию
-            </a>
+            <ConsultationButton serviceCategory="Подготовка к иммиграционному интервью США">
+              Получить консультацию
+            </ConsultationButton>
           </div>
         </div>
       </div>

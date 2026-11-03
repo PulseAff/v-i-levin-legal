@@ -3,9 +3,11 @@
 import React from 'react';
 import { MessageSquare, Shield, Globe, ArrowRight } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
+import { useConsultation } from '@/context/ConsultationContext';
 
 export default function ContactsPage() {
   const { currentLang } = useLanguage();
+  const { openConsultation } = useConsultation();
 
   const labels: Record<string, {
     badge: string;
@@ -24,9 +26,9 @@ export default function ContactsPage() {
       badge: 'Связь с практикой',
       title: 'Контакты и первичное обращение',
       desc: 'Для обеспечения защиты персональных данных и мгновенной классификации обращений первичный прием ведется через официальные защищенные каналы практики.',
-      botTitle: 'Telegram-бот практики',
-      botDesc: 'Основной канал получения и первичной квалификации обращений. Позволяет описать ситуацию, указать юрисдикцию и передать контакты.',
-      botBtn: 'Перейти в @VILEVIN_bot',
+      botTitle: 'Первичная консультация',
+      botDesc: 'Основной канал первичного приема обращений. Позволяет описать ситуацию, выбрать юрисдикцию и передать дело ведущему юристу практики.',
+      botBtn: 'Получить консультацию',
       threadsTitle: 'Экспертный канал Threads',
       threadsDesc: 'Официальный канал V. I. LEVIN: правовой анализ прецедентов, новости международного законодательства, разборы ошибок и закрытая практика.',
       threadsBtn: 'threads.net/@v.i.levin',
@@ -37,9 +39,9 @@ export default function ContactsPage() {
       badge: 'Practice Communication',
       title: 'Contacts & Initial Case Intake',
       desc: 'To guarantee data protection and rapid case classification, initial triage is conducted via our official secured practice channels.',
-      botTitle: 'Official Telegram Bot',
-      botDesc: 'Primary channel for initial intake and inquiry triage. Enables describing your situation, specifying jurisdictions, and providing secure contact details.',
-      botBtn: 'Open @VILEVIN_bot',
+      botTitle: 'Confidential Consultation',
+      botDesc: 'Primary channel for confidential case intake. Outline your matter, select jurisdictions, and transfer details directly to senior counsel.',
+      botBtn: 'Get Consultation',
       threadsTitle: 'Expert Threads Channel',
       threadsDesc: 'Official channel of V. I. LEVIN: legal precedent analysis, international statutory updates, risk teardowns, and practice insights.',
       threadsBtn: 'threads.net/@v.i.levin',
@@ -50,9 +52,9 @@ export default function ContactsPage() {
       badge: "Зв'язок з практикою",
       title: 'Контакти та первинне звернення',
       desc: 'Для забезпечення захисту персональних даних та миттєвої класифікації звернень первинний прийом ведеться через офіційні захищені канали практики.',
-      botTitle: 'Telegram-бот практики',
-      botDesc: 'Основний канал отримання та первинної кваліфікації звернень. Дозволяє описати ситуацію, вказати юрисдикцію та передати контакти.',
-      botBtn: 'Перейти в @VILEVIN_bot',
+      botTitle: 'Первичная консультация',
+      botDesc: 'Основний канал первинного прийому звернень. Дозволяє описати ситуацію, обрати юрисдикцію та передати справу провідному юристу практики.',
+      botBtn: 'Получить консультацию',
       threadsTitle: 'Експертний канал Threads',
       threadsDesc: 'Офіційний канал V. I. LEVIN: правовий аналіз прецедентів, новини міжнародного законодавства, розбори помилок та закрита практика.',
       threadsBtn: 'threads.net/@v.i.levin',
@@ -63,9 +65,9 @@ export default function ContactsPage() {
       badge: 'Contacto con la práctica',
       title: 'Contacto y recepción de consultas',
       desc: 'Para garantizar la máxima protección de datos y la clasificación inmediata, la recepción inicial se realiza a través de nuestros canales oficiales seguros.',
-      botTitle: 'Bot oficial de Telegram',
+      botTitle: 'Consulta confidencial',
       botDesc: 'Canal principal para la presentación de casos y análisis inicial. Le permite describir su asunto, especificar jurisdicciones y aportar sus datos de contacto.',
-      botBtn: 'Abrir @VILEVIN_bot',
+      botBtn: 'Obtener consulta',
       threadsTitle: 'Canal de análisis Threads',
       threadsDesc: 'Canal oficial de V. I. LEVIN: jurisprudencia, novedades regulatorias internacionales, análisis de casos y perspectiva legal.',
       threadsBtn: 'threads.net/@v.i.levin',
@@ -76,9 +78,9 @@ export default function ContactsPage() {
       badge: 'Contatto con lo studio',
       title: 'Contatti e primo colloquio',
       desc: 'Per garantire la massima protezione dei dati e una rapida qualificazione del caso, la ricezione preliminare avviene tramite i nostri canali protetti ufficiali.',
-      botTitle: 'Bot Telegram ufficiale',
+      botTitle: 'Consulenza riservata',
       botDesc: 'Canale principale per la ricezione e la valutazione preliminare del caso. Permette di descrivere la situazione, indicare la giurisdizione e lasciare i recapiti.',
-      botBtn: 'Apri @VILEVIN_bot',
+      botBtn: 'Richiedi consulenza',
       threadsTitle: 'Canale specialistico Threads',
       threadsDesc: 'Canale ufficiale V. I. LEVIN: analisi di precedenti legali, aggiornamenti normativi internazionali e prassi dello studio.',
       threadsBtn: 'threads.net/@v.i.levin',
@@ -89,9 +91,9 @@ export default function ContactsPage() {
       badge: 'Contacter le cabinet',
       title: 'Contacts et première prise de contact',
       desc: 'Pour assurer la protection des données et une qualification immédiate, l’accueil initial est géré via les canaux officiels sécurisés du cabinet.',
-      botTitle: 'Bot Telegram officiel',
+      botTitle: 'Consultation confidentielle',
       botDesc: 'Canal principal de réception et d’évaluation préliminaire des dossiers. Permet de décrire la situation, préciser les juridictions et transmettre vos coordonnées.',
-      botBtn: 'Ouvrir @VILEVIN_bot',
+      botBtn: 'Obtenir une consultation',
       threadsTitle: 'Canal d’analyse Threads',
       threadsDesc: 'Canal officiel V. I. LEVIN : analyse des précédents légaux, actualités réglementaires internationales et retours d’expérience.',
       threadsBtn: 'threads.net/@v.i.levin',
@@ -129,14 +131,13 @@ export default function ContactsPage() {
                 {l.botDesc}
               </p>
             </div>
-            <a
-              href="https://t.me/VILEVIN_bot"
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              type="button"
+              onClick={() => openConsultation()}
               className="py-2.5 px-5 rounded-md bg-[#DFBA73] hover:bg-[#cfab5b] text-[#080B11] text-xs font-bold uppercase tracking-wider text-center block border border-[#FFE8A3]/40 shadow-md hover:brightness-105 active:scale-[0.98] transition-all cursor-pointer"
             >
               {l.botBtn}
-            </a>
+            </button>
           </div>
 
           {/* Threads Channel */}
