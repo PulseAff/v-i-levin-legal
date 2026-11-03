@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { X, CheckCircle2, ChevronDown, Lock, Send, Globe, Phone, Mail, MessageSquare, User, Shield } from 'lucide-react';
 import { useLanguage, LanguageCode } from '@/context/LanguageContext';
 import { LuxuryUsaFlag } from '@/components/ui/LuxuryUsaFlag';
+import { CountryFlagSvg } from '@/components/ui/CountryFlagSvg';
 
 interface ConsultationModalProps {
   isOpen: boolean;
@@ -42,6 +43,7 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
   const [telegram, setTelegram] = useState('');
   const [email, setEmail] = useState('');
   const [note, setNote] = useState('');
+  const [selectedCommLang, setSelectedCommLang] = useState<string>('ru');
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -92,6 +94,7 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
   useEffect(() => {
     if (isOpen) {
       setIsSuccess(false);
+      setSelectedCommLang(currentLang || 'ru');
       setError('');
       if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
         (window as any).gtag('event', 'consultation_modal_open', {
@@ -322,6 +325,15 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
     const cleanTg = telegram.replace(/[@\s]/g, '');
     const tgLink = cleanTg ? `https://t.me/${cleanTg}` : '';
 
+        const commLangLabels: Record<string, string> = {
+      ru: '🇷🇺 Русский',
+      en: '🇺🇸 English',
+      tr: '🇹🇷 Türkçe',
+      uk: '🇺🇦 Українська',
+      es: '🇪🇸 Español',
+      other: '🌐 Другой / Other',
+    };
+
     const escapeHtml = (str: string = '') =>
       str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
@@ -341,6 +353,7 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
       email.trim() ? `✉️ <b>Email:</b> <code>${escapeHtml(email.trim())}</code>` : '',
       ``,
       note.trim() ? `📝 <b>Суть ситуации:</b>\n<i>${escapeHtml(note.trim())}</i>\n` : '',
+            `🗣️ <b>Язык общения:</b> <code>${escapeHtml(commLangLabels[selectedCommLang] || selectedCommLang)}</code>`,
       `🌐 <b>Язык сайта:</b> <code>${currentLang.toUpperCase()}</code>`,
       `🕒 <b>Время:</b> ${new Date().toLocaleString('ru-RU')}`,
     ].filter((line) => typeof line === 'string').join('\n');
@@ -439,7 +452,7 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/55 backdrop-blur-xs sm:backdrop-blur-sm animate-in fade-in duration-200">
       <div
         className="relative w-full max-w-lg rounded-xl border border-white/[0.14] p-3.5 sm:p-4 shadow-2xl overflow-hidden max-h-[92vh] overflow-y-auto scrollbar-none"
         style={{
@@ -535,8 +548,8 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
                     }}
                     className="w-full h-8 px-2.5 rounded-md bg-[#101524] border border-white/[0.14] hover:border-white/30 focus:border-[#DFBA73] flex items-center justify-between text-left text-xs font-sans font-medium text-white transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)] cursor-pointer select-none"
                   >
-                    <div className="flex items-center gap-1.5 overflow-hidden">
-                      <span className="text-xs shrink-0">{currentJurisdiction.flag}</span>
+                    <div className="flex items-center gap-2 overflow-hidden">
+                      <CountryFlagSvg code={currentJurisdiction.id} size="sm" />
                       <span className="truncate text-white text-[11.5px] font-medium">{currentJurisdiction.title}</span>
                     </div>
                     <ChevronDown
@@ -562,7 +575,7 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
                                 : 'text-gray-200 hover:bg-white/10 hover:text-white border border-transparent'
                             }`}
                           >
-                            <span className="text-xs shrink-0">{jur.flag}</span>
+                            <CountryFlagSvg code={jur.id} size="sm" />
                             <span className="truncate text-[11.5px]">{jur.title}</span>
                           </button>
                         );
@@ -695,53 +708,125 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
                 />
               </div>
 
-              {/* 5. Contact Information Grid */}
-              <div className="space-y-1.5 pt-0.5">
-                <label className="text-[10px] font-sans font-semibold tracking-wider text-[#DFBA73] block uppercase">
-                  4. КОНТАКТНЫЕ ДАННЫЕ ДЛЯ СВЯЗИ:
+              {/* 4. Preferred Communication Language (Язык общения) */}
+              <div className="space-y-1 pt-0.5">
+                <label className="text-[10px] font-sans font-semibold tracking-wider text-[#DFBA73] block uppercase flex items-center justify-between">
+                  <span>4. ЯЗЫК ОБЩЕНИЯ / PREFERRED LANGUAGE:</span>
+                  <span className="text-[9px] text-gray-400 normal-case font-normal">для обратной связи</span>
+                </label>
+                <div className="grid grid-cols-4 gap-1.5">
+                  {[
+                    { id: 'ru', flag: 'ru', label: 'Русский' },
+                    { id: 'en', flag: 'usa', label: 'English' },
+                    { id: 'tr', flag: 'turkey', label: 'Türkçe' },
+                    { id: 'uk', flag: 'other', label: 'Українська' },
+                  ].map((item) => {
+                    const isSelected = selectedCommLang === item.id;
+                    return (
+                      <button
+                        key={item.id}
+                        type="button"
+                        onClick={() => setSelectedCommLang(item.id)}
+                        className={`h-7 px-2 rounded-md flex items-center justify-center gap-1.5 text-[11px] font-medium transition-all cursor-pointer border select-none ${
+                          isSelected
+                            ? 'bg-[#DFBA73]/25 border-[#DFBA73] text-[#FFE8A3] shadow-[0_0_8px_rgba(223,186,115,0.3)] font-semibold'
+                            : 'bg-[#101524] border-white/10 text-gray-300 hover:text-white hover:border-white/25'
+                        }`}
+                      >
+                        <CountryFlagSvg code={item.flag} size="xs" />
+                        <span>{item.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* 5. Contact Information Grid with Clear Labels & Branded Icons */}
+              <div className="space-y-2 pt-0.5">
+                <label className="text-[10px] font-sans font-semibold tracking-wider text-[#DFBA73] block uppercase flex items-center justify-between">
+                  <span>5. КОНТАКТНЫЕ ДАННЫЕ ДЛЯ СВЯЗИ:</span>
+                  <span className="text-[9px] text-emerald-400 normal-case font-normal">укажите удобный контакт</span>
                 </label>
 
-                {/* Name & Phone in 2 columns on sm */}
+                {/* Row 1: Name & WhatsApp */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   <div>
-                    <input
-                      type="text"
-                      value={clientName}
-                      onChange={(e) => setClientName(e.target.value)}
-                      placeholder={L.namePlaceholder}
-                      className="w-full h-8 px-2.5 rounded-md bg-[#101524] border border-white/[0.14] focus:border-[#DFBA73] focus:bg-[#141b2e] text-white placeholder-gray-500 font-sans text-xs outline-none transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)]"
-                    />
+                    <label className="text-[10px] font-sans font-medium text-gray-300 mb-0.5 flex items-center gap-1">
+                      <User size={11} className="text-[#DFBA73]" />
+                      <span>Ваше имя:</span>
+                    </label>
+                    <div className="relative">
+                      <User size={12} className="text-gray-400 absolute left-2.5 top-2.5 pointer-events-none" />
+                      <input
+                        type="text"
+                        value={clientName}
+                        onChange={(e) => setClientName(e.target.value)}
+                        placeholder="Александр"
+                        className="w-full h-8 pl-7 pr-2.5 rounded-md bg-[#101524] border border-white/[0.14] focus:border-[#DFBA73] focus:bg-[#141b2e] text-white placeholder-gray-500 font-sans text-xs outline-none transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)]"
+                      />
+                    </div>
                   </div>
+
                   <div>
-                    <input
-                      type="tel"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      placeholder={L.phonePlaceholder}
-                      className="w-full h-8 px-2.5 rounded-md bg-[#101524] border border-white/[0.14] focus:border-[#DFBA73] focus:bg-[#141b2e] text-white placeholder-gray-500 font-sans text-xs outline-none transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)]"
-                    />
+                    <label className="text-[10px] font-sans font-medium text-gray-300 mb-0.5 flex items-center gap-1">
+                      <svg className="w-3 h-3 text-[#25D366] shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.888 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                      </svg>
+                      <span className="text-[#25D366] font-semibold">WhatsApp / Телефон:</span>
+                    </label>
+                    <div className="relative">
+                      <svg className="w-3.5 h-3.5 text-[#25D366] absolute left-2.5 top-2.5 pointer-events-none" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.888 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                      </svg>
+                      <input
+                        type="tel"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        placeholder="+1 (___) ___-____ или с кодом"
+                        className="w-full h-8 pl-7 pr-2.5 rounded-md bg-[#101524] border border-white/[0.14] focus:border-[#25D366] focus:bg-[#141b2e] text-white placeholder-gray-500 font-sans text-xs outline-none transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)]"
+                      />
+                    </div>
                   </div>
                 </div>
 
-                {/* Telegram & Email in 2 columns on sm */}
+                {/* Row 2: Telegram & Email */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   <div>
-                    <input
-                      type="text"
-                      value={telegram}
-                      onChange={(e) => setTelegram(e.target.value)}
-                      placeholder={L.tgPlaceholder}
-                      className="w-full h-8 px-2.5 rounded-md bg-[#101524] border border-white/[0.14] focus:border-[#DFBA73] focus:bg-[#141b2e] text-white placeholder-gray-500 font-sans text-xs outline-none transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)]"
-                    />
+                    <label className="text-[10px] font-sans font-medium text-gray-300 mb-0.5 flex items-center gap-1">
+                      <svg className="w-3 h-3 text-[#2AABEE] shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.121l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.832.922z"/>
+                      </svg>
+                      <span className="text-[#2AABEE] font-semibold">Telegram (@username):</span>
+                    </label>
+                    <div className="relative">
+                      <svg className="w-3.5 h-3.5 text-[#2AABEE] absolute left-2.5 top-2.5 pointer-events-none" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.121l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.832.922z"/>
+                      </svg>
+                      <input
+                        type="text"
+                        value={telegram}
+                        onChange={(e) => setTelegram(e.target.value)}
+                        placeholder="@username"
+                        className="w-full h-8 pl-7 pr-2.5 rounded-md bg-[#101524] border border-white/[0.14] focus:border-[#2AABEE] focus:bg-[#141b2e] text-white placeholder-gray-500 font-sans text-xs outline-none transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)]"
+                      />
+                    </div>
                   </div>
+
                   <div>
-                    <input
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder={L.emailPlaceholder}
-                      className="w-full h-8 px-2.5 rounded-md bg-[#101524] border border-white/[0.14] focus:border-[#DFBA73] focus:bg-[#141b2e] text-white placeholder-gray-500 font-sans text-xs outline-none transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)]"
-                    />
+                    <label className="text-[10px] font-sans font-medium text-gray-300 mb-0.5 flex items-center gap-1">
+                      <Mail size={11} className="text-[#DFBA73]" />
+                      <span>Электронная почта (Email):</span>
+                    </label>
+                    <div className="relative">
+                      <Mail size={12} className="text-gray-400 absolute left-2.5 top-2.5 pointer-events-none" />
+                      <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="name@example.com"
+                        className="w-full h-8 pl-7 pr-2.5 rounded-md bg-[#101524] border border-white/[0.14] focus:border-[#DFBA73] focus:bg-[#141b2e] text-white placeholder-gray-500 font-sans text-xs outline-none transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)]"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
