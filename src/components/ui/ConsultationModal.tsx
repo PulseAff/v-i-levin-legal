@@ -53,10 +53,12 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
   const [jurDropdownOpen, setJurDropdownOpen] = useState(false);
   const [catDropdownOpen, setCatDropdownOpen] = useState(false);
   const [topicDropdownOpen, setTopicDropdownOpen] = useState(false);
+  const [langDropdownOpen, setLangDropdownOpen] = useState(false);
 
   const jurRef = useRef<HTMLDivElement>(null);
   const catRef = useRef<HTMLDivElement>(null);
   const topicRef = useRef<HTMLDivElement>(null);
+  const langRef = useRef<HTMLDivElement>(null);
 
   // Close dropdowns on click outside
   useEffect(() => {
@@ -70,6 +72,9 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
       if (topicRef.current && !topicRef.current.contains(e.target as Node)) {
         setTopicDropdownOpen(false);
       }
+      if (langRef.current && !langRef.current.contains(e.target as Node)) {
+        setLangDropdownOpen(false);
+      }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
@@ -81,6 +86,7 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
       setJurDropdownOpen(false);
       setCatDropdownOpen(false);
       setTopicDropdownOpen(false);
+      setLangDropdownOpen(false);
       return;
     }
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -259,6 +265,16 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
     },
   ];
 
+    const COMM_LANGUAGES = [
+    { id: 'ru', flag: 'ru', title: 'Русский (RU)' },
+    { id: 'en', flag: 'usa', title: 'English (US)' },
+    { id: 'tr', flag: 'turkey', title: 'Türkçe (TR)' },
+    { id: 'uk', flag: 'other', title: 'Українська (UA)' },
+    { id: 'es', flag: 'other', title: 'Español (ES)' },
+    { id: 'de', flag: 'eu', title: 'Deutsch (DE)' },
+    { id: 'other', flag: 'other', title: 'Другой / Other' },
+  ];
+  const currentCommLangObj = COMM_LANGUAGES.find((l) => l.id === selectedCommLang) || COMM_LANGUAGES[0];
   const currentCategory = categoriesList.find((c) => c.id === selectedCat) || categoriesList[0];
   const jurisdictionsList = JURISDICTIONS[currentLang] || JURISDICTIONS.ru;
   const currentJurisdiction = jurisdictionsList.find((j) => j.id === selectedJurisdiction) || jurisdictionsList[0];
@@ -454,7 +470,7 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/55 backdrop-blur-xs sm:backdrop-blur-sm animate-in fade-in duration-200">
       <div
-        className="relative w-full max-w-lg rounded-xl border border-white/[0.14] p-3.5 sm:p-4 shadow-2xl overflow-hidden max-h-[92vh] overflow-y-auto scrollbar-none"
+        className="relative w-full max-w-lg rounded-xl border border-white/[0.14] p-3.5 sm:p-4 shadow-2xl overflow-y-auto overflow-x-hidden max-h-[92vh] scrollbar-none"
         style={{
           background: 'linear-gradient(180deg, #0A0F1D 0%, #060912 100%)',
           boxShadow: '0 25px 60px -15px rgba(0, 0, 0, 0.95), 0 0 40px rgba(212, 175, 55, 0.1)',
@@ -518,10 +534,7 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
                 <p className="text-[11px] font-sans text-gray-300 leading-tight">
                   {L.modalSub}
                 </p>
-                <div className="flex items-center gap-1 text-[9px] font-mono text-gold-400 uppercase tracking-widest pt-0.5">
-                  <Shield size={10} className="text-gold-400" />
-                  <span>Rule 1.6 Attorney-Client Privilege · Confidential</span>
-                </div>
+
               </div>
             </div>
 
@@ -629,7 +642,7 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
                                 : 'text-gray-200 hover:bg-white/10 hover:text-white border border-transparent'
                             }`}
                           >
-                            <span className="text-xs shrink-0">{cat.icon}</span>
+                            {cat.id === 'usa' ? <CountryFlagSvg code="usa" size="xs" /> : <span className="text-xs shrink-0">{cat.icon}</span>}
                             <span className="truncate text-[11.5px]">{cat.title}</span>
                           </button>
                         );
@@ -639,56 +652,114 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
                 </div>
               </div>
 
-              {/* 3. Specific Subcategory / Topic Dropdown */}
-              <div ref={topicRef} className="relative">
-                <label className="text-[10px] font-sans font-semibold tracking-wider text-[#DFBA73] block mb-0.5 uppercase">
-                  {L.topicLabel}
-                </label>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setTopicDropdownOpen(!topicDropdownOpen);
-                    setJurDropdownOpen(false);
-                    setCatDropdownOpen(false);
-                  }}
-                  className="w-full h-8 px-2.5 rounded-md bg-[#101524] border border-white/[0.14] hover:border-white/30 focus:border-[#DFBA73] flex items-center justify-between text-left text-xs font-sans font-medium text-white transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)] cursor-pointer select-none"
-                >
-                  <div className="flex items-center gap-2 overflow-hidden">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#DFBA73] shrink-0 shadow-[0_0_5px_rgba(223,186,115,0.7)]" />
-                    <span className="truncate text-white font-medium">{selectedChip}</span>
-                  </div>
-                  <ChevronDown
-                    size={13}
-                    className={`text-gray-400 shrink-0 transition-transform duration-200 ${
-                      topicDropdownOpen ? 'rotate-180 text-[#DFBA73]' : ''
-                    }`}
-                  />
-                </button>
+              {/* 3 & 4: Compact 2-column row for Specific Task & Preferred Language */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {/* 3. Specific Subcategory / Topic Dropdown */}
+                <div ref={topicRef} className="relative">
+                  <label className="text-[10px] font-sans font-semibold tracking-wider text-[#DFBA73] block mb-0.5 uppercase truncate">
+                    {L.topicLabel}
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setTopicDropdownOpen(!topicDropdownOpen);
+                      setJurDropdownOpen(false);
+                      setCatDropdownOpen(false);
+                      setLangDropdownOpen(false);
+                    }}
+                    className="w-full h-8 px-2.5 rounded-md bg-[#101524] border border-white/[0.14] hover:border-white/30 focus:border-[#DFBA73] flex items-center justify-between text-left text-xs font-sans font-medium text-white transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)] cursor-pointer select-none"
+                  >
+                    <div className="flex items-center gap-1.5 overflow-hidden">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#DFBA73] shrink-0 shadow-[0_0_5px_rgba(223,186,115,0.7)]" />
+                      <span className="truncate text-white text-[11.5px] font-medium">{selectedChip}</span>
+                    </div>
+                    <ChevronDown
+                      size={12}
+                      className={`text-gray-400 shrink-0 transition-transform duration-200 ${
+                        topicDropdownOpen ? 'rotate-180 text-[#DFBA73]' : ''
+                      }`}
+                    />
+                  </button>
 
-                {topicDropdownOpen && (
-                  <div className="absolute z-40 left-0 right-0 mt-1 p-1 bg-[#0D1220] border border-white/20 rounded-md shadow-2xl shadow-black space-y-0.5 animate-in fade-in-50 zoom-in-95 duration-150 max-h-44 overflow-y-auto scrollbar-none">
-                    {currentCategory.chips.map((chip) => {
-                      const isSelected = selectedChip === chip;
-                      return (
-                        <button
-                          key={chip}
-                          type="button"
-                          onClick={() => handleTopicSelect(chip)}
-                          className={`w-full px-2.5 py-1.5 rounded text-xs font-sans text-left transition-all cursor-pointer ${
-                            isSelected
-                              ? 'bg-[#DFBA73]/20 text-[#FFE8A3] border border-[#DFBA73]/40 font-semibold'
-                              : 'text-gray-200 hover:bg-white/10 hover:text-white border border-transparent'
-                          }`}
-                        >
-                          <span className="truncate">{chip}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
+                  {topicDropdownOpen && (
+                    <div className="absolute z-40 left-0 right-0 mt-1 p-1 bg-[#0D1220] border border-white/20 rounded-md shadow-2xl shadow-black space-y-0.5 animate-in fade-in-50 zoom-in-95 duration-150 max-h-44 overflow-y-auto scrollbar-none">
+                      {currentCategory.chips.map((chip) => {
+                        const isSelected = selectedChip === chip;
+                        return (
+                          <button
+                            key={chip}
+                            type="button"
+                            onClick={() => handleTopicSelect(chip)}
+                            className={`w-full px-2 py-1.5 rounded text-xs font-sans text-left transition-all cursor-pointer ${
+                              isSelected
+                                ? 'bg-[#DFBA73]/20 text-[#FFE8A3] border border-[#DFBA73]/40 font-semibold'
+                                : 'text-gray-200 hover:bg-white/10 hover:text-white border border-transparent'
+                            }`}
+                          >
+                            <span className="truncate text-[11.5px]">{chip}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+
+                {/* 4. Preferred Language of Communication Dropdown (Выпадающий список) */}
+                <div ref={langRef} className="relative">
+                  <label className="text-[10px] font-sans font-semibold tracking-wider text-[#DFBA73] block mb-0.5 uppercase truncate">
+                    4. ЯЗЫК ОБЩЕНИЯ:
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setLangDropdownOpen(!langDropdownOpen);
+                      setJurDropdownOpen(false);
+                      setCatDropdownOpen(false);
+                      setTopicDropdownOpen(false);
+                    }}
+                    className="w-full h-8 px-2.5 rounded-md bg-[#101524] border border-white/[0.14] hover:border-white/30 focus:border-[#DFBA73] flex items-center justify-between text-left text-xs font-sans font-medium text-white transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)] cursor-pointer select-none"
+                  >
+                    <div className="flex items-center gap-2 overflow-hidden">
+                      <CountryFlagSvg code={currentCommLangObj.flag} size="xs" />
+                      <span className="truncate text-white text-[11.5px] font-medium">{currentCommLangObj.title}</span>
+                    </div>
+                    <ChevronDown
+                      size={12}
+                      className={`text-gray-400 shrink-0 transition-transform duration-200 ${
+                        langDropdownOpen ? 'rotate-180 text-[#DFBA73]' : ''
+                      }`}
+                    />
+                  </button>
+
+                  {langDropdownOpen && (
+                    <div className="absolute z-40 left-0 right-0 mt-1 p-1 bg-[#0D1220] border border-white/20 rounded-md shadow-2xl shadow-black space-y-0.5 animate-in fade-in-50 zoom-in-95 duration-150 max-h-44 overflow-y-auto scrollbar-none">
+                      {COMM_LANGUAGES.map((item) => {
+                        const isSelected = selectedCommLang === item.id;
+                        return (
+                          <button
+                            key={item.id}
+                            type="button"
+                            onClick={() => {
+                              setSelectedCommLang(item.id);
+                              setLangDropdownOpen(false);
+                            }}
+                            className={`w-full px-2 py-1.5 rounded text-xs font-sans text-left flex items-center gap-2 transition-all cursor-pointer ${
+                              isSelected
+                                ? 'bg-[#DFBA73]/20 text-[#FFE8A3] border border-[#DFBA73]/40 font-semibold'
+                                : 'text-gray-200 hover:bg-white/10 hover:text-white border border-transparent'
+                            }`}
+                          >
+                            <CountryFlagSvg code={item.flag} size="xs" />
+                            <span className="truncate text-[11.5px]">{item.title}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
               </div>
 
-              {/* 4. Description Textarea */}
+              {/* 5. Description Textarea */}
               <div className="rounded-md p-2 bg-[#101524] border border-white/[0.14] focus-within:border-white/30 transition-all shadow-[inset_0_1px_2px_rgba(0,0,0,0.4)]">
                 <div className="flex items-center justify-between pb-1 mb-1 border-b border-white/10">
                   <label className="text-[10px] font-sans uppercase tracking-wider text-[#DFBA73] font-semibold flex items-center gap-1">
@@ -708,44 +779,11 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({
                 />
               </div>
 
-              {/* 4. Preferred Communication Language (Язык общения) */}
-              <div className="space-y-1 pt-0.5">
-                <label className="text-[10px] font-sans font-semibold tracking-wider text-[#DFBA73] block uppercase flex items-center justify-between">
-                  <span>4. ЯЗЫК ОБЩЕНИЯ / PREFERRED LANGUAGE:</span>
-                  <span className="text-[9px] text-gray-400 normal-case font-normal">для обратной связи</span>
-                </label>
-                <div className="grid grid-cols-4 gap-1.5">
-                  {[
-                    { id: 'ru', flag: 'ru', label: 'Русский' },
-                    { id: 'en', flag: 'usa', label: 'English' },
-                    { id: 'tr', flag: 'turkey', label: 'Türkçe' },
-                    { id: 'uk', flag: 'other', label: 'Українська' },
-                  ].map((item) => {
-                    const isSelected = selectedCommLang === item.id;
-                    return (
-                      <button
-                        key={item.id}
-                        type="button"
-                        onClick={() => setSelectedCommLang(item.id)}
-                        className={`h-7 px-2 rounded-md flex items-center justify-center gap-1.5 text-[11px] font-medium transition-all cursor-pointer border select-none ${
-                          isSelected
-                            ? 'bg-[#DFBA73]/25 border-[#DFBA73] text-[#FFE8A3] shadow-[0_0_8px_rgba(223,186,115,0.3)] font-semibold'
-                            : 'bg-[#101524] border-white/10 text-gray-300 hover:text-white hover:border-white/25'
-                        }`}
-                      >
-                        <CountryFlagSvg code={item.flag} size="xs" />
-                        <span>{item.label}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
               {/* 5. Contact Information Grid with Clear Labels & Branded Icons */}
               <div className="space-y-2 pt-0.5">
                 <label className="text-[10px] font-sans font-semibold tracking-wider text-[#DFBA73] block uppercase flex items-center justify-between">
-                  <span>5. КОНТАКТНЫЕ ДАННЫЕ ДЛЯ СВЯЗИ:</span>
-                  <span className="text-[9px] text-emerald-400 normal-case font-normal">укажите удобный контакт</span>
+                  <span>6. КОНТАКТНЫЕ ДАННЫЕ ДЛЯ СВЯЗИ:</span>
+                  <span className="text-[9px] text-emerald-400 normal-case font-normal">достаточно любого одного контакта</span>
                 </label>
 
                 {/* Row 1: Name & WhatsApp */}
