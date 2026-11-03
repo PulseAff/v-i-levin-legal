@@ -30,7 +30,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/cases',
   ];
 
-  const languages = ['ru', 'en', 'uk', 'es', 'it', 'fr'];
+  const languages = ['ru', 'en', 'uk', 'es', 'it', 'fr', 'tr'];
 
   return routes.map((route) => {
     const isPriorityRoot = route === '' || route === '/usa' || route === '/usa/green-card';

@@ -21,10 +21,22 @@ export function generateMetadata({ params }: PageProps): Metadata {
   const description = country.shortOverview;
 
   return {
-    title,
+    title: {
+      absolute: title,
+    },
     description,
     alternates: {
       canonical: `https://vilevin.com/countries/${country.code}`,
+      languages: {
+        'ru': `https://vilevin.com/countries/${country.code}?lang=ru`,
+        'en': `https://vilevin.com/countries/${country.code}?lang=en`,
+        'uk': `https://vilevin.com/countries/${country.code}?lang=uk`,
+        'es': `https://vilevin.com/countries/${country.code}?lang=es`,
+        'it': `https://vilevin.com/countries/${country.code}?lang=it`,
+        'fr': `https://vilevin.com/countries/${country.code}?lang=fr`,
+        'tr': `https://vilevin.com/countries/${country.code}?lang=tr`,
+        'x-default': `https://vilevin.com/countries/${country.code}`,
+      },
     },
     openGraph: {
       title,
