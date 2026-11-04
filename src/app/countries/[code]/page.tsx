@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { countriesData } from '@/data/countriesData';
-import { Shield, CheckCircle2, ArrowRight, MessageSquare, ChevronDown } from 'lucide-react';
+import { Shield, CheckCircle2 } from 'lucide-react';
 import { ConsultationButton } from '@/components/ui/ConsultationButton';
 
 interface PageProps {
@@ -18,32 +18,22 @@ export function generateMetadata({ params }: PageProps): Metadata {
   const country = countriesData.find((c) => c.code === params.code);
   if (!country) return { title: 'Страна не найдена' };
 
-  const title = country.seoTitle || `Юрисдикция ${country.name} | V. I. LEVIN Practice`;
-  const description = country.shortOverview;
+  if (country.code === 'turkey') {
+    return {
+      title: 'Юридическая консультация онлайн в Турции | Юрист по международному праву',
+      description: 'Юридическая консультация онлайн по праву Турции для экспатов и бизнеса: инвестиции, аудит недвижимости TAPU, регистрация компаний и гражданство.',
+      alternates: {
+        canonical: 'https://vilevin.com/countries/turkey/',
+      }
+    };
+  }
 
   return {
-    title: {
-      absolute: title,
-    },
-    description,
+    title: `Юрисдикция ${country.name} | V. I. LEVIN Practice`,
+    description: country.shortOverview,
     alternates: {
-      canonical: `https://vilevin.com/countries/${country.code}`,
-      languages: {
-        'ru': `https://vilevin.com/countries/${country.code}?lang=ru`,
-        'en': `https://vilevin.com/countries/${country.code}?lang=en`,
-        'uk': `https://vilevin.com/countries/${country.code}?lang=uk`,
-        'es': `https://vilevin.com/countries/${country.code}?lang=es`,
-        'it': `https://vilevin.com/countries/${country.code}?lang=it`,
-        'fr': `https://vilevin.com/countries/${country.code}?lang=fr`,
-        'tr': `https://vilevin.com/countries/${country.code}?lang=tr`,
-        'x-default': `https://vilevin.com/countries/${country.code}`,
-      },
-    },
-    openGraph: {
-      title,
-      description,
-      url: `https://vilevin.com/countries/${country.code}`,
-    },
+      canonical: `https://vilevin.com/countries/${country.code}/`,
+    }
   };
 }
 
@@ -118,6 +108,25 @@ export default function CountryDetailPage({ params }: PageProps) {
                 </div>
               ))}
             </div>
+
+            {/* Schema.org FAQPage */}
+            <script
+              type="application/ld+json"
+              dangerouslySetInnerHTML={{
+                __html: JSON.stringify({
+                  '@context': 'https://schema.org',
+                  '@type': 'FAQPage',
+                  mainEntity: country.faq.map((item) => ({
+                    '@type': 'Question',
+                    name: item.q,
+                    acceptedAnswer: {
+                      '@type': 'Answer',
+                      text: item.a,
+                    },
+                  })),
+                }),
+              }}
+            />
           </div>
         )}
 

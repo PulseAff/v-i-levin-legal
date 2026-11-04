@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { articlesData } from '@/data/articlesData';
-import { Clock, Calendar, ArrowUpRight, MessageSquare, Shield } from 'lucide-react';
+import { Calendar, Clock } from 'lucide-react';
 import { ConsultationButton } from '@/components/ui/ConsultationButton';
 
 interface PageProps {
@@ -21,6 +21,16 @@ export function generateMetadata({ params }: PageProps): Metadata {
   return {
     title: `${article.title} | V. I. LEVIN Practice`,
     description: article.excerpt,
+    alternates: {
+      canonical: `https://vilevin.com/articles/${article.slug}/`,
+    },
+    openGraph: {
+      title: article.title,
+      description: article.excerpt,
+      url: `https://vilevin.com/articles/${article.slug}/`,
+      type: 'article',
+      publishedTime: article.publishedAt,
+    },
   };
 }
 
@@ -52,56 +62,35 @@ export default function ArticleDetailPage({ params }: PageProps) {
             </span>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif text-white font-bold leading-tight">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-serif text-white font-bold leading-tight">
             {article.title}
           </h1>
 
-          <p className="text-base sm:text-lg text-gray-300 font-light leading-relaxed">
+          <p className="text-sm sm:text-base text-gray-300 font-light leading-relaxed">
             {article.excerpt}
           </p>
         </header>
 
-        {/* Content Body */}
-        <div
-          className="prose prose-invert prose-gold max-w-none text-gray-300 text-sm sm:text-base leading-relaxed space-y-6 font-light
-          [&>h2]:text-2xl [&>h2]:font-serif [&>h2]:text-white [&>h2]:font-bold [&>h2]:mt-8 [&>h2]:mb-3
-          [&>p]:leading-relaxed [&>ul]:space-y-2 [&>ul]:list-disc [&>ul]:pl-5
-          [&>strong]:text-white [&>strong]:font-semibold"
+        {/* Article content */}
+        <article
+          className="prose prose-invert prose-gold max-w-none text-gray-300 font-light leading-relaxed text-sm sm:text-base"
           dangerouslySetInnerHTML={{ __html: article.contentHtml }}
         />
 
-        {/* Threads synergy box */}
-        <div className="p-6 rounded-md bg-navy-900 border border-surface-border flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div>
-            <h4 className="text-sm font-serif text-white font-bold">
-              Обсуждайте кейс в Threads
-            </h4>
-            <p className="text-xs text-gray-400 mt-1 font-light">
-              Авторские заметки, разборы прецедентов и комментарии юриста в экспертном профиле.
+        {/* Bottom CTA */}
+        <div className="pt-8 border-t border-surface-border">
+          <div className="p-8 rounded-md bg-navy-900 border border-gold-500/30 text-center space-y-3">
+            <h3 className="text-xl font-serif text-white font-bold">
+              Нужна правовая оценка вашей ситуации?
+            </h3>
+            <p className="text-xs text-gray-400 max-w-md mx-auto">
+              Задайте вопрос напрямую международному юристу практики V. I. LEVIN.
             </p>
-          </div>
-          <a
-            href="https://threads.net/@v.i.levin"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-4 py-2 bg-navy-850 hover:bg-navy-800 text-gold-400 border border-gold-500/30 text-xs font-semibold uppercase rounded-md transition-colors inline-flex items-center gap-1.5 shrink-0"
-          >
-            Открыть Threads <ArrowUpRight size={14} />
-          </a>
-        </div>
-
-        {/* CTA */}
-        <div className="text-center p-8 rounded-md bg-gradient-to-r from-navy-900 via-navy-850 to-navy-900 border border-gold-500/30 space-y-3">
-          <h3 className="text-xl font-serif text-white font-bold">
-            Нужен персональный правовой анализ?
-          </h3>
-          <p className="text-xs text-gray-400 max-w-md mx-auto font-light">
-            Каждая юридическая ситуация уникальна. Запишитесь на индивидуальный разбор с ведущим специалистом.
-          </p>
-          <div className="pt-2">
-            <ConsultationButton serviceCategory={`Статья: ${article.title}`}>
-              Получить консультацию
-            </ConsultationButton>
+            <div className="pt-2">
+              <ConsultationButton serviceCategory={`Статья: ${article.title}`}>
+                Получить консультацию
+              </ConsultationButton>
+            </div>
           </div>
         </div>
       </div>

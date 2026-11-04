@@ -243,6 +243,28 @@ export default function RootLayout({
         )}
       </head>
       <body className="min-h-screen flex flex-col font-sans bg-[#05070D] text-slate-100 antialiased">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'LegalService',
+              name: 'V. I. LEVIN — Международная юридическая практика',
+              alternateName: 'V. I. LEVIN Practice',
+              url: 'https://vilevin.com',
+              logo: 'https://vilevin.com/favicon.ico',
+              sameAs: [
+                'https://t.me/VILEVIN_bot',
+                'https://threads.net/@v.i.levin',
+              ],
+              priceRange: '$$$$',
+              address: {
+                '@type': 'PostalAddress',
+                addressCountry: 'US',
+              },
+            }),
+          }}
+        />
         <LanguageProvider>
           <ThemeProvider>
             <ConsultationProvider>
